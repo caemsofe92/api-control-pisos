@@ -10,6 +10,7 @@ var updateDiagnosticRouter = require("./routes/update-diagnostic");
 var getHome = require("./routes/get-home");
 var getRaic = require("./routes/get-raic");
 var getDiagnostic = require("./routes/get-diagnostic");
+var getHomeCP = require("./routes/get-home-cp");
 
 var app = express();
 app.use(compression());
@@ -24,6 +25,7 @@ app.use("/update-diagnostic", updateDiagnosticRouter);
 app.use("/get-home", getHome);
 app.use("/get-raic", getRaic);
 app.use("/get-diagnostic", getDiagnostic);
+app.use("/get-home-cp", getHomeCP);
 
 app.use(function (req, res, next) {
   next(createError(404));
