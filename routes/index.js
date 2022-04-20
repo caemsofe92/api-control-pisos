@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.send("HSEQ API");
+  res.send("Control de Pisos API");
 });
 
 module.exports = router;
