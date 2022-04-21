@@ -86,23 +86,23 @@ router.post("/", async (req, res) => {
 
     if (!_mainReply || refresh) {
       const Entity1 = axios.get(
-        `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none&cross-company=true&$filter(Status eq 'InProcess')&$top=1`,
+        `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none&cross-company=true&$filter(Status eq 'InProcess')`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity2 = axios.get(
-        `${tenant}/data/CaseRequestTables?$format=application/json;odata.metadata=none&cross-company=true&$top=1`,
+        `${tenant}/data/CaseRequestTables?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity3 = axios.get(
-        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none&cross-company=true&$top=1`,
+        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity4 = axios.get(
-        `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none&cross-company=true&$top=1`,
+        `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity5 = axios.get(
-        `${tenant}/data/Workers?$format=application/json;odata.metadata=none&cross-company=true&$top=1`,
+        `${tenant}/data/Workers?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity6 = axios.get(
