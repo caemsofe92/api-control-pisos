@@ -31,9 +31,6 @@ router.post("/", async (req, res) => {
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-    if (!isClockIn || isClockIn.length === 0)
-      throw new Error("isClockIn is Mandatory");
-
     if (!client.isOpen) client.connect();
 
     let token = await client.get(environment);
