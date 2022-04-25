@@ -101,7 +101,7 @@ router.post("/", async (req, res) => {
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity6 = axios.get(
-        `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none&cross-company=true&$select=DataArea,Name`,
+        `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       await axios
