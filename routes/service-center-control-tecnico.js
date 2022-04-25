@@ -1,8 +1,7 @@
 let express = require("express");
 let router = express.Router();
-const axios = require("axios");
 const client = require("../bin/redis-client");
-const moment = require("moment");
+const axios = require("axios");
 
 router.post("/", async (req, res) => {
   try {
@@ -11,11 +10,9 @@ router.post("/", async (req, res) => {
     const clientSecret =
       req.query.clientSecret || (req.body && req.body.clientSecret);
     const tenant = req.query.tenant || (req.body && req.body.tenant);
-    const environment =
-      req.query.environment || (req.body && req.body.environment);
-    const clockIn = req.query.clockIn || (req.body && req.body.clockIn);
-    const clockOut = req.query.clockOut || (req.body && req.body.clockOut);
-    const isClockIn = req.query.isClockIn || (req.body && req.body.isClockIn);
+    const entity = req.query.entity || (req.body && req.body.entity);
+    const refresh = req.query.refresh || (req.body && req.body.refresh);
+    const environment = req.query.environment || (req.body && req.body.environment);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -28,11 +25,22 @@ router.post("/", async (req, res) => {
 
     if (!tenant || tenant.length === 0) throw new Error("tenant is Mandatory");
 
+    if (!entity || entity.length === 0) throw new Error("entity is Mandatory");
+
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-
     if (!client.isOpen) client.connect();
+
+    if (!refresh) {
+      const userReply = await client.get(entity);
+      if (userReply)
+        return res.json({
+          result: true,
+          message: "OK",
+          response: JSON.parse(userReply),
+        });
+    }
 
     let token = await client.get(environment);
 
@@ -64,67 +72,73 @@ router.post("/", async (req, res) => {
       });
     }
 
-    let _clockIn;
-    let _clockOut;
+    let _mainReply;
+    let mainReply;
 
-    if (isClockIn) {
-      _clockIn = await axios
-        .post(
-          `${tenant}/data/CaseTables/Microsoft.Dynamics.DataEntities.ClockIn`,
-          clockIn,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .catch(function (error) {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.innererror &&
-            error.response.data.error.innererror.message
-          ) {
-            throw new Error(error.response.data.error.innererror.message);
-          } else if (error.request) {
-            throw new Error(error.request);
-          } else {
-            throw new Error("Error", error.message);
-          }
-        });
-      _clockIn = _clockIn.data;
-    } else {
-      _clockOut = await axios
-        .post(
-          `${tenant}/data/CaseTables/Microsoft.Dynamics.DataEntities.ClockOut`,
-          clockOut,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .catch(function (error) {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.innererror &&
-            error.response.data.error.innererror.message
-          ) {
-            throw new Error(error.response.data.error.innererror.message);
-          } else if (error.request) {
-            throw new Error(error.request);
-          } else {
-            throw new Error("Error", error.message);
-          }
-        });
-      _clockOut = _clockOut.data;
+    if (!refresh) {
+      _mainReply = await client.get(entity);
     }
 
-    return res.json({
-      result: true,
-      message: "OK",
-      _clockIn,
-      _clockOut,
-    });
+    if (!_mainReply || refresh) {
+      const Entity1 = axios.get(
+        `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none&cross-company=true&$filter(Status eq 'InProcess')`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity2 = axios.get(
+        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity3 = axios.get(
+        `${tenant}/data/NAVInspectionGroups?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity4 = axios.get(
+        `${tenant}/data/InspectionTables?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity5 = axios.get(
+        `${tenant}/data/NAVDiagnosticsConditions?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity6 = axios.get(
+        `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none&cross-company=true&$select=DataArea,Name`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      await axios
+        .all([Entity1, Entity2, Entity3, Entity4, Entity5, Entity6])
+        .then(
+          axios.spread(async (...responses) => {
+            mainReply = {
+              CaseTables: responses[0].data.value,
+              NAVInspectionTables: responses[1].data.value,
+              NAVInspectionGroups: responses[2].data.value,
+              InspectionTables: responses[3].data.value,
+              NAVDiagnosticsConditions: responses[4].data.value,
+              NAVDiagnostics: responses[5].data.value,
+            };
+
+            await client.set(entity, JSON.stringify(mainReply), {
+              EX: 9999999,
+            });
+            return res.json({ result: true, message: "OK", response: mainReply });
+          })
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
+    } 
   } catch (error) {
     return res.status(500).json({
       result: false,
