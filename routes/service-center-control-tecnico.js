@@ -81,27 +81,27 @@ router.post("/", async (req, res) => {
 
     if (!_mainReply || refresh) {
       const Entity1 = axios.get(
-        `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none&cross-company=true&$filter(Status eq 'InProcess')`,
+        `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none&cross-company=true&$filter(Status eq 'InProcess')&$top=3`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity2 = axios.get(
-        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none&cross-company=true&$top=3`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity3 = axios.get(
-        `${tenant}/data/NAVInspectionGroups?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/NAVInspectionGroups?$format=application/json;odata.metadata=none&cross-company=true&$top=3`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity4 = axios.get(
-        `${tenant}/data/InspectionTables?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/InspectionTables?$format=application/json;odata.metadata=none&cross-company=true&$top=3`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity5 = axios.get(
-        `${tenant}/data/NAVDiagnosticsConditions?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/NAVDiagnosticsConditions?$format=application/json;odata.metadata=none&cross-company=true&$top=3`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity6 = axios.get(
-        `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none&cross-company=true&$top=3`,
         { headers: { Authorization: "Bearer " + token } }
       );
       await axios
