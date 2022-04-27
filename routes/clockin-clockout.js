@@ -69,7 +69,7 @@ if (!client.isOpen) client.connect();
     if (isClockIn) {
       _clockIn = await axios
         .post(
-          `${tenant}/data/CaseTables/Microsoft.Dynamics.DataEntities.ClockIn`,
+          `${tenant}/data/NAVCaseTimeSheetTrans/Microsoft.Dynamics.DataEntities.NAVClockIn`,
           clockIn,
           {
             headers: { Authorization: "Bearer " + token },
@@ -94,7 +94,7 @@ if (!client.isOpen) client.connect();
     } else {
       _clockOut = await axios
         .post(
-          `${tenant}/data/CaseTables/Microsoft.Dynamics.DataEntities.ClockOut`,
+          `${tenant}/data/NAVCaseTimeSheetTrans/Microsoft.Dynamics.DataEntities.NAVclockOut`,
           clockOut,
           {
             headers: { Authorization: "Bearer " + token },
