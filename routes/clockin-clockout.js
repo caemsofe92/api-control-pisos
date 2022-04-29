@@ -69,7 +69,7 @@ if (!client.isOpen) client.connect();
     if (isClockIn) {
       _clockIn = await axios
         .post(
-          `${tenant}/data/NAVCaseTimeSheetTrans/Microsoft.Dynamics.DataEntities.NAVClockIn`,
+          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
           clockIn,
           {
             headers: { Authorization: "Bearer " + token },
@@ -94,7 +94,7 @@ if (!client.isOpen) client.connect();
     } else {
       _clockOut = await axios
         .post(
-          `${tenant}/data/NAVCaseTimeSheetTrans/Microsoft.Dynamics.DataEntities.NAVclockOut`,
+          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVClockOut`,
           clockOut,
           {
             headers: { Authorization: "Bearer " + token },
@@ -124,12 +124,16 @@ if (!client.isOpen) client.connect();
       _clockIn,
       _clockOut,
     });
-  } catch (error) {
+
+    
+  }
+   catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),
     });
   }
+
 });
 
 module.exports = router;
