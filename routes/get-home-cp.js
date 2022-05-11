@@ -115,7 +115,7 @@ router.post("/", async (req, res) => {
               Workers: responses[1].data.value,
               Companies: responses[2].data.value,
               NAVWrkCtrs: responses[3].data.value,
-              CaseWorkshopLocationResources: responses[4].data.value
+              CaseWorkshopLocationResources: responses[4].data.value,
             };
 
             await client.set(entity, JSON.stringify(mainReply), {
@@ -156,7 +156,7 @@ router.post("/", async (req, res) => {
       .then(
         axios.spread(async (...responses) => {
           const _PersonUsers = responses[1].data.value;
-  
+
           let PersonUsers = {};
           let Workers = {};
           let CaseWorkshopLocationResources = {};
@@ -164,32 +164,31 @@ router.post("/", async (req, res) => {
           if (_PersonUsers.length > 0) {
             PersonUsers = _PersonUsers[0];
             const _Workers = mainReply.Workers.filter(
-              (item) =>
-                item.PartyNumber === PersonUsers.PartyNumber
+              (item) => item.PartyNumber === PersonUsers.PartyNumber
             );
 
-            if(_Workers.length > 0) {
+            if (_Workers.length > 0) {
               Workers = _Workers[0];
             }
-            
+
             const _NAVWrkCtrs = mainReply.NAVWrkCtrs.filter(
               (item) =>
                 item.DirPerson_FK_PartyNumber === PersonUsers.PartyNumber
             );
 
             if (_NAVWrkCtrs.length > 0) {
-              const _CaseWorkshopLocationResources = mainReply.CaseWorkshopLocationResources.filter(
-                (item) =>
-                  item.WrkCtrId === _NAVWrkCtrs[0].WrkCtrId
-              );
+              const _CaseWorkshopLocationResources =
+                mainReply.CaseWorkshopLocationResources.filter(
+                  (item) => item.WrkCtrId === _NAVWrkCtrs[0].WrkCtrId
+                );
 
               if (_CaseWorkshopLocationResources.length > 0) {
-                CaseWorkshopLocationResources = _CaseWorkshopLocationResources[0];
+                CaseWorkshopLocationResources =
+                  _CaseWorkshopLocationResources[0];
               }
-              
             }
           }
-          
+
           const userReply = {
             Roles: responses[0].data.value.map((Rol) => {
               return { Name: Rol.Name };
@@ -199,7 +198,7 @@ router.post("/", async (req, res) => {
               PersonName: PersonUsers.PersonName,
               PersonnelNumber: Workers.PersonnelNumber,
               Company: CaseWorkshopLocationResources.dataAreaId,
-              LocationId: CaseWorkshopLocationResources.LocationId
+              LocationId: CaseWorkshopLocationResources.LocationId,
             },
             Companies: mainReply.Companies,
             SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
