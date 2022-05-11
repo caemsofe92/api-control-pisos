@@ -86,51 +86,36 @@ router.post("/", async (req, res) => {
 
     if (!_mainReply || refresh) {
       const Entity1 = axios.get(
-        `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none&cross-company=true&$filter(Status eq 'InProcess')`,
+        `${tenant}/data/SRF_AMCaseWorkshopLocation?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity2 = axios.get(
-        `${tenant}/data/CaseRequestTables?$format=application/json;odata.metadata=none&cross-company=true`,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      const Entity3 = axios.get(
-        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none&cross-company=true`,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      const Entity4 = axios.get(
-        `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none&cross-company=true`,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-      const Entity5 = axios.get(
         `${tenant}/data/Workers?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
-      const Entity6 = axios.get(
+      const Entity3 = axios.get(
         `${tenant}/data/Companies?$format=application/json;odata.metadata=none&cross-company=true&$select=DataArea,Name`,
         { headers: { Authorization: "Bearer " + token } }
       );
-      const Entity7 = axios.get(
+      const Entity4 = axios.get(
         `${tenant}/data/NAVWrkCtrs?$format=application/json;odata.metadata=none&cross-company=true&$select=WrkCtrId,DirPerson_FK_PartyNumber`,
         { headers: { Authorization: "Bearer " + token } }
       );
-      const Entity8 = axios.get(
+      const Entity5 = axios.get(
         `${tenant}/data/CaseWorkshopLocationResources?$format=application/json;odata.metadata=none&cross-company=true&$select=WrkCtrId,LocationId,dataAreaId`,
         { headers: { Authorization: "Bearer " + token } }
       );
 
       await axios
-        .all([Entity1, Entity2, Entity3, Entity4, Entity5, Entity6, Entity7, Entity8])
+        .all([Entity1, Entity2, Entity3, Entity4, Entity5])
         .then(
           axios.spread(async (...responses) => {
             mainReply = {
-              CaseTables: responses[0].data.value,
-              CaseRequestTables: responses[1].data.value,
-              NAVInspectionTables: responses[2].data.value,
-              NAVConditionsRequests: responses[3].data.value,
-              Workers: responses[4].data.value,
-              Companies: responses[5].data.value,
-              NAVWrkCtrs: responses[6].data.value,
-              CaseWorkshopLocationResources: responses[7].data.value
+              SRF_AMCaseWorkshopLocation: responses[0].data.value,
+              Workers: responses[1].data.value,
+              Companies: responses[2].data.value,
+              NAVWrkCtrs: responses[3].data.value,
+              CaseWorkshopLocationResources: responses[4].data.value
             };
 
             await client.set(entity, JSON.stringify(mainReply), {
@@ -217,11 +202,7 @@ router.post("/", async (req, res) => {
               LocationId: CaseWorkshopLocationResources.LocationId
             },
             Companies: mainReply.Companies,
-            Workers: mainReply.Workers,
-            CaseTables: mainReply.CaseTables,
-            CaseRequestTables: mainReply.CaseRequestTables,
-            NAVInspectionTables: mainReply.NAVInspectionTables,
-            NAVConditionsRequests: mainReply.NAVConditionsRequests
+            SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
           };
 
           await client.set(entity + userEmail, JSON.stringify(userReply), {
