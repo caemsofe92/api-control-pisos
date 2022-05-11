@@ -30,8 +30,8 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
-
-    if (!client.isOpen) client.connect();
+   
+if (!client.isOpen) client.connect();
 
     let token = await client.get(environment);
 
@@ -69,7 +69,7 @@ router.post("/", async (req, res) => {
     if (isClockIn) {
       _clockIn = await axios
         .post(
-          `${tenant}/data/CaseTables/Microsoft.Dynamics.DataEntities.ClockIn`,
+          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
           clockIn,
           {
             headers: { Authorization: "Bearer " + token },
@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
     } else {
       _clockOut = await axios
         .post(
-          `${tenant}/data/CaseTables/Microsoft.Dynamics.DataEntities.ClockOut`,
+          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVClockOut`,
           clockOut,
           {
             headers: { Authorization: "Bearer " + token },
@@ -124,12 +124,16 @@ router.post("/", async (req, res) => {
       _clockIn,
       _clockOut,
     });
-  } catch (error) {
+
+    
+  }
+   catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),
     });
   }
+
 });
 
 module.exports = router;
