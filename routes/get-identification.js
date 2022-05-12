@@ -91,14 +91,14 @@ router.post("/", async (req, res) => {
     const Entity2 = axios.get(
       `${tenant}/data/SRF_DeviceTableMasters?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=RegistrationNumber,ModelId,RecId1,ModelYear,MasterId,ChassisNumber,VINSerialNumber,DeviceName,BrandId,FuelId,LastInspectionDate,NextInspectionDate`,
+      }&cross-company=true&$select=RegistrationNumber,ModelId,RecId1,ModelYear,MasterId,ChassisNumber,VINSerialNumber,DeviceName,BrandId,FuelId,LastInspectionDate,NextInspectionDate,ClassId`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity3 = axios.get(
-      `${tenant}/data/SRF_CustTablesV3?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_CustTablesV2?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=dataAreaId,CustomerAccount,OrganizationName,IdentificationNumber,PartyNumber,PaymentTerms,CreditLimit,OnHoldStatus,PaymentMethod, PrimaryContactPhone,PrimaryContactEmail${
+      }&cross-company=true${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
       }`,
       { headers: { Authorization: "Bearer " + token } }
