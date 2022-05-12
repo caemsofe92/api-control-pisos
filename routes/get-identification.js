@@ -84,21 +84,21 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.get(
       `${tenant}/data/DeviceCustodians?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$select=DeviceMasterId,Party_PartyNumber,Party_Name,Operator,Party_PrimaryContactEmail,Party_PrimaryContactPhone`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity2 = axios.get(
       `${tenant}/data/SRF_DeviceTableMasters?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$select=RegistrationNumber,ModelId,RecId1,ModelYear,MasterId,ChassisNumber,VINSerialNumber,DeviceName,BrandId,FuelId,LastInspectionDate,NextInspectionDate`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity3 = axios.get(
-      `${tenant}/data/SRF_CustTable?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_CustTablesV2?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
+      }&cross-company=true&$select=dataAreaId,AccountNum,Name,IdentificationNumber,PartyNumber,PaymTermId,CreditMax,Blocked${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
       }`,
       { headers: { Authorization: "Bearer " + token } }
@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
     const Entity4 = axios.get(
       `${tenant}/data/SRF_PartyTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$select=PartyNumber,Name,NameAlias,LATCO_IdentificationNum,CustTablePhone,IdentificationNum,DocumentTypeId`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
