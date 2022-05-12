@@ -96,9 +96,9 @@ router.post("/", async (req, res) => {
     );
 
     const Entity3 = axios.get(
-      `${tenant}/data/SRF_CustTablesV2?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_CustTablesV3?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=dataAreaId,AccountNum,Name,IdentificationNumber,PartyNumber,PaymTermId,CreditMax,Blocked${
+      }&cross-company=true&$select=dataAreaId,CustomerAccount,OrganizationName,IdentificationNumber,PartyNumber,PaymentTerms,CreditLimit,OnHoldStatus,PaymentMethod, PrimaryContactPhone,PrimaryContactEmail${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
       }`,
       { headers: { Authorization: "Bearer " + token } }
