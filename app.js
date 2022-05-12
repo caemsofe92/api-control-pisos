@@ -15,6 +15,8 @@ var getDiagnostic = require("./routes/get-diagnostic");
 var getHomeCP = require("./routes/get-home-cp");
 var ClockInClockOut = require("./routes/clockin-clockout");
 var ControlTecnico = require("./routes/service-center-control-tecnico");
+var GetClock = require("./routes/get-clock");
+var GetWatchman = require("./routes/get-watchman");
 
 var app = express();
 app.use(compression());
@@ -32,6 +34,10 @@ app.use("/get-diagnostic", getDiagnostic);
 app.use("/get-home-cp", getHomeCP);
 app.use("/clockin-clockout", ClockInClockOut);
 app.use("/service-center-control-tecnico", ControlTecnico);
+app.use("/get-clock", GetClock);
+app.use("/get-watchman", GetWatchman);
+
+
 
 app.use(function (req, res, next) {
   next(createError(404));

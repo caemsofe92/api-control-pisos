@@ -82,69 +82,22 @@ router.post("/", async (req, res) => {
     }
 
     const Entity1 = axios.get(
-      `${tenant}/data/DeviceCustodians?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=DeviceMasterId,Party_PartyNumber,Party_Name,Operator,Party_PrimaryContactEmail,Party_PrimaryContactPhone`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity2 = axios.get(
-      `${tenant}/data/SRF_DeviceTableMasters?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=RegistrationNumber,ModelId,RecId1,ModelYear,MasterId,ChassisNumber,VINSerialNumber,DeviceName,BrandId,FuelId,LastInspectionDate,NextInspectionDate`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity3 = axios.get(
-      `${tenant}/data/SRF_CustTablesV3?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=dataAreaId,CustomerAccount,OrganizationName,IdentificationNumber,PartyNumber,PaymentTerms,CreditLimit,OnHoldStatus,PaymentMethod, PrimaryContactPhone,PrimaryContactEmail${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity4 = axios.get(
-      `${tenant}/data/SRF_PartyTables?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=PartyNumber,Name,NameAlias,LATCO_IdentificationNum,CustTablePhone,IdentificationNum,DocumentTypeId`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity5 = axios.get(
-      `${tenant}/data/NAVCaseRequestTables?$format=application/json;odata.metadata=none${
+      `${tenant}/data/ABIDeviceInventTransFacts?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
-
-    const Entity6 = axios.get(
-      `${tenant}/data/CaseRequestSchedules?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-   
+    
 
     await axios
       .all([
         Entity1,
-        Entity2,
-        Entity3,
-        Entity4,
-        Entity5,
-        Entity6
       ])
       .then(
         axios.spread(async (...responses) => {
 
           const reply = {
-            DeviceCustodians: responses[0].data.value,
-            SRF_DeviceTableMasters: responses[1].data.value,
-            SRF_CustTable: responses[2].data.value,
-            SRF_PartyTables: responses[3].data.value,
-            NAVCaseRequestTables: responses[4].data.value.filter(item => item.Status === "Confirmed"),
-            CaseRequestSchedules: responses[5].data.value
+            ABIDeviceInventTransFacts: responses[0].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
