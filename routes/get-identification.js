@@ -135,7 +135,7 @@ router.post("/", async (req, res) => {
             SRF_DeviceTableMasters: responses[1].data.value,
             SRF_CustTable: responses[2].data.value,
             SRF_PartyTables: responses[3].data.value,
-            NAVCaseRequestTables: responses[4].data.value,
+            NAVCaseRequestTables: responses[4].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
