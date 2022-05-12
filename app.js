@@ -17,6 +17,9 @@ var ClockInClockOut = require("./routes/clockin-clockout");
 var ControlTecnico = require("./routes/service-center-control-tecnico");
 var GetClock = require("./routes/get-clock");
 var GetWatchman = require("./routes/get-watchman");
+var CreateCaseRequest = require("./routes/create-case-request");
+
+
 
 var app = express();
 app.use(compression());
@@ -36,6 +39,8 @@ app.use("/clockin-clockout", ClockInClockOut);
 app.use("/service-center-control-tecnico", ControlTecnico);
 app.use("/get-clock", GetClock);
 app.use("/get-watchman", GetWatchman);
+app.use("/create-case-request", CreateCaseRequest);
+
 
 
 
