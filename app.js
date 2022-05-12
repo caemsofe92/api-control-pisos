@@ -18,7 +18,7 @@ var ControlTecnico = require("./routes/service-center-control-tecnico");
 var GetClock = require("./routes/get-clock");
 var GetWatchman = require("./routes/get-watchman");
 var CreateCaseRequest = require("./routes/create-case-request");
-
+var UpdateCaseRequest = require("./routes/update-case-request");
 
 
 var app = express();
@@ -40,8 +40,7 @@ app.use("/service-center-control-tecnico", ControlTecnico);
 app.use("/get-clock", GetClock);
 app.use("/get-watchman", GetWatchman);
 app.use("/create-case-request", CreateCaseRequest);
-
-
+app.use("/update-case-request", UpdateCaseRequest);
 
 
 app.use(function (req, res, next) {
