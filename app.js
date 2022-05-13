@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 var indexRouter = require("./routes/index");
-var createRAICRouter = require("./routes/create-raic");
+var requestVehicle = require("./routes/request-vehicle");
 var updateRAICRouter = require("./routes/update-raic");
 var updateDiagnosticRouter = require("./routes/update-diagnostic");
 var getHome = require("./routes/get-home");
@@ -28,7 +28,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use("/", indexRouter);
-app.use("/create-raic", createRAICRouter);
+app.use("/request-vehicle", requestVehicle);
 app.use("/update-raic", updateRAICRouter);
 app.use("/update-diagnostic", updateDiagnosticRouter);
 app.use("/get-home", getHome);
