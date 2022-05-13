@@ -69,7 +69,11 @@ router.post("/", async (req, res) => {
       .post(
         `${tenant}/api/services/NAVcreateCaseRequestServices/NAVcreateCaseRequestService/NAVcreateCaseRequest?$format=application/json;odata.metadata=none`,
         {
-          CaseRequestList: [caseRequest],
+          CaseRequestList: [{
+            ...caseRequest,
+            newFromDate: moment(caseRequest.newFromDate).add(5, 'hours'),
+            newToDate: moment(caseRequest.newToDate).add(5, 'hours')
+          }],
         },
         { headers: { Authorization: "Bearer " + token } }
       )
