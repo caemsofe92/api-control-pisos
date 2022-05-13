@@ -89,9 +89,9 @@ router.post("/", async (req, res) => {
     );
 
     const Entity2 = axios.get(
-      `${tenant}/data/SRF_DeviceTableMasters?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=RegistrationNumber,ModelId,RecId1,ModelYear,MasterId,ChassisNumber,VINSerialNumber,DeviceName,BrandId,FuelId,LastInspectionDate,NextInspectionDate,ClassId`,
+      }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
