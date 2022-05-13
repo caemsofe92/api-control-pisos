@@ -152,8 +152,8 @@ router.post("/", async (req, res) => {
             SRF_CustTable: responses[2].data.value,
             SRF_PartyTables: responses[3].data.value,
             NAVCaseRequestTables: responses[4].data.value.filter(item => item.Status === "Confirmed"),
-            CaseRequestSchedules: responses[5].data.value,
-            NAVWrkCtrResourceGroups: responses[6].data.value
+            DimAttributeWrkCtrTables: responses[5].data.value,
+            DimAttributeWrkCtrResourceGroups: responses[6].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
