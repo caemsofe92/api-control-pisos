@@ -119,14 +119,14 @@ router.post("/", async (req, res) => {
     );
 
     const Entity6 = axios.get(
-      `${tenant}/data/CaseRequestSchedules?$format=application/json;odata.metadata=none${
+      `${tenant}/data/DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity7 = axios.get(
-      `${tenant}/data/NAVWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
+      `${tenant}/data/DimAttributeWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
