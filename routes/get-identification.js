@@ -128,7 +128,7 @@ router.post("/", async (req, res) => {
     const Entity7 = axios.get(
       `${tenant}/data/SRF_DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$filter=WrkCtrType eq Microsoft.Dynamics.DataEntities.WrkCtrType'Location'`,
       { headers: { Authorization: "Bearer " + token } }
     );
    
