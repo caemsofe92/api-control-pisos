@@ -119,14 +119,14 @@ router.post("/", async (req, res) => {
     );
 
     const Entity6 = axios.get(
-      `${tenant}/data/DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
+      `${tenant}/data/DimAttributeWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity7 = axios.get(
-      `${tenant}/data/DimAttributeWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
@@ -152,8 +152,8 @@ router.post("/", async (req, res) => {
             SRF_CustTable: responses[2].data.value,
             SRF_PartyTables: responses[3].data.value,
             NAVCaseRequestTables: responses[4].data.value.filter(item => item.Status === "Confirmed"),
-            DimAttributeWrkCtrTables: responses[5].data.value,
-            DimAttributeWrkCtrResourceGroups: responses[6].data.value
+            DimAttributeWrkCtrResourceGroups: responses[5].data.value,
+            SRF_DimAttributeWrkCtrTables: responses[6].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
