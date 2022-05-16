@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
     );
 
     const Entity3 = axios.get(
-      `${tenant}/data/SRF_CustTablesV2?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_CustTable?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
