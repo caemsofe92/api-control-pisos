@@ -66,19 +66,19 @@ router.post("/", async (req, res) => {
       });
     }
 
+    console.error({
+      ...caseRequest,
+      fromDatetime: moment(new Date(caseRequest.fromDatetime)).format("yyyy/MM/DD HH:mm:ss"),
+      toDatetime: moment(new Date(caseRequest.toDatetime)).format("yyyy/MM/DD HH:mm:ss")
+    });
+    
     let _caseRequest = await axios
       .post(
         `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
         {
           ...caseRequest,
-          fromDatetime: moment(caseRequest.fromDatetime).add(
-            5,
-            "hours"
-          ),
-          toDatetime: moment(caseRequest.toDatetime).add(
-            5,
-            "hours"
-          )
+          fromDatetime: moment(new Date(caseRequest.fromDatetime)).format("yyyy/MM/DD HH:mm:ss"),
+          toDatetime: moment(new Date(caseRequest.toDatetime)).format("yyyy/MM/DD HH:mm:ss")
         },
         { headers: { Authorization: "Bearer " + token } }
       )
