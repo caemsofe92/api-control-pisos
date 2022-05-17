@@ -94,12 +94,14 @@ router.post("/", async (req, res) => {
     _customerData = _customerData.data;
     
     if (email) {
+      const message = `<div><p>Señores</p><p>Cordial saludo;</p><p>Se ha soliciado la creación de un nuevo cliente desde la aplicación, relacionamos la información digilenciada:</p> <br/> <p>Identificación: ${customerData.identificationNumber}</p> <p>Nombre o Razón social: ${customerData.name}</p> <p>Teléfono: ${customerData.phone}</p> <p>Correo Electrónico: ${customerData.email}</p> <p>Id de la Parte: ${_customerData}</p> <br/> <p>Gracias.</p></div>`;
       await axios
         .post(
           process.env.EMAILNOTIFICATIONURL,
           {
             recipients: !email.recipients || email.recipients === "" ? process.env.DEVELOPEREMAIL : email.recipients,
-            message: `<div><p>Señores</p><p>Cordial saludo;</p><p>Se ha soliciado la creación de un nuevo cliente desde la aplicación, relacionamos la información digilenciada:</p> <br/> <p>Identificación: ${customerData.identificationNumber}</p> <p>Nombre o Razón social: ${customerData.name}</p> <p>Teléfono: ${customerData.phone}</p> <p>Correo Electrónico: ${customerData.email}</p> <p>Id de la Parte: ${_customerData}</p> <br/> <p>Gracias.</p></div>`,
+            message,
+            messageTeams: message,
             subject: `Solicitud creación de cliente - Control de Pisos`,
           },
           {
