@@ -9,6 +9,7 @@ router.post("/", async (req, res) => {
     if (!email || email.length === 0) throw new Error("email is Mandatory");
 
     if (email) {
+      
       await axios
         .post(
           process.env.EMAILNOTIFICATIONURL,
@@ -25,9 +26,9 @@ router.post("/", async (req, res) => {
               <h4>Datos del vehículo:</h4>
               <p>Placa: ${email.registrationNumber}</p>
               <p>Cara Frontal Tarjeta de Propiedad</p>
-              <img src="${email.frontalImage}" alt="Cara Frontal Tarjeta de Propiedad">
+              <img src="${JSON.parse(email.frontalImage).toString()}" alt="Cara Frontal Tarjeta de Propiedad">
               <p>Cara Posterior Tarjeta de Propiedad</p>
-              <img src="${email.posteriorImage}" alt="Cara Posterior Tarjeta de Propiedad">
+              <img src="${JSON.parse(email.posteriorImage).toString()}" alt="Cara Posterior Tarjeta de Propiedad">
               <br>
               <h4>Datos del cliente:</h4>
               <p>Nombre o Razón Social: ${email.customerName}</p>
