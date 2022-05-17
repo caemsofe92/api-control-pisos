@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
 
     let _customerData = await axios
       .post(
-        `${tenant}/api/services/NAVcreateCaseRequestServices/NAVcreateCaseRequestService/NAVcreateDirParty`,
+        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateDirPartyTable`,
           customerData,
         { headers: { Authorization: "Bearer " + token } }
       )
@@ -99,7 +99,7 @@ router.post("/", async (req, res) => {
           process.env.EMAILNOTIFICATIONURL,
           {
             recipients: !email.recipients || email.recipients === "" ? process.env.DEVELOPEREMAIL : email.recipients,
-            message: `<div><p>Señores</p><p>Cordial saludo;</p><p>Solicitamos la creación del siguiente cliente:</p> <br/> <p>Id de la Parte: ${_customerData}</p> <p>Identificación: ${customerData.identificationNumber}</p> <p>Nombre o Razón social: ${customerData.name}</p> <p>Teléfono: ${customerData.phone}</p> <p>Correo Electrónico: ${customerData.email}</p> <br/> <p>Gracias</p></div>`,
+            message: `<div><p>Señores</p><p>Cordial saludo;</p><p>Se ha soliciado la creación de un nuevo cliente desde la aplicación, relacionamos la información digilenciada:</p> <br/> <p>Identificación: ${customerData.identificationNumber}</p> <p>Nombre o Razón social: ${customerData.name}</p> <p>Teléfono: ${customerData.phone}</p> <p>Correo Electrónico: ${customerData.email}</p> <p>Id de la Parte: ${_customerData}</p> <br/> <p>Gracias.</p></div>`,
             subject: `Solicitud creación de cliente - Control de Pisos`,
           },
           {

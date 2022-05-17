@@ -69,7 +69,7 @@ router.post("/", async (req, res) => {
 
     let _driverData = await axios
       .post(
-        `${tenant}/api/services/NAVcreateCaseRequestServices/NAVcreateCaseRequestService/NAVcreateDriverCustodian`,
+        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateDeviceCustodianJour`,
         driverData,
         { headers: { Authorization: "Bearer " + token } }
       )

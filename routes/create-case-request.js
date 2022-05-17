@@ -67,14 +67,8 @@ router.post("/", async (req, res) => {
 
     let _caseRequest = await axios
       .post(
-        `${tenant}/api/services/NAVcreateCaseRequestServices/NAVcreateCaseRequestService/NAVcreateCaseRequest?$format=application/json;odata.metadata=none`,
-        {
-          CaseRequestList: [{
-            ...caseRequest,
-            newFromDate: moment(caseRequest.newFromDate).add(5, 'hours'),
-            newToDate: moment(caseRequest.newToDate).add(5, 'hours')
-          }],
-        },
+        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
+        caseRequest,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
