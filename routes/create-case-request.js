@@ -3,6 +3,7 @@ let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
 const moment = require("moment");
+require('moment/locale/es');
 
 router.post("/", async (req, res) => {
   try {
@@ -68,7 +69,17 @@ router.post("/", async (req, res) => {
     let _caseRequest = await axios
       .post(
         `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
-        caseRequest,
+        {
+          ...caseRequest,
+          fromDatetime: moment(caseRequest.fromDatetime).add(
+            5,
+            "hours"
+          ),
+          toDatetime: moment(caseRequest.toDatetime).add(
+            5,
+            "hours"
+          )
+        },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
