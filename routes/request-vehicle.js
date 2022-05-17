@@ -25,9 +25,9 @@ router.post("/", async (req, res) => {
               Se ha soliciado la creación de un nuevo vehículo desde la aplicación, relacionamos la información digilenciada:
               <h4>Datos del vehículo:</h4>
               <p>Placa: ${email.registrationNumber}</p>
-              <p>Cara Frontal Tarjeta de Propiedad</p>
+              <h4>Cara Frontal Tarjeta deropiedad</h4>
               <img src="${JSON.parse(email.frontalImage).toString()}" alt="Cara Frontal Tarjeta de Propiedad">
-              <p>Cara Posterior Tarjeta de Propiedad</p>
+              <h4>Cara Posterior Tarjeta de Propiedad</h4>
               <img src="${JSON.parse(email.posteriorImage).toString()}" alt="Cara Posterior Tarjeta de Propiedad">
               <br>
               <h4>Datos del cliente:</h4>
