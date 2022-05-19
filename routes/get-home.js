@@ -86,15 +86,37 @@ router.post("/", async (req, res) => {
 
     if (!_mainReply || refresh) {
       const Entity1 = axios.get(
-        `${tenant}/data/HcmWorkers?$format=application/json;odata.metadata=none&cross-company=true&$select=DirPerson_FK_PartyNumber,PersonnelNumber`,
+        `${tenant}/data/SRF_AMCaseWorkshopLocation?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity2 = axios.get(
+        `${tenant}/data/Workers?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity3 = axios.get(
+        `${tenant}/data/Companies?$format=application/json;odata.metadata=none&cross-company=true&$select=DataArea,Name`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity4 = axios.get(
+        `${tenant}/data/NAVWrkCtrs?$format=application/json;odata.metadata=none&cross-company=true&$select=WrkCtrId,DirPerson_FK_PartyNumber`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      const Entity5 = axios.get(
+        `${tenant}/data/CaseWorkshopLocationResources?$format=application/json;odata.metadata=none&cross-company=true&$select=WrkCtrId,LocationId,dataAreaId`,
         { headers: { Authorization: "Bearer " + token } }
       );
 
       await axios
-        .all([Entity1])
+        .all([Entity1, Entity2, Entity3, Entity4, Entity5])
         .then(
           axios.spread(async (...responses) => {
-            mainReply = responses[0].data.value;
+            mainReply = {
+              SRF_AMCaseWorkshopLocation: responses[0].data.value,
+              Workers: responses[1].data.value,
+              Companies: responses[2].data.value,
+              NAVWrkCtrs: responses[3].data.value,
+              CaseWorkshopLocationResources: responses[4].data.value,
+            };
 
             await client.set(entity, JSON.stringify(mainReply), {
               EX: 9999999,
@@ -121,49 +143,65 @@ router.post("/", async (req, res) => {
     }
 
     const Entity1 = axios.get(
-      `${tenant}/data/SRFSecurityRoles?$format=application/json;odata.metadata=none&cross-company=true&$filter=Email eq '${userEmail}'&$select=Name,company`,
+      `${tenant}/data/SRFSecurityRoles?$format=application/json;odata.metadata=none&cross-company=true&$filter=Email eq '${userEmail}'&$select=Name`,
       { headers: { Authorization: "Bearer " + token } }
     );
     const Entity2 = axios.get(
       `${tenant}/data/PersonUsers?$format=application/json;odata.metadata=none&cross-company=true&$filter=UserEmail eq '${userEmail}'&$select=UserId,PersonName,PartyNumber`,
       { headers: { Authorization: "Bearer " + token } }
     );
-    const Entity3 = axios.get(
-      `${tenant}/data/Companies?$format=application/json;odata.metadata=none&cross-company=true&$select=DataArea,Name`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
 
     await axios
-      .all([Entity1, Entity2, Entity3])
+      .all([Entity1, Entity2])
       .then(
         axios.spread(async (...responses) => {
           const _PersonUsers = responses[1].data.value;
+
           let PersonUsers = {};
-          let HcmWorkers = {};
+          let Workers = {};
+          let CaseWorkshopLocationResources = {};
 
           if (_PersonUsers.length > 0) {
             PersonUsers = _PersonUsers[0];
-            const _HcmWorkers = mainReply.filter(
+            const _Workers = mainReply.Workers.filter(
+              (item) => item.PartyNumber === PersonUsers.PartyNumber
+            );
+
+            if (_Workers.length > 0) {
+              Workers = _Workers[0];
+            }
+
+            const _NAVWrkCtrs = mainReply.NAVWrkCtrs.filter(
               (item) =>
                 item.DirPerson_FK_PartyNumber === PersonUsers.PartyNumber
             );
 
-            if (_HcmWorkers.length > 0) {
-              HcmWorkers = _HcmWorkers[0];
+            if (_NAVWrkCtrs.length > 0) {
+              const _CaseWorkshopLocationResources =
+                mainReply.CaseWorkshopLocationResources.filter(
+                  (item) => item.WrkCtrId === _NAVWrkCtrs[0].WrkCtrId
+                );
+
+              if (_CaseWorkshopLocationResources.length > 0) {
+                CaseWorkshopLocationResources =
+                  _CaseWorkshopLocationResources[0];
+              }
             }
           }
 
           const userReply = {
-            SRFSecurityRoles: responses[0].data.value.map((Rol) => {
+            Roles: responses[0].data.value.map((Rol) => {
               return { Name: Rol.Name };
             }),
-            SRFUserData: {
+            UserData: {
               UserId: PersonUsers.UserId,
               PersonName: PersonUsers.PersonName,
-              PersonnelNumber: HcmWorkers.PersonnelNumber,
-              Company: responses[0].data.value[0].company,
+              PersonnelNumber: Workers.PersonnelNumber,
+              Company: CaseWorkshopLocationResources.dataAreaId,
+              LocationId: CaseWorkshopLocationResources.LocationId,
             },
-            Companies: responses[2].data.value,
+            Companies: mainReply.Companies,
+            SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
           };
 
           await client.set(entity + userEmail, JSON.stringify(userReply), {
