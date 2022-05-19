@@ -8,7 +8,7 @@ dotenv.config();
 var indexRouter = require("./routes/index");
 var RequestVehicle = require("./routes/request-vehicle");
 var UpdateRAICRouter = require("./routes/update-raic");
-var UpdateDiagnosticRouter = require("./routes/update-diagnostic");
+var CreateCondition = require("./routes/create-condition");
 var GetConditions = require("./routes/get-conditions");
 var GetIdentification = require("./routes/get-identification");
 var CreateDriver = require("./routes/create-custodian-driver");
@@ -21,7 +21,6 @@ var CreateCaseRequest = require("./routes/create-case-request");
 var UpdateCaseRequest = require("./routes/update-case-request");
 var CreateCustomerParty = require("./routes/create-customer-party");
 
-
 var app = express();
 app.use(compression());
 app.use(cookieParser());
@@ -31,7 +30,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use("/", indexRouter);
 app.use("/request-vehicle", RequestVehicle);
 app.use("/update-raic", UpdateRAICRouter);
-app.use("/update-diagnostic", UpdateDiagnosticRouter);
+app.use("/create-condition", CreateCondition);
 app.use("/get-conditions", GetConditions);
 app.use("/get-identification", GetIdentification);
 app.use("/create-custodian-driver", CreateDriver);

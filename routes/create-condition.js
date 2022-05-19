@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const caseRequest =
-      req.query.caseRequest || (req.body && req.body.caseRequest);
+    const condition =
+      req.query.condition || (req.body && req.body.condition);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -31,8 +31,8 @@ router.post("/", async (req, res) => {
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-    if (!caseRequest || caseRequest.length === 0)
-      throw new Error("caseRequest is Mandatory");
+    if (!condition || condition.length === 0)
+      throw new Error("condition is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -66,14 +66,10 @@ router.post("/", async (req, res) => {
       });
     }
     
-    let _caseRequest = await axios
+    let _condition = await axios
       .post(
-        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
-        {
-          ...caseRequest,
-          fromDatetime: moment(new Date(caseRequest.fromDatetime)).format("yyyy/MM/DD HH:mm:ss"),
-          toDatetime: moment(new Date(caseRequest.toDatetime)).format("yyyy/MM/DD HH:mm:ss")
-        },
+        `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none`,
+        condition,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -92,12 +88,12 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _caseRequest = _caseRequest.data;
+    _condition = _condition.data;
 
     return res.json({
       result: true,
       message: "OK",
-      _caseRequest,
+      _condition,
     });
   } catch (error) {
     return res.status(500).json({
