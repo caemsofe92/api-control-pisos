@@ -231,6 +231,15 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity21 = axios.get(
+      `${tenant}/data/TypeConditions?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true${
+        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
+      }&$select=TypeConditionId,TypeConditionName`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
     await axios
       .all([
         Entity1,
@@ -252,7 +261,8 @@ router.post("/", async (req, res) => {
         Entity17,
         Entity18,
         Entity19,
-        Entity20
+        Entity20,
+        Entity21
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -277,7 +287,8 @@ router.post("/", async (req, res) => {
             CaseGroups: responses[16].data.value,
             CaseTypes: responses[17].data.value,
             CasePriorities: responses[18].data.value,
-            SRF_SystemTables: responses[19].data.value
+            SRF_SystemTables: responses[19].data.value,
+            TypeConditions: responses[20].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
