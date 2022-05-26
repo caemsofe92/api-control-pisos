@@ -108,13 +108,20 @@ router.post("/", async (req, res) => {
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
+    const Entity5 = axios.get(
+      `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
     await axios
       .all([
         Entity1,
         Entity2,
         Entity3,
-        Entity4
+        Entity4,
+        Entity5,
        
       ])
       .then(
@@ -125,6 +132,7 @@ router.post("/", async (req, res) => {
             PartCarTables: responses[1].data.value,
             NAVDiagnostics: responses[2].data.value,
             NAVDiagnosticsConditions: responses[3].data.value,
+            CaseTables: responses[4].data.value,
             
           };
 
