@@ -89,154 +89,23 @@ router.post("/", async (req, res) => {
     );
 
     const Entity2 = axios.get(
-      `${tenant}/data/CaseOprModels?$format=application/json;odata.metadata=none${
+      `${tenant}/data/PartCarTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity3 = axios.get(
-      `${tenant}/data/DeviceBrands?$format=application/json;odata.metadata=none${
+      `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity4 = axios.get(
-      `${tenant}/data/CaseRecallTables?$format=application/json;odata.metadata=none${
+      `${tenant}/data/NAVDiagnosticsConditions?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity5 = axios.get(
-      `${tenant}/data/CaseRecallLines?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity6 = axios.get(
-      `${tenant}/data/InspectionFaultTrans?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity7 = axios.get(
-      `${tenant}/data/SRF_AMCaseServicePlans?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity8 = axios.get(
-      `${tenant}/data/CaseServicePlanReferences?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity9 = axios.get(
-      `${tenant}/data/DeviceWarrantyTransCollection?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-    
-    const Entity10 = axios.get(
-      `${tenant}/data/ContractTables?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity11 = axios.get(
-      `${tenant}/data/ContractLines?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity12 = axios.get(
-      `${tenant}/data/NAVCaseRequestTables?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity13 = axios.get(
-      `${tenant}/data/DimAttributeWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity14 = axios.get(
-      `${tenant}/data/SRF_DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=WrkCtrType eq Microsoft.Dynamics.DataEntities.WrkCtrType'Location'`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity15 = axios.get(
-      `${tenant}/data/Workers?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=PersonnelNumber,TitleId,WorkerType,Name,PartyNumber,LATCOIdentificationNumber`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity16 = axios.get(
-      `${tenant}/data/NAVWrkCtrs?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=WrkCtrId,WrkCtrType,Name,hcmWorker_PersonnelNumber,DirPerson_FK_PartyNumber`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity17 = axios.get(
-      `${tenant}/data/CaseGroups?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=GroupId,ProjGroupId,Description`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity18 = axios.get(
-      `${tenant}/data/CaseTypes?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=TypeId,Description`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity19 = axios.get(
-      `${tenant}/data/CasePriorities?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=PriorityId,Description`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity20 = axios.get(
-      `${tenant}/data/SRF_SystemTables?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=SystemId,SystemName`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    const Entity21 = axios.get(
-      `${tenant}/data/TypeConditions?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=TypeConditionId,TypeConditionName`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -245,50 +114,18 @@ router.post("/", async (req, res) => {
         Entity1,
         Entity2,
         Entity3,
-        Entity4,
-        Entity5,
-        Entity6,
-        Entity7,
-        Entity8,
-        Entity9,
-        Entity10,
-        Entity11,
-        Entity12,
-        Entity13,
-        Entity14,
-        Entity15,
-        Entity16,
-        Entity17,
-        Entity18,
-        Entity19,
-        Entity20,
-        Entity21
+        Entity4
+       
       ])
       .then(
         axios.spread(async (...responses) => {
 
           const reply = {
             NAVConditionsRequests: responses[0].data.value,
-            CaseOprModels: responses[1].data.value,
-            DeviceBrands: responses[2].data.value,
-            CaseRecallTables: responses[3].data.value,
-            CaseRecallLines: responses[4].data.value,
-            InspectionFaultTrans: responses[5].data.value,
-            SRF_AMCaseServicePlans: responses[6].data.value,
-            CaseServicePlanReferences: responses[7].data.value,
-            DeviceWarrantyTransCollection: responses[8].data.value,
-            ContractTables: responses[9].data.value,
-            ContractLines: responses[10].data.value,
-            NAVCaseRequestTables: responses[11].data.value,
-            DimAttributeWrkCtrResourceGroups: responses[12].data.value,
-            SRF_DimAttributeWrkCtrTables: responses[13].data.value,
-            Workers: responses[14].data.value,
-            NAVWrkCtrs: responses[15].data.value,
-            CaseGroups: responses[16].data.value,
-            CaseTypes: responses[17].data.value,
-            CasePriorities: responses[18].data.value,
-            SRF_SystemTables: responses[19].data.value,
-            TypeConditions: responses[20].data.value
+            PartCarTables: responses[1].data.value,
+            NAVDiagnostics: responses[2].data.value,
+            NAVDiagnosticsConditions: responses[3].data.value,
+            
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {

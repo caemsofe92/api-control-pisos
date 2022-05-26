@@ -20,7 +20,7 @@ var GetWatchman = require("./routes/get-watchman");
 var CreateCaseRequest = require("./routes/create-case-request");
 var UpdateCaseRequest = require("./routes/update-case-request");
 var CreateCustomerParty = require("./routes/create-customer-party");
-
+var GetDiagnostics =require("./routes/get-diagnostics");
 var app = express();
 app.use(compression());
 app.use(cookieParser());
@@ -42,6 +42,7 @@ app.use("/get-watchman", GetWatchman);
 app.use("/create-case-request", CreateCaseRequest);
 app.use("/update-case-request", UpdateCaseRequest);
 app.use("/create-customer-party", CreateCustomerParty);
+app.use("/get-diagnostics", GetDiagnostics);
 
 app.use(function (req, res, next) {
   next(createError(404));
