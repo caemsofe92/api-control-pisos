@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     
     let _inspection = await axios
       .post(
-        `${tenant}/data/InspectionTables?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/NAVInspectionTables?$format=application/json;odata.metadata=none`,
         inspection,
         { headers: { Authorization: "Bearer " + token } }
       )
