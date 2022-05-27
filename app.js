@@ -7,9 +7,6 @@ dotenv.config();
 
 var indexRouter = require("./routes/index");
 var RequestVehicle = require("./routes/request-vehicle");
-var UpdateRAICRouter = require("./routes/update-raic");
-var CreateCondition = require("./routes/create-condition");
-var GetConditions = require("./routes/get-conditions");
 var GetIdentification = require("./routes/get-identification");
 var CreateDriver = require("./routes/create-custodian-driver");
 var GetHome = require("./routes/get-home");
@@ -21,6 +18,14 @@ var CreateCaseRequest = require("./routes/create-case-request");
 var UpdateCaseRequest = require("./routes/update-case-request");
 var CreateCustomerParty = require("./routes/create-customer-party");
 var GetDiagnostics =require("./routes/get-diagnostics");
+var GetInspection = require("./routes/get-inspection");
+var CreateInspection =require("./routes/create-inspection");
+var UpdateInspectionLine =require("./routes/update-inspection-line");
+var GetConditions = require("./routes/get-conditions");
+var CreateCondition = require("./routes/create-condition");
+var GetResourceAssignment =require("./routes/get-resource-assignment");
+var UpdateResourceAssignment =require("./routes/update-resource-assignment");
+
 var app = express();
 app.use(compression());
 app.use(cookieParser());
@@ -29,7 +34,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use("/", indexRouter);
 app.use("/request-vehicle", RequestVehicle);
-app.use("/update-raic", UpdateRAICRouter);
+app.use("/get-inspection", GetInspection);
 app.use("/create-condition", CreateCondition);
 app.use("/get-conditions", GetConditions);
 app.use("/get-identification", GetIdentification);
@@ -43,6 +48,10 @@ app.use("/create-case-request", CreateCaseRequest);
 app.use("/update-case-request", UpdateCaseRequest);
 app.use("/create-customer-party", CreateCustomerParty);
 app.use("/get-diagnostics", GetDiagnostics);
+app.use("/create-inspection", CreateInspection);
+app.use("/update-inspection-line", UpdateInspectionLine);
+app.use("/get-resource-assignment", GetResourceAssignment);
+app.use("/update-resource-assignment", UpdateResourceAssignment);
 
 app.use(function (req, res, next) {
   next(createError(404));
