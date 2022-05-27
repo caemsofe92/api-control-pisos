@@ -3,8 +3,6 @@ const { createClient } = require("redis");
 var cacheHostName = process.env.CACHEHOSTNAME;
 var cachePassword = process.env.CACHEPASSWORD;
 
-console.error(cacheHostName, cachePassword);
-
 try {
   // Connecting to redis
   const client = createClient({
