@@ -69,7 +69,7 @@ router.post("/", async (req, res) => {
     let _diagnostics = await axios
       .post(
         `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none`,
-        condition,
+        diagnostics,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -88,7 +88,7 @@ router.post("/", async (req, res) => {
         }
       });
 
-    diagnostics = _diagnostics.data;
+    _diagnostics = _diagnostics.data;
 
     return res.json({
       result: true,
