@@ -26,6 +26,7 @@ var CreateCondition = require("./routes/create-condition");
 var GetResourceAssignment =require("./routes/get-resource-assignment");
 var UpdateResourceAssignment =require("./routes/update-resource-assignment");
 var CreateDiagnostics =require("./routes/create-diagnostics");
+var CreateParCar =require("./routes/create-part-car");
 
 var app = express();
 app.use(compression());
@@ -54,6 +55,7 @@ app.use("/update-inspection-line", UpdateInspectionLine);
 app.use("/get-resource-assignment", GetResourceAssignment);
 app.use("/update-resource-assignment", UpdateResourceAssignment);
 app.use("/create-diagnostics", CreateDiagnostics);
+app.use("/create-part-car",CreateParCar);
 
 app.use(function (req, res, next) {
   next(createError(404));
