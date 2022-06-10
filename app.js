@@ -27,6 +27,7 @@ var GetResourceAssignment =require("./routes/get-resource-assignment");
 var UpdateResourceAssignment =require("./routes/update-resource-assignment");
 var CreateDiagnostics =require("./routes/create-diagnostics");
 var CreateParCar =require("./routes/create-part-car");
+var CreateDiagnosticsCondition =require("./routes/create-diagnostics-condition")
 
 var app = express();
 app.use(compression());
@@ -56,6 +57,7 @@ app.use("/get-resource-assignment", GetResourceAssignment);
 app.use("/update-resource-assignment", UpdateResourceAssignment);
 app.use("/create-diagnostics", CreateDiagnostics);
 app.use("/create-part-car",CreateParCar);
+app.use("/create-diagnostics-condition", CreateDiagnosticsCondition);
 
 app.use(function (req, res, next) {
   next(createError(404));

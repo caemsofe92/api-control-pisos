@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const diagnostics =
-      req.query.diagnostics || (req.body && req.body.diagnostics);
+    const diagnosticsCondition =
+      req.query.diagnosticsCondition || (req.body && req.body.diagnosticsCondition);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-    if (!diagnostics || diagnostics.length === 0)
+    if (!diagnosticsCondition || diagnosticsCondition.length === 0)
       throw new Error("diagnostics is Mandatory");;
 
     if (!client.isOpen) client.connect();
@@ -66,10 +66,10 @@ router.post("/", async (req, res) => {
       });
     }
     
-    let _diagnostics = await axios
+    let _diagnosticsCondition = await axios
       .post(
-        `${tenant}/data/SRF_Diagnostics?$format=application/json;odata.metadata=none`,
-        diagnostics,
+        `${tenant}/data/NAVDiagnosticsConditions?$format=application/json;odata.metadata=none`,
+        _diagnosticsCondition,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -88,12 +88,12 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _diagnostics = _diagnostics.data;
+      _diagnosticsCondition = _diagnosticsCondition.data;
 
     return res.json({
       result: true,
       message: "OK",
-      _diagnostics,
+      _diagnosticsCondition,
     });
   } catch (error) {
     return res.status(500).json({
