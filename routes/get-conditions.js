@@ -240,6 +240,13 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity22 = axios.get(
+      `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
     await axios
       .all([
         Entity1,
@@ -262,7 +269,8 @@ router.post("/", async (req, res) => {
         Entity18,
         Entity19,
         Entity20,
-        Entity21
+        Entity21,
+        Entity22
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -288,7 +296,11 @@ router.post("/", async (req, res) => {
             CaseTypes: responses[17].data.value,
             CasePriorities: responses[18].data.value,
             SRF_SystemTables: responses[19].data.value,
-            TypeConditions: responses[20].data.value
+            TypeConditions: responses[20].data.value,
+            SRF_DeviceTableMasters: responses[21].data.value,
+            //InspectionListLines: responses[9].data.value,
+//InspectionLists: responses[11].data.value,
+//InspectionFaultTrans: responses[12].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
