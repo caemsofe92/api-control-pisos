@@ -2,6 +2,8 @@ let express = require("express");
 let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
+const moment = require("moment");
+require("moment/locale/es");
 
 router.post("/", async (req, res) => {
   try {
@@ -68,9 +70,9 @@ router.post("/", async (req, res) => {
         .patch(
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
           {
-            fromDatetime: moment(new Date(caseRequest.fromDatetime)).format(
+            StartDateTime: moment(new Date(caseRequest.fromDatetime)).format(
               "yyyy/MM/DD HH:mm:ss"
-            ),
+            )
           },
           {
             headers: { Authorization: "Bearer " + token },
@@ -84,6 +86,7 @@ router.post("/", async (req, res) => {
             error.response.data.error.innererror &&
             error.response.data.error.innererror.message
           ) {
+            console.log(error.response.data);
             throw new Error(error.response.data.error.innererror.message);
           } else if (error.request) {
             throw new Error(error.request);
@@ -103,6 +106,7 @@ router.post("/", async (req, res) => {
       message: "OK",
       _caseRequest
     });
+   
   } catch (error) {
     return res.status(500).json({
       result: false,
