@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
           {
             RequestedStartDateTime: moment(new Date(caseRequest.fromDatetime)).format(
-              "yyyy/MM/DD HH:mm:ss"
+              "yyyy-MM-DDTHH:mm:ssZ"
             )
           },
           {
