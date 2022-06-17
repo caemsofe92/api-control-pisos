@@ -131,6 +131,13 @@ router.post("/", async (req, res) => {
       }&cross-company=true&$filter=WrkCtrType eq Microsoft.Dynamics.DataEntities.WrkCtrType'Location'`,
       { headers: { Authorization: "Bearer " + token } }
     );
+
+    const Entity8 = axios.get(
+      `${tenant}/data/DeviceBrands?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
    
 
     await axios
@@ -141,7 +148,8 @@ router.post("/", async (req, res) => {
         Entity4,
         Entity5,
         Entity6,
-        Entity7
+        Entity7,
+        Entity8
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -153,7 +161,8 @@ router.post("/", async (req, res) => {
             SRF_PartyTables: responses[3].data.value,
             NAVCaseRequestTables: responses[4].data.value.filter(item => item.Status === "Confirmed"),
             DimAttributeWrkCtrResourceGroups: responses[5].data.value,
-            SRF_DimAttributeWrkCtrTables: responses[6].data.value
+            SRF_DimAttributeWrkCtrTables: responses[6].data.value,
+            DeviceBrands: responses[7].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
