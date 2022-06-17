@@ -67,7 +67,11 @@ router.post("/", async (req, res) => {
       _caseRequest = await axios
         .patch(
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
-          caseRequest,
+          {
+            fromDatetime: moment(new Date(caseRequest.fromDatetime)).format(
+              "yyyy/MM/DD HH:mm:ss"
+            ),
+          },
           {
             headers: { Authorization: "Bearer " + token },
           }
