@@ -70,9 +70,6 @@ router.post("/", async (req, res) => {
         .patch(
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
           {
-            StartDateTime: moment(new Date(caseRequest.fromDatetime)).format(
-              "yyyy/MM/DD HH:mm:ss"
-            ),
             RequestedStartDateTime: moment(new Date(caseRequest.fromDatetime)).format(
               "yyyy/MM/DD HH:mm:ss"
             )
