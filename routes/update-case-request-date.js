@@ -72,6 +72,9 @@ router.post("/", async (req, res) => {
           {
             StartDateTime: moment(new Date(caseRequest.fromDatetime)).format(
               "yyyy/MM/DD HH:mm:ss"
+            ),
+            RequestedStartDateTime: moment(new Date(caseRequest.fromDatetime)).format(
+              "yyyy/MM/DD HH:mm:ss"
             )
           },
           {
