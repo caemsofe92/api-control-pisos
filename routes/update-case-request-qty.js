@@ -4,7 +4,7 @@ const axios = require("axios");
 const client = require("../bin/redis-client");
 
 router.post("/", async (req, res) => {
-  try {
+  
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -67,7 +67,10 @@ router.post("/", async (req, res) => {
       _caseRequest = await axios
         .patch(
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
-          caseRequest,
+          {
+            DeviceUsageQty: (caseRequest.DeviceUsageQty ? caseRequest.DeviceUsageQty : 0).toString(),
+            UsageQty: caseRequest.UsageQty ? caseRequest.UsageQty : 0
+          },
           {
             headers: { Authorization: "Bearer " + token },
           }
@@ -80,6 +83,7 @@ router.post("/", async (req, res) => {
             error.response.data.error.innererror &&
             error.response.data.error.innererror.message
           ) {
+            console.log(error.response.data.error);
             throw new Error(error.response.data.error.innererror.message);
           } else if (error.request) {
             throw new Error(error.request);
@@ -99,6 +103,7 @@ router.post("/", async (req, res) => {
       message: "OK",
       _caseRequest
     });
+    try {
   } catch (error) {
     return res.status(500).json({
       result: false,
