@@ -94,12 +94,19 @@ router.post("/", async (req, res) => {
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
+    const Entity3 = axios.get(
+      `${tenant}/data/NAVReasonTables?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
     
 
     await axios
       .all([
         Entity1,
-        Entity2
+        Entity2,
+        Entity3
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -107,6 +114,7 @@ router.post("/", async (req, res) => {
           const reply = {
             CaseTables: responses[0].data.value,
             NAVCaseTimeSheetTrans: responses[1].data.value,
+            NAVReasonTables: responses[2].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
