@@ -16,6 +16,8 @@ var GetClock = require("./routes/get-clock");
 var GetWatchman = require("./routes/get-watchman");
 var CreateCaseRequest = require("./routes/create-case-request");
 var UpdateCaseRequest = require("./routes/update-case-request");
+var UpdateCaseRequestDate = require("./routes/update-case-request-date");
+var UpdateCaseRequestQty = require("./routes/update-case-request-qty");
 var CreateCustomerParty = require("./routes/create-customer-party");
 var GetDiagnostics =require("./routes/get-diagnostics");
 var GetInspection = require("./routes/get-inspection");
@@ -27,7 +29,8 @@ var GetResourceAssignment =require("./routes/get-resource-assignment");
 var UpdateResourceAssignment =require("./routes/update-resource-assignment");
 var CreateDiagnostics =require("./routes/create-diagnostics");
 var CreateParCar =require("./routes/create-part-car");
-var CreateDiagnosticsCondition =require("./routes/create-diagnostics-condition")
+var CreateDiagnosticsCondition =require("./routes/create-diagnostics-condition");
+var RequestCustChange =require("./routes/request-cust-change");
 
 var app = express();
 app.use(compression());
@@ -49,6 +52,8 @@ app.use("/get-clock", GetClock);
 app.use("/get-watchman", GetWatchman);
 app.use("/create-case-request", CreateCaseRequest);
 app.use("/update-case-request", UpdateCaseRequest);
+app.use("/update-case-request-date", UpdateCaseRequestDate);
+app.use("/update-case-request-qty", UpdateCaseRequestQty);
 app.use("/create-customer-party", CreateCustomerParty);
 app.use("/get-diagnostics", GetDiagnostics);
 app.use("/create-inspection", CreateInspection);
@@ -58,6 +63,8 @@ app.use("/update-resource-assignment", UpdateResourceAssignment);
 app.use("/create-diagnostics", CreateDiagnostics);
 app.use("/create-part-car",CreateParCar);
 app.use("/create-diagnostics-condition", CreateDiagnosticsCondition);
+app.use("/request-cust-change", RequestCustChange);
+
 
 app.use(function (req, res, next) {
   next(createError(404));

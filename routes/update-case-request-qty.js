@@ -2,11 +2,9 @@ let express = require("express");
 let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
-const moment = require("moment");
-require("moment/locale/es");
 
 router.post("/", async (req, res) => {
-  try {
+  
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -16,8 +14,8 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const caseRequest =
       req.query.caseRequest || (req.body && req.body.caseRequest);
-
-    if (!tenantUrl || tenantUrl.length === 0)
+    
+      if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
 
     if (!clientId || clientId.length === 0)
@@ -30,9 +28,6 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
-
-    if (!caseRequest || caseRequest.length === 0)
-      throw new Error("caseRequest is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -66,41 +61,49 @@ router.post("/", async (req, res) => {
       });
     }
 
-    let _caseRequest = await axios
-      .post(
-        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
-        {
-          ...caseRequest,
-          fromDatetime: moment(new Date(caseRequest.fromDatetime)).format(
-            "yyyy/MM/DD HH:mm:ss"
-          ),
-        },
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .catch(function (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error &&
-          error.response.data.error.innererror &&
-          error.response.data.error.innererror.message
-        ) {
-          throw new Error(error.response.data.error.innererror.message);
-        } else if (error.request) {
-          console.log(error);
-          throw new Error(error.request);
-        } else {
-          throw new Error("Error", error.message);
-        }
-      });
+    let _caseRequest;
 
-    _caseRequest = _caseRequest.data;
+    if (caseRequest) {
+      _caseRequest = await axios
+        .patch(
+          `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
+          {
+            DeviceUsageQty: (caseRequest.DeviceUsageQty ? caseRequest.DeviceUsageQty : 0).toString(),
+            UsageQty: caseRequest.UsageQty ? caseRequest.UsageQty : 0
+          },
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            console.log(error.response.data.error);
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
+    }
+
+    _caseRequest =
+      _caseRequest && _caseRequest.data === "" ? "Modified" : "Unchanged";
+
+    
 
     return res.json({
       result: true,
       message: "OK",
-      _caseRequest,
+      _caseRequest
     });
+    try {
   } catch (error) {
     return res.status(500).json({
       result: false,
