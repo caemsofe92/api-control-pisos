@@ -3,7 +3,7 @@ let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
 const moment = require("moment");
-require('moment/locale/es');
+require("moment/locale/es");
 
 router.post("/", async (req, res) => {
   try {
@@ -16,8 +16,8 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const condition =
       req.query.condition || (req.body && req.body.condition);
-
-    if (!tenantUrl || tenantUrl.length === 0)
+    
+      if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
 
     if (!clientId || clientId.length === 0)
@@ -30,9 +30,6 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
-
-    if (!condition || condition.length === 0)
-      throw new Error("condition is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -65,36 +62,46 @@ router.post("/", async (req, res) => {
         EX: 3599,
       });
     }
-    
-    let _condition = await axios
-      .patch(
-        `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
-        condition,
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .catch(function (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error &&
-          error.response.data.error.innererror &&
-          error.response.data.error.innererror.message
-        ) {
-          throw new Error(error.response.data.error.innererror.message);
-        } else if (error.request) {
-          throw new Error(error.request);
-        } else {
-          throw new Error("Error", error.message);
-        }
-      });
 
-    _condition = _condition.data;
+    let _condition;
+
+    if (condition) {
+      _condition = await axios
+        .patch(
+          `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
+          condition,
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
+    }
+
+    _condition =
+      _condition && _condition.data === "" ? "Modified" : "Unchanged";
+
+    
 
     return res.json({
       result: true,
       message: "OK",
-      _condition,
+      _condition
     });
+   
   } catch (error) {
     return res.status(500).json({
       result: false,
