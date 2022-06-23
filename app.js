@@ -31,6 +31,7 @@ var CreateDiagnostics =require("./routes/create-diagnostics");
 var CreateParCar =require("./routes/create-part-car");
 var CreateDiagnosticsCondition =require("./routes/create-diagnostics-condition");
 var RequestCustChange =require("./routes/request-cust-change");
+var DeleteDiagnostics = require("./routes/delete-diagnosticss");
 
 var app = express();
 app.use(compression());
@@ -64,6 +65,7 @@ app.use("/create-diagnostics", CreateDiagnostics);
 app.use("/create-part-car",CreateParCar);
 app.use("/create-diagnostics-condition", CreateDiagnosticsCondition);
 app.use("/request-cust-change", RequestCustChange);
+app.use("/delete-diagnosticss", DeleteDiagnostics);
 
 
 app.use(function (req, res, next) {
