@@ -35,6 +35,7 @@ var CreateCase =require("./routes/create-case");
 var UpdateConditionResource =require("./routes/update-condition-resource");
 var UpdateCondition =require("./routes/update-condition");
 var DeleteCondition =require("./routes/delete-condition");
+var DeleteDiagnostics = require("./routes/delete-diagnosticss");
 
 var app = express();
 app.use(compression());
@@ -72,7 +73,7 @@ app.use("/create-case", CreateCase);
 app.use("/update-condition-resource", UpdateConditionResource);
 app.use("/update-condition", UpdateCondition);
 app.use("/delete-condition", DeleteCondition);
-
+app.use("/delete-diagnosticss", DeleteDiagnostics);
 app.use(function (req, res, next) {
   next(createError(404));
 });
