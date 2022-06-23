@@ -32,6 +32,9 @@ var CreateParCar =require("./routes/create-part-car");
 var CreateDiagnosticsCondition =require("./routes/create-diagnostics-condition");
 var RequestCustChange =require("./routes/request-cust-change");
 var CreateCase =require("./routes/create-case");
+var UpdateConditionResource =require("./routes/update-condition-resource");
+var UpdateCondition =require("./routes/update-condition");
+var DeleteCondition =require("./routes/delete-condition");
 
 var app = express();
 app.use(compression());
@@ -66,6 +69,9 @@ app.use("/create-part-car",CreateParCar);
 app.use("/create-diagnostics-condition", CreateDiagnosticsCondition);
 app.use("/request-cust-change", RequestCustChange);
 app.use("/create-case", CreateCase);
+app.use("/update-condition-resource", UpdateConditionResource);
+app.use("/update-condition", UpdateCondition);
+app.use("/delete-condition", DeleteCondition);
 
 app.use(function (req, res, next) {
   next(createError(404));
