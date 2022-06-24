@@ -247,6 +247,15 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity23 = axios.get(
+      `${tenant}/data/NAVWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    
+
     await axios
       .all([
         Entity1,
@@ -270,7 +279,8 @@ router.post("/", async (req, res) => {
         Entity19,
         Entity20,
         Entity21,
-        Entity22
+        Entity22,
+        Entity23
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -298,6 +308,7 @@ router.post("/", async (req, res) => {
             SRF_SystemTables: responses[19].data.value,
             TypeConditions: responses[20].data.value,
             SRF_DeviceTableMasters: responses[21].data.value,
+            NAVWrkCtrResourceGroups: responses[22].data.value
             //InspectionListLines: responses[9].data.value,
 //InspectionLists: responses[11].data.value,
 //InspectionFaultTrans: responses[12].data.value,
