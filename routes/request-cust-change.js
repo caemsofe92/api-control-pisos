@@ -33,6 +33,9 @@ router.post("/", async (req, res) => {
               <p>Nombre o Razón Social: ${email.currentCustomerName ? email.currentCustomerName : ""}</p>
               <p>Cuenta del cliente: ${email.currentCustomerAccountNumber ? email.currentCustomerAccountNumber : ""}</p>
               <p>Cédula o NIT: ${email.currentCustomerIdentificationNumber ? email.currentCustomerIdentificationNumber : ""}</p>
+              <p>Persona de Contacto: ${email.currentCustomerContactName ? email.currentCustomerContactName : ""}</p>
+              <p>Correo Electrónico: ${email.currentCustomerEmail ? email.currentCustomerEmail : ""}</p>
+              <p>Número de Contacto: ${email.currentCustomerPhoneNumber ? email.currentCustomerPhoneNumber : ""}</p>
               <br/>
               <h4>Datos del nuevo cliente:</h4>
               <p>Nombre o Razón Social: ${email.newCustomerName ? email.newCustomerName : ""}</p>
@@ -58,6 +61,9 @@ router.post("/", async (req, res) => {
               <p>Nombre o Razón Social: ${email.currentCustomerName ? email.currentCustomerName : ""}</p>
               <p>Cuenta del cliente: ${email.currentCustomerAccountNumber ? email.currentCustomerAccountNumber : ""}</p>
               <p>Cédula o NIT: ${email.currentCustomerIdentificationNumber ? email.currentCustomerIdentificationNumber : ""}</p>
+              <p>Persona de Contacto: ${email.currentCustomerContactName ? email.currentCustomerContactName : ""}</p>
+              <p>Correo Electrónico: ${email.currentCustomerEmail ? email.currentCustomerEmail : ""}</p>
+              <p>Número de Contacto: ${email.currentCustomerPhoneNumber ? email.currentCustomerPhoneNumber : ""}</p>
               <br/>
               <h5>Datos del nuevo cliente:</h5>
               <p>Nombre o Razón Social: ${email.newCustomerName ? email.newCustomerName : ""}</p>
