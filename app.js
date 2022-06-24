@@ -36,6 +36,8 @@ var UpdateConditionResource =require("./routes/update-condition-resource");
 var UpdateCondition =require("./routes/update-condition");
 var DeleteCondition =require("./routes/delete-condition");
 var DeleteDiagnostics = require("./routes/delete-diagnosticss");
+var GetDeviceLastUsageQty = require("./routes/get-device-last-usage-qty");
+
 
 var app = express();
 app.use(compression());
@@ -74,6 +76,8 @@ app.use("/update-condition-resource", UpdateConditionResource);
 app.use("/update-condition", UpdateCondition);
 app.use("/delete-condition", DeleteCondition);
 app.use("/delete-diagnosticss", DeleteDiagnostics);
+app.use("/get-device-last-usage-qty", GetDeviceLastUsageQty);
+
 app.use(function (req, res, next) {
   next(createError(404));
 });
