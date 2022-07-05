@@ -115,7 +115,7 @@ router.post("/", async (req, res) => {
           const imageType = matches[1];
 
           const name =
-            _unsafeCondition.RecId1 +
+            _inspection.RecId1 +
             moment().format().toString() +
             "sscinspectionimage." +
             imageType.split("/")[1];
@@ -128,11 +128,11 @@ router.post("/", async (req, res) => {
           );
 
           const imageRequest = {
-            _DataareaId: _unsafeCondition.dataAreaId,
+            _DataareaId: _inspection.dataAreaId,
             _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGERAICPATH}/${name}`,
             _name: name,
             _TableId: 66416,
-            _RefRecId: _unsafeCondition.RecId1,
+            _RefRecId: _inspection.RecId1,
             _FileType: imageType.split("/")[1],
           };
 
@@ -161,7 +161,7 @@ router.post("/", async (req, res) => {
                 }
               });
             _evidences.push({
-              RefRecId: _unsafeCondition.RecId1,
+              RefRecId: _inspection.RecId1,
               OriginalFileName: name,
             });
           }
