@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
     );
 
     const Entity2 = axios.get(
-      `${tenant}/data/NAVWrkCtrs?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
@@ -133,7 +133,7 @@ router.post("/", async (req, res) => {
     );
 
     const Entity8 = axios.get(
-      `${tenant}/data/SRF_InspectionTables?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_AMInspectionTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
@@ -171,7 +171,7 @@ router.post("/", async (req, res) => {
 
           const reply = {
             CaseTables: responses[0].data.value,
-            NAVWrkCtrs: responses[1].data.value,
+            SRF_DimAttributeWrkCtrTables: responses[1].data.value,
             SRF_AMDeviceTable: responses[2].data.value,
             SRF_AMInspectionLines: responses[3].data.value,
             InspectionCategoryInputs: responses[4].data.value,

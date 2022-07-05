@@ -16,7 +16,6 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const inspection =
       req.query.inspection || (req.body && req.body.inspection);
-    const evidences = req.query.evidences || (req.body && req.body.evidences);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -69,7 +68,7 @@ router.post("/", async (req, res) => {
 
     let _inspection = await axios
       .post(
-        `${tenant}/data/SRF_InspectionTables?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/SRF_AMInspectionTables?$format=application/json;odata.metadata=none`,
         inspection,
         { headers: { Authorization: "Bearer " + token } }
       )
@@ -81,8 +80,10 @@ router.post("/", async (req, res) => {
           error.response.data.error.innererror &&
           error.response.data.error.innererror.message
         ) {
+          console.log(error.response.data.error.innererror);
           throw new Error(error.response.data.error.innererror.message);
         } else if (error.request) {
+          console.log(error.request);
           throw new Error(error.request);
         } else {
           throw new Error("Error", error.message);
@@ -91,89 +92,10 @@ router.post("/", async (req, res) => {
 
     _inspection = _inspection.data;
 
-    let _evidences = [];
-
-    if (evidences) {
-      const blobServiceClient = BlobServiceClient.fromConnectionString(
-        process.env.BLOBSTORAGECONNECTIONSTRING
-      );
-
-      const containerClient = blobServiceClient.getContainerClient(
-        process.env.BLOBSTORAGERAICPATH
-      );
-
-      for (let i = 0; i < evidences.length; i++) {
-        const element = evidences[i];
-
-        if (element.imagePath.length > 0) {
-          const path = JSON.parse(element.imagePath).toString();
-
-          const matches = path.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-
-          const buffer = new Buffer.from(matches[2], "base64");
-
-          const imageType = matches[1];
-
-          const name =
-            _inspection.RecId1 +
-            moment().format().toString() +
-            "sscinspectionimage." +
-            imageType.split("/")[1];
-
-          const blockBlobClient = containerClient.getBlockBlobClient(name);
-
-          const responseImage = await blockBlobClient.upload(
-            buffer,
-            buffer.byteLength
-          );
-
-          const imageRequest = {
-            _DataareaId: _inspection.dataAreaId,
-            _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGERAICPATH}/${name}`,
-            _name: name,
-            _TableId: 66416,
-            _RefRecId: _inspection.RecId1,
-            _FileType: imageType.split("/")[1],
-          };
-
-          if (responseImage) {
-            await axios
-              .post(
-                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                imageRequest,
-                {
-                  headers: { Authorization: "Bearer " + token },
-                }
-              )
-              .catch(function (error) {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.error &&
-                  error.response.data.error.innererror &&
-                  error.response.data.error.innererror.message
-                ) {
-                  throw new Error(error.response.data.error.innererror.message);
-                } else if (error.request) {
-                  throw new Error(error.request);
-                } else {
-                  throw new Error("Error", error.message);
-                }
-              });
-            _evidences.push({
-              RefRecId: _inspection.RecId1,
-              OriginalFileName: name,
-            });
-          }
-        }
-      }
-    }
-
     return res.json({
       result: true,
       message: "OK",
-      _inspection,
-      _evidences,
+      _inspection
     });
   } catch (error) {
     return res.status(500).json({

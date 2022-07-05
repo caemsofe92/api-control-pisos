@@ -12,6 +12,9 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
+    const inspection =
+      req.query.inspection || (req.body && req.body.inspection);
+    const evidences = req.query.evidences || (req.body && req.body.evidences);
     const inspectionLines =
       req.query.inspectionLines || (req.body && req.body.inspectionLines);
 
@@ -65,11 +68,11 @@ router.post("/", async (req, res) => {
 
     if (inspectionLines && inspectionLines.length > 0) {
       for (let i = 0; i < inspectionLines.length; i++) {
-        const inspection = inspectionLines[i];
+        const inspectionLine = inspectionLines[i];
         const inspectionResponse = await axios
           .patch(
-            `${tenant}/data/SRF_AMInspectionLines(dataAreaId='${inspection.dataAreaId}',RecId1=${inspection.RecId1})?cross-company=true`,
-            inspection,
+            `${tenant}/data/SRF_AMInspectionLines(dataAreaId='${inspectionLine.dataAreaId}',RecId1=${inspectionLine.RecId1})?cross-company=true`,
+            inspectionLine,
             {
               headers: { Authorization: "Bearer " + token },
             }
@@ -97,9 +100,116 @@ router.post("/", async (req, res) => {
       }
     }
 
+    let _inspection;
+    if (inspection) {
+    _inspection = await axios
+      .patch(
+        `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId=${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
+        inspection,
+        { headers: { Authorization: "Bearer " + token } }
+      )
+      .catch(function (error) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error &&
+          error.response.data.error.innererror &&
+          error.response.data.error.innererror.message
+        ) {
+          throw new Error(error.response.data.error.innererror.message);
+        } else if (error.request) {
+          throw new Error(error.request);
+        } else {
+          throw new Error("Error", error.message);
+        }
+      });
+
+    _inspection = _inspection.data;
+    }
+
+    let _evidences = [];
+
+    if (evidences) {
+      const blobServiceClient = BlobServiceClient.fromConnectionString(
+        process.env.BLOBSTORAGECONNECTIONSTRING
+      );
+
+      const containerClient = blobServiceClient.getContainerClient(
+        process.env.BLOBSTORAGERAICPATH
+      );
+
+      for (let i = 0; i < evidences.length; i++) {
+        const element = evidences[i];
+
+        if (element.imagePath.length > 0) {
+          const path = JSON.parse(element.imagePath).toString();
+
+          const matches = path.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+          const buffer = new Buffer.from(matches[2], "base64");
+
+          const imageType = matches[1];
+
+          const name =
+            inspection.RecId1 +
+            moment().format().toString() +
+            "sscinspectionimage." +
+            imageType.split("/")[1];
+
+          const blockBlobClient = containerClient.getBlockBlobClient(name);
+
+          const responseImage = await blockBlobClient.upload(
+            buffer,
+            buffer.byteLength
+          );
+
+          const imageRequest = {
+            _DataareaId: inspection.dataAreaId,
+            _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGERAICPATH}/${name}`,
+            _name: name,
+            _TableId: 66416,
+            _RefRecId: inspection.RecId1,
+            _FileType: imageType.split("/")[1],
+          };
+
+          if (responseImage) {
+            await axios
+              .post(
+                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                imageRequest,
+                {
+                  headers: { Authorization: "Bearer " + token },
+                }
+              )
+              .catch(function (error) {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.error &&
+                  error.response.data.error.innererror &&
+                  error.response.data.error.innererror.message
+                ) {
+                  throw new Error(error.response.data.error.innererror.message);
+                } else if (error.request) {
+                  throw new Error(error.request);
+                } else {
+                  throw new Error("Error", error.message);
+                }
+              });
+            _evidences.push({
+              RefRecId: inspection.RecId1,
+              OriginalFileName: name,
+            });
+          }
+        }
+      }
+    }
+
     return res.json({
       result: true,
       message: "OK",
+      _inspection,
+      _evidences,
       _inspectionLines,
     });
   } catch (error) {
