@@ -126,14 +126,14 @@ router.post("/", async (req, res) => {
     );
 
     const Entity7 = axios.get(
-      `${tenant}/data/InspectionGroups?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_InspectionGroups?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
     const Entity8 = axios.get(
-      `${tenant}/data/InspectionTables?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_InspectionTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
@@ -176,8 +176,8 @@ router.post("/", async (req, res) => {
             SRF_AMInspectionLines: responses[3].data.value,
             InspectionCategoryInputs: responses[4].data.value,
             InspectionInputTypes: responses[5].data.value,
-            InspectionGroups: responses[6].data.value,
-            InspectionTables: responses[7].data.value,
+            SRF_InspectionGroups: responses[6].data.value,
+            SRF_InspectionTables: responses[7].data.value,
             InspectionCategories: responses[8].data.value,
             InspectionLines: responses[9].data.value
           };
