@@ -89,11 +89,9 @@ router.post("/", async (req, res) => {
     );
 
     const Entity2 = axios.get(
-      `${tenant}/data/SRF_DimAttributeWrkCtrTables?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_Workers?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }`,
+      }&cross-company=true&$select=RecId1,Name,PersonnelNumber`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -153,6 +151,8 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    
+
     await axios
       .all([
         Entity1,
@@ -171,7 +171,7 @@ router.post("/", async (req, res) => {
 
           const reply = {
             CaseTables: responses[0].data.value,
-            SRF_DimAttributeWrkCtrTables: responses[1].data.value,
+            SRF_Workers: responses[1].data.value,
             SRF_AMDeviceTable: responses[2].data.value,
             SRF_AMInspectionLines: responses[3].data.value,
             InspectionCategoryInputs: responses[4].data.value,
