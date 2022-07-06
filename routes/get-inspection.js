@@ -151,7 +151,27 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
-    
+    const Entity11 = axios.get(
+      `${tenant}/data/InspectionListLines?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity12 = axios.get(
+      `${tenant}/data/InspectionLists?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity13 = axios.get(
+      `${tenant}/data/InspectionFaultTrans?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true&$filter=RepairStatus eq Microsoft.Dynamics.DataEntities.AMInspectionRepairStatus'Reported'`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
 
     await axios
       .all([
@@ -164,7 +184,10 @@ router.post("/", async (req, res) => {
         Entity7,
         Entity8,
         Entity9,
-        Entity10
+        Entity10,
+        Entity11,
+        Entity12,
+        Entity13
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -179,7 +202,10 @@ router.post("/", async (req, res) => {
             SRF_InspectionGroups: responses[6].data.value,
             SRF_InspectionTables: responses[7].data.value,
             InspectionCategories: responses[8].data.value,
-            InspectionLines: responses[9].data.value
+            InspectionLines: responses[9].data.value,
+            InspectionListLines: responses[10].data.value,
+            InspectionLists: responses[11].data.value,
+            InspectionFaultTrans: responses[12].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {

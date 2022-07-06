@@ -309,9 +309,6 @@ router.post("/", async (req, res) => {
             TypeConditions: responses[20].data.value,
             SRF_DeviceTableMasters: responses[21].data.value,
             NAVWrkCtrResourceGroups: responses[22].data.value
-            //InspectionListLines: responses[9].data.value,
-//InspectionLists: responses[11].data.value,
-//InspectionFaultTrans: responses[12].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
