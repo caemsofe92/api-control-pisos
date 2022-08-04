@@ -182,7 +182,7 @@ router.post("/", async (req, res) => {
     const Entity15 = axios.get(
       `${tenant}/data/Workers?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=PersonnelNumber,TitleId,WorkerType,Name,PartyNumber,LATCOIdentificationNumber`,
+      }&cross-company=true&$select=PersonnelNumber,TitleId,WorkerType,Name,PartyNumber`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
