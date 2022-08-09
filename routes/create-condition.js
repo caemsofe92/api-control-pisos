@@ -69,7 +69,10 @@ router.post("/", async (req, res) => {
     let _condition = await axios
       .post(
         `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none`,
-        condition,
+        {
+          ...condition,
+          CapacityHours: parseFloat(condition.CapacityHours)
+        },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
