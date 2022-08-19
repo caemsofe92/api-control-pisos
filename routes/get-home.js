@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity2 = axios.get(
-        `${tenant}/data/Workers?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/SRF_Workers?$format=application/json;odata.metadata=none&cross-company=true`,
         { headers: { Authorization: "Bearer " + token } }
       );
       const Entity3 = axios.get(
@@ -199,6 +199,7 @@ router.post("/", async (req, res) => {
               PersonnelNumber: Workers.PersonnelNumber,
               Company: CaseWorkshopLocationResources.dataAreaId,
               LocationId: CaseWorkshopLocationResources.LocationId,
+              RecId: Workers.RecId1,
             },
             Companies: mainReply.Companies,
             SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
