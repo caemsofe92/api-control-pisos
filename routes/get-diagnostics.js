@@ -17,6 +17,8 @@ router.post("/", async (req, res) => {
     const refresh = req.query.refresh || (req.body && req.body.refresh);
     const userCompany =
       req.query.userCompany || (req.body && req.body.userCompany);
+    const userPersonnelNumber =
+      req.query.userPersonnelNumber || (req.body && req.body.userPersonnelNumber);
     const environment =
       req.query.environment || (req.body && req.body.environment);
 
@@ -35,6 +37,9 @@ router.post("/", async (req, res) => {
 
     if (!userCompany || userCompany.length === 0)
       throw new Error("userCompany is Mandatory");
+
+    if (!userPersonnelNumber || userPersonnelNumber.length === 0)
+      throw new Error("userPersonnelNumber is Mandatory");
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
@@ -111,7 +116,7 @@ router.post("/", async (req, res) => {
     const Entity5 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$filter=WorkerResponsible_PersonnelNumber eq '${userPersonnelNumber}'`,
       { headers: { Authorization: "Bearer " + token } }
     );
     const Entity6 = axios.get(
