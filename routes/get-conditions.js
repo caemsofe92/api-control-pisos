@@ -161,7 +161,7 @@ router.post("/", async (req, res) => {
     const Entity12 = axios.get(
       `${tenant}/data/NAVCaseRequestTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true?$filter=Status eq Microsoft.Dynamics.DataEntities.AMCaseRequestStatus'Created'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -253,8 +253,6 @@ router.post("/", async (req, res) => {
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
-
-    
 
     await axios
       .all([
