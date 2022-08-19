@@ -126,6 +126,34 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity7 = axios.get(
+      `${tenant}/data/NAVWrkCtrs?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true${
+        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
+      }&$select=WrkCtrId,WrkCtrType,Name,hcmWorker_PersonnelNumber,DirPerson_FK_PartyNumber`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity8 = axios.get(
+      `${tenant}/data/SRF_SystemTables?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true${
+        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
+      }&$select=SystemId,SystemName`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity9 = axios.get(
+      `${tenant}/data/TypeConditions?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true${
+        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
+      }&$select=TypeConditionId,TypeConditionName`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+
     await axios
       .all([
         Entity1,
@@ -134,7 +162,9 @@ router.post("/", async (req, res) => {
         Entity4,
         Entity5,
         Entity6,
-       
+        Entity7,
+        Entity8,
+        Entity9
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -146,7 +176,9 @@ router.post("/", async (req, res) => {
             NAVDiagnosticsConditions: responses[3].data.value,
             CaseTables: responses[4].data.value,
             RetailInventTable: responses[5].data.value,
-            
+            NAVWrkCtrs: responses[6].data.value,
+            SRF_SystemTables: responses[7].data.value,
+            TypeConditions: responses[8].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
