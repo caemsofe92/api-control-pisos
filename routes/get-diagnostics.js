@@ -116,7 +116,7 @@ router.post("/", async (req, res) => {
     const Entity5 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=WorkerResponsible_PersonnelNumber eq '${userPersonnelNumber}'`,
+      }&cross-company=true&$filter=WorkerResponsible_PersonnelNumber eq '${userPersonnelNumber}' and Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess'`,
       { headers: { Authorization: "Bearer " + token } }
     );
     const Entity6 = axios.get(
