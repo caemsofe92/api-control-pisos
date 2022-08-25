@@ -105,9 +105,14 @@ router.post("/", async (req, res) => {
         `${tenant}/data/CaseWorkshopLocationResources?$format=application/json;odata.metadata=none&cross-company=true&$select=WrkCtrId,LocationId,dataAreaId`,
         { headers: { Authorization: "Bearer " + token } }
       );
+      
+    const Entity6 = axios.get(
+      `${tenant}/data/CaseEmplTables?$format=application/json;odata.metadata=none&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
       await axios
-        .all([Entity1, Entity2, Entity3, Entity4, Entity5])
+        .all([Entity1, Entity2, Entity3, Entity4, Entity5, Entity6])
         .then(
           axios.spread(async (...responses) => {
             mainReply = {
@@ -116,6 +121,7 @@ router.post("/", async (req, res) => {
               Companies: responses[2].data.value,
               NAVWrkCtrs: responses[3].data.value,
               CaseWorkshopLocationResources: responses[4].data.value,
+              CaseEmplTables: responses[5].data.value
             };
 
             await client.set(entity, JSON.stringify(mainReply), {
@@ -160,7 +166,7 @@ router.post("/", async (req, res) => {
           let PersonUsers = {};
           let Workers = {};
           let CaseWorkshopLocationResources = {};
-
+          let CaseEmplTables
           if (_PersonUsers.length > 0) {
             PersonUsers = _PersonUsers[0];
             const _Workers = mainReply.Workers.filter(
@@ -175,6 +181,15 @@ router.post("/", async (req, res) => {
               (item) =>
                 item.DirPerson_FK_PartyNumber === PersonUsers.PartyNumber
             );
+
+            const _CaseEmplTables = mainReply.CaseEmplTables.filter(
+              (item) =>
+                item.HcmWorker_PersonnelNumber === Workers.PersonnelNumber
+            );
+
+            if (_CaseEmplTables.length > 0) {
+              CaseEmplTables = _CaseEmplTables[0];
+            }
 
             if (_NAVWrkCtrs.length > 0) {
               const _CaseWorkshopLocationResources =
@@ -203,6 +218,7 @@ router.post("/", async (req, res) => {
             },
             Companies: mainReply.Companies,
             SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
+            CaseEmplTables
           };
 
           await client.set(entity + userEmail, JSON.stringify(userReply), {
