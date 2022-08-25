@@ -17,8 +17,8 @@ router.post("/", async (req, res) => {
     const refresh = req.query.refresh || (req.body && req.body.refresh);
     const userCompany =
       req.query.userCompany || (req.body && req.body.userCompany);
-    const userPersonnelNumber =
-      req.query.userPersonnelNumber || (req.body && req.body.userPersonnelNumber);
+    const WorkshopLocationId =
+      req.query.WorkshopLocationId || (req.body && req.body.WorkshopLocationId);
     const environment =
       req.query.environment || (req.body && req.body.environment);
 
@@ -38,8 +38,8 @@ router.post("/", async (req, res) => {
     if (!userCompany || userCompany.length === 0)
       throw new Error("userCompany is Mandatory");
 
-    if (!userPersonnelNumber || userPersonnelNumber.length === 0)
-      throw new Error("userPersonnelNumber is Mandatory");
+    if (!WorkshopLocationId || WorkshopLocationId.length === 0)
+      throw new Error("WorkshopLocationId is Mandatory");
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
@@ -116,7 +116,7 @@ router.post("/", async (req, res) => {
     const Entity5 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=WorkerResponsible_PersonnelNumber eq '${userPersonnelNumber}' and Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess'`,
+      }&cross-company=true&$filter=WorkshopLocationId eq '${WorkshopLocationId}' and Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess'`,
       { headers: { Authorization: "Bearer " + token } }
     );
     const Entity6 = axios.get(
