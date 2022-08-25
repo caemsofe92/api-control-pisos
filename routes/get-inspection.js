@@ -19,6 +19,8 @@ router.post("/", async (req, res) => {
       req.query.userCompany || (req.body && req.body.userCompany);
     const environment =
       req.query.environment || (req.body && req.body.environment);
+    const WorkshopLocationId =
+      req.query.WorkshopLocationId || (req.body && req.body.WorkshopLocationId);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -35,6 +37,9 @@ router.post("/", async (req, res) => {
 
     if (!userCompany || userCompany.length === 0)
       throw new Error("userCompany is Mandatory");
+
+    if (!WorkshopLocationId || WorkshopLocationId.length === 0)
+      throw new Error("WorkshopLocationId is Mandatory");
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
@@ -84,7 +89,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$filter=WorkshopLocationId eq '${WorkshopLocationId}' and Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
