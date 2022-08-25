@@ -69,7 +69,12 @@ router.post("/", async (req, res) => {
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
           {
             DeviceUsageQty: (caseRequest.DeviceUsageQty ? caseRequest.DeviceUsageQty : 0).toString(),
-            UsageQty: caseRequest.UsageQty ? caseRequest.UsageQty : 0
+            UsageQty: caseRequest.UsageQty ? caseRequest.UsageQty : 0,
+            NAVUsageHour: caseRequest.NAVUsageHour ? caseRequest.NAVUsageHour : 0,
+            NAV_ThirdPartyRecId: caseRequest.NAV_ThirdPartyRecId ? caseRequest.NAV_ThirdPartyRecId : "",
+            NAV_ThirdPartyName: caseRequest.NAV_ThirdPartyName ? caseRequest.NAV_ThirdPartyName : "",
+            NAV_ThirPartyPhone: caseRequest.NAV_ThirPartyPhone ? caseRequest.NAV_ThirPartyPhone : "",
+            NAV_ThirPartyMail: caseRequest.NAV_ThirPartyMail ? caseRequest.NAV_ThirPartyMail : ""
           },
           {
             headers: { Authorization: "Bearer " + token },
