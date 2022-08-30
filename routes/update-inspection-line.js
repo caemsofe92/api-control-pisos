@@ -2,6 +2,7 @@ let express = require("express");
 let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
+const { BlobServiceClient } = require("@azure/storage-blob");
 
 router.post("/", async (req, res) => {
   try {

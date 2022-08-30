@@ -2,6 +2,7 @@ let express = require("express");
 let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
+const { BlobServiceClient } = require("@azure/storage-blob");
 
 router.post("/", async (req, res) => {
   try {
@@ -92,39 +93,39 @@ router.post("/", async (req, res) => {
               throw new Error("Error", error.message);
             }
           });
-        _inspectionLines.push(
-          inspectionResponse && inspectionResponse.data === ""
-            ? "Modified"
-            : "Unchanged"
-        );
+        _inspectionLines.push(inspectionResponse.data);
       }
     }
 
     let _inspection;
     if (inspection) {
-    _inspection = await axios
-      .patch(
-        `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId=${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
-        inspection,
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .catch(function (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error &&
-          error.response.data.error.innererror &&
-          error.response.data.error.innererror.message
-        ) {
-          throw new Error(error.response.data.error.innererror.message);
-        } else if (error.request) {
-          throw new Error(error.request);
-        } else {
-          throw new Error("Error", error.message);
-        }
-      });
+      _inspection = await axios
+        .patch(
+          `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
+          {
+            InspectionStatus: inspection.InspectionStatus,
+            InspectionDate: inspection.InspectionDate,
+          },
+          { headers: { Authorization: "Bearer " + token } }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
 
-    _inspection = _inspection.data;
+      _inspection =
+        _inspection && _inspection.data === "" ? "Modified" : "Unchanged";
     }
 
     let _evidences = [];
