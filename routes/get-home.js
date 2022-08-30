@@ -211,7 +211,7 @@ router.post("/", async (req, res) => {
             UserData: {
               UserId: PersonUsers.UserId,
               PersonName: PersonUsers.PersonName,
-              PersonName: PersonUsers.PartyNumber,
+              PartyNumber: PersonUsers.PartyNumber,
               PersonnelNumber: Workers.PersonnelNumber,
               Company: CaseWorkshopLocationResources.dataAreaId,
               LocationId: CaseWorkshopLocationResources.LocationId,
