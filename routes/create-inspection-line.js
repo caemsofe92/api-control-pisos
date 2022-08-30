@@ -73,7 +73,10 @@ router.post("/", async (req, res) => {
         const inspectionResponse = await axios
           .post(
             `${tenant}/data/SRF_AMInspectionLines?cross-company=true`,
-            inspectionLine,
+            {
+              ...inspectionLine,
+              InstanceRelationType: 66094
+            },
             {
               headers: { Authorization: "Bearer " + token },
             }
