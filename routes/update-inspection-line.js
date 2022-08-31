@@ -152,7 +152,7 @@ router.post("/", async (req, res) => {
       );
 
       const containerClient = blobServiceClient.getContainerClient(
-        process.env.BLOBSTORAGERAICPATH
+        process.env.BLOBSTORAGEEVIDENCESPATH
       );
 
       for (let i = 0; i < evidences.length; i++) {
