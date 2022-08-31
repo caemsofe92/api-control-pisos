@@ -105,11 +105,11 @@ router.post("/", async (req, res) => {
         `${tenant}/data/CaseWorkshopLocationResources?$format=application/json;odata.metadata=none&cross-company=true&$select=WrkCtrId,LocationId,dataAreaId`,
         { headers: { Authorization: "Bearer " + token } }
       );
-      
-    const Entity6 = axios.get(
-      `${tenant}/data/SRF_CaseEmplTables?$format=application/json;odata.metadata=none&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
+
+      const Entity6 = axios.get(
+        `${tenant}/data/SRF_CaseEmplTables?$format=application/json;odata.metadata=none&cross-company=true`,
+        { headers: { Authorization: "Bearer " + token } }
+      );
 
       await axios
         .all([Entity1, Entity2, Entity3, Entity4, Entity5, Entity6])
@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
               Companies: responses[2].data.value,
               NAVWrkCtrs: responses[3].data.value,
               CaseWorkshopLocationResources: responses[4].data.value,
-              CaseEmplTables: responses[5].data.value
+              CaseEmplTables: responses[5].data.value,
             };
 
             await client.set(entity, JSON.stringify(mainReply), {
@@ -166,7 +166,8 @@ router.post("/", async (req, res) => {
           let PersonUsers = {};
           let Workers = {};
           let CaseWorkshopLocationResources = {};
-          let CaseEmplTables
+          let CaseEmplTables;
+          let _NAVWrkCtrs;
           if (_PersonUsers.length > 0) {
             PersonUsers = _PersonUsers[0];
             const _Workers = mainReply.Workers.filter(
@@ -177,7 +178,7 @@ router.post("/", async (req, res) => {
               Workers = _Workers[0];
             }
 
-            const _NAVWrkCtrs = mainReply.NAVWrkCtrs.filter(
+            _NAVWrkCtrs = mainReply.NAVWrkCtrs.filter(
               (item) =>
                 item.DirPerson_FK_PartyNumber === PersonUsers.PartyNumber
             );
@@ -216,11 +217,11 @@ router.post("/", async (req, res) => {
               Company: CaseWorkshopLocationResources.dataAreaId,
               LocationId: CaseWorkshopLocationResources.LocationId,
               RecId: Workers.RecId1,
-              WrkCtrId: _NAVWrkCtrs[0].WrkCtrId
+              WrkCtrId: _NAVWrkCtrs[0].WrkCtrId,
             },
             Companies: mainReply.Companies,
             SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
-            CaseEmplTables
+            CaseEmplTables,
           };
 
           await client.set(entity + userEmail, JSON.stringify(userReply), {
@@ -242,6 +243,7 @@ router.post("/", async (req, res) => {
         } else if (error.request) {
           throw new Error(error.request);
         } else {
+          console.log(error);
           throw new Error("Error", error.message);
         }
       });
