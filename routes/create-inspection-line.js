@@ -171,7 +171,7 @@ router.post("/", async (req, res) => {
 
           const imageRequest = {
             _DataareaId: inspection.dataAreaId,
-            _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGERAICPATH}/${name}`,
+            _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
             _name: name,
             _TableId: 66416,
             _RefRecId: inspection.RecId1,
