@@ -73,7 +73,17 @@ router.post("/", async (req, res) => {
         const inspectionResponse = await axios
           .patch(
             `${tenant}/data/SRF_AMInspectionLines(dataAreaId='${inspectionLine.dataAreaId}',RecId1=${inspectionLine.RecId1})?cross-company=true`,
-            inspectionLine,
+            {
+              CheckPass: inspectionLine.CheckPass,
+              ChargeCustomer: inspectionLine.ChargeCustomer,
+              Comment: inspectionLine.Comment,
+              CheckFail: inspectionLine.CheckFail,
+              CheckObservation: inspectionLine.CheckObservation,
+              Checked: inspectionLine.Checked,
+              OnSiteRepair: inspectionLine.OnSiteRepair,
+              InspectionValue: inspectionLine.InspectionValue,
+              InspectionDateTime: inspectionLine.InspectionDateTime
+            },
             {
               headers: { Authorization: "Bearer " + token },
             }
@@ -93,11 +103,9 @@ router.post("/", async (req, res) => {
               throw new Error("Error", error.message);
             }
           });
-        _inspectionLines.push(
-          inspectionResponse && inspectionResponse.data === ""
-            ? "Modified"
-            : "Unchanged"
-        );
+        _inspectionLines.push(inspectionResponse && inspectionResponse.data === ""
+        ? "Modified"
+        : "Unchanged");
       }
     }
 
@@ -105,8 +113,11 @@ router.post("/", async (req, res) => {
     if (inspection) {
     _inspection = await axios
       .patch(
-        `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId=${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
-        inspection,
+        `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
+        {
+          InspectionStatus: inspection.InspectionStatus,
+          InspectionDate: inspection.InspectionDate,
+        },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -125,7 +136,10 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _inspection = _inspection.data;
+    _inspection = 
+    _inspection && _inspection.data === ""
+      ? "Modified"
+      : "Unchanged";
     }
 
     let _evidences = [];
