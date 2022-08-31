@@ -216,6 +216,7 @@ router.post("/", async (req, res) => {
               Company: CaseWorkshopLocationResources.dataAreaId,
               LocationId: CaseWorkshopLocationResources.LocationId,
               RecId: Workers.RecId1,
+              WrkCtrId: _NAVWrkCtrs[0].WrkCtrId
             },
             Companies: mainReply.Companies,
             SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
