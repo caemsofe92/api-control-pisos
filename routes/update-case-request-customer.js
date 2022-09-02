@@ -6,7 +6,7 @@ const moment = require("moment");
 require("moment/locale/es");
 
 router.post("/", async (req, res) => {
-  try {
+
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
 
     if (caseRequest) {
       _caseRequest = await axios
-        .patch(
+        .post(
           `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
           {
             requestId: caseRequest.requestId,
@@ -89,6 +89,7 @@ router.post("/", async (req, res) => {
             console.log(error.response.data.error.innererror);
             throw new Error(error.response.data.error.innererror.message);
           } else if (error.request) {
+            console.log(error);
             throw new Error(error.request);
           } else {
             throw new Error("Error", error.message);
@@ -106,7 +107,7 @@ router.post("/", async (req, res) => {
       message: "OK",
       _caseRequest
     });
-
+    try {
   } catch (error) {
     return res.status(500).json({
       result: false,
