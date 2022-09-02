@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
           {
             ContactPersonName: caseRequest.contactPersonName,
-            CustAccount: caseRequest.custAccount
+            DirPartyTable_PartyNumber: caseRequest.dirPartyTablePartyNumber
           },
           {
             headers: { Authorization: "Bearer " + token },
