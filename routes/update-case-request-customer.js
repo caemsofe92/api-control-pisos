@@ -68,10 +68,11 @@ router.post("/", async (req, res) => {
     if (caseRequest) {
       _caseRequest = await axios
         .patch(
-          `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
+          `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdateAMCaseRequestTable?$format=application/json;odata.metadata=none`,
           {
-            ContactPersonName: caseRequest.contactPersonName,
-            DirPartyTable_PartyNumber: caseRequest.dirPartyTablePartyNumber
+            requestId: caseRequest.requestId,
+            custAccount: caseRequest.custAccount,
+            contactPersonName: caseRequest.contactPersonName
           },
           {
             headers: { Authorization: "Bearer " + token },
