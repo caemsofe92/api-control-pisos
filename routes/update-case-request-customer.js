@@ -70,7 +70,8 @@ router.post("/", async (req, res) => {
         .patch(
           `${tenant}/data/NAVCaseRequestTables(RequestId='${caseRequest.RequestId}')?cross-company=true`,
           {
-            ContactPersonName: caseRequest.contactPersonName
+            ContactPersonName: caseRequest.contactPersonName,
+            CustAccount: caseRequest.custAccount
           },
           {
             headers: { Authorization: "Bearer " + token },
