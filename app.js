@@ -40,6 +40,9 @@ var DeleteCondition =require("./routes/delete-condition");
 var DeleteDiagnostics = require("./routes/delete-diagnosticss");
 var GetDeviceLastUsageQty = require("./routes/get-device-last-usage-qty");
 var UpdateCaseRequestCustomer = require("./routes/update-case-request-customer");
+var deleteDiagnosticsCondition = require("./routes/delete-diagnostics-condition");
+var deleteInspections = require("./routes/delete-inspections");
+var deletePartCar = require("./routes/delete-part-car");
 
 var app = express();
 app.use(compression());
@@ -82,6 +85,9 @@ app.use("/delete-condition", DeleteCondition);
 app.use("/delete-diagnosticss", DeleteDiagnostics);
 app.use("/get-device-last-usage-qty", GetDeviceLastUsageQty);
 app.use("/update-case-request-customer", UpdateCaseRequestCustomer);
+app.use("/delete-diagnostics-condition", deleteDiagnosticsCondition);
+app.use("/delete-inspections", deleteInspections);
+app.use("/delete-part-car", deletePartCar);
 
 app.use(function (req, res, next) {
   next(createError(404));
