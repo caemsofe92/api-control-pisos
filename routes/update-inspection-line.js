@@ -117,6 +117,7 @@ router.post("/", async (req, res) => {
       .patch(
         `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
         {
+          Posted: inspection.Posted,
           InspectionStatus: inspection.InspectionStatus,
           InspectionDate: inspection.InspectionDate,
         },
