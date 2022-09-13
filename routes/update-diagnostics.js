@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
       throw new Error("environment is Mandatory");
 
     if (!diagnosticsUpdate || diagnosticsUpdate.length === 0)
-      throw new Error("diagnosticsUpdate is Mandatory");;
+      throw new Error("diagnosticsUpdate is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -66,11 +66,13 @@ router.post("/", async (req, res) => {
       });
     }
     
-    let _diagnosticsUpdate = await axios
+    let _diagnosticsUpdate = await axios 
       .patch(
-        `${tenant}/data/SRF_Diagnostics(dataAreaId='${diagnosticsUpdate.dataAreaId}',RecId1=${diagnosticsUpdate.RecId1})?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/SRF_Diagnostics(DiagnosticsId='${diagnosticsUpdate.DiagnosticsId}',dataAreaId='${diagnosticsUpdate.dataAreaId}')?$format=application/json;odata.metadata=none&cross-company=true`,
         diagnosticsUpdate,
-        { headers: { Authorization: "Bearer " + token } }
+        { 
+          headers: { Authorization: "Bearer " + token } 
+        }
       )
       .catch(function (error) {
         if (
@@ -82,6 +84,7 @@ router.post("/", async (req, res) => {
         ) {
           throw new Error(error.response.data.error.innererror.message);
         } else if (error.request) {
+          console.log(error)
           throw new Error(error.request);
         } else {
           throw new Error("Error", error.message);
@@ -101,6 +104,7 @@ router.post("/", async (req, res) => {
       message: error.toString(),
     });
   }
+  
 });
 
 module.exports = router;
