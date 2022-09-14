@@ -3,7 +3,7 @@ let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
 const moment = require("moment");
-require('moment/locale/es');
+require("moment/locale/es");
 
 router.post("/", async (req, res) => {
   try {
@@ -15,7 +15,8 @@ router.post("/", async (req, res) => {
     const environment =
       req.query.environment || (req.body && req.body.environment);
     const diagnosticsConditionUpdate =
-      req.query.diagnosticsConditionUpdate || (req.body && req.body.diagnosticsConditionUpdate);
+      req.query.diagnosticsConditionUpdate ||
+      (req.body && req.body.diagnosticsConditionUpdate);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -65,13 +66,13 @@ router.post("/", async (req, res) => {
         EX: 3599,
       });
     }
-    
-    let _diagnosticsConditionUpdate = await axios 
+
+    let _diagnosticsConditionUpdate = await axios
       .patch(
-        `${tenant}/data/NAVDiagnosticsConditions(NAVDiagnosticsRefRecId=${diagnosticsConditionUpdate.NAVDiagnosticsRefRecId},dataAreaId='${diagnosticsConditionUpdate.dataAreaId}')?$format=application/json;odata.metadata=none&cross-company=true`,
+        `${tenant}/data/NAVDiagnosticsConditions(CaseId='${diagnosticsConditionUpdate.CaseId}',NAVConditionsRequestRefRecId=${diagnosticsConditionUpdate.NAVConditionsRequestRefRecId},NAVDiagnosticsRefRecId=${diagnosticsConditionUpdate.NAVDiagnosticsRefRecId},dataAreaId='${diagnosticsConditionUpdate.dataAreaId}')?$format=application/json;odata.metadata=none&cross-company=true`,
         diagnosticsConditionUpdate,
-        { 
-          headers: { Authorization: "Bearer " + token } 
+        {
+          headers: { Authorization: "Bearer " + token },
         }
       )
       .catch(function (error) {
@@ -84,14 +85,14 @@ router.post("/", async (req, res) => {
         ) {
           throw new Error(error.response.data.error.innererror.message);
         } else if (error.request) {
-          console.log(error)
+          console.log(error);
           throw new Error(error.request);
         } else {
           throw new Error("Error", error.message);
         }
       });
 
-      _diagnosticsConditionUpdate = _diagnosticsConditionUpdate.data;
+    _diagnosticsConditionUpdate = _diagnosticsConditionUpdate.data;
 
     return res.json({
       result: true,
@@ -104,7 +105,6 @@ router.post("/", async (req, res) => {
       message: error.toString(),
     });
   }
-  
 });
 
 module.exports = router;
