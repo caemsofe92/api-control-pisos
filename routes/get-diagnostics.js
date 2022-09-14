@@ -101,7 +101,7 @@ router.post("/", async (req, res) => {
     );
 
     const Entity3 = axios.get(
-      `${tenant}/data/SRF_Diagnostics?$format=application/json;odata.metadata=none${
+      `${tenant}/data/NAVDiagnostics?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
