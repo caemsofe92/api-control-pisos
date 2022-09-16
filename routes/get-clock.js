@@ -100,13 +100,37 @@ router.post("/", async (req, res) => {
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
+
+    const Entity4 = axios.get(
+      `${tenant}/data/SRF_AMInspectionTables?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity5 = axios.get(
+      `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity6 = axios.get(
+      `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
     
 
     await axios
       .all([
         Entity1,
         Entity2,
-        Entity3
+        Entity3,
+        Entity4,
+        Entity5,
+        Entity6
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -115,6 +139,9 @@ router.post("/", async (req, res) => {
             CaseTables: responses[0].data.value,
             NAVCaseTimeSheetTrans: responses[1].data.value,
             NAVReasonTables: responses[2].data.value,
+            SRF_InspectionTables: responses[3].data.value,
+            NAVConditionsRequests: responses[4].data.value,
+            SRF_AMDeviceTable: responses[5].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
