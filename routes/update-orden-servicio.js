@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const condition =
-      req.query.condition || (req.body && req.body.condition);
+    const updateordenservicio =
+      req.query.updateordenservicio || (req.body && req.body.updateordenservicio);
     
       if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -63,12 +63,16 @@ router.post("/", async (req, res) => {
       });
     }
 
-    let _condition;
+    let _updateordenservicio;
 
-    if (condition) {
-      _condition = await axios
-        .delete(
-          `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
+    if (updateordenservicio) {
+      _updateordenservicio = await axios
+        .patch(
+          `${tenant}/data/NAVConditionsRequests(dataAreaId='${updateordenservicio.dataAreaId}',ConditionRecId=${updateordenservicio.ConditionRecId})?$format=application/json;odata.metadata=none`,
+          {
+            ...updateordenservicio,
+            CapacityHours: parseFloat(updateordenservicio.CapacityHours)
+          },
           {
             headers: { Authorization: "Bearer " + token },
           }
@@ -90,15 +94,15 @@ router.post("/", async (req, res) => {
         });
     }
 
-    _condition =
-      _condition = _condition.data === "" ? "Deleted" : "Unchanged";
+    _updateordenservicio =
+      _updateordenservicio && _updateordenservicio.data === "" ? "Modified" : "Unchanged";
 
     
 
     return res.json({
       result: true,
       message: "OK",
-      _condition
+      _updateordenservicio
     });
    
   } catch (error) {

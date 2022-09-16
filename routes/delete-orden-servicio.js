@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const condition =
-      req.query.condition || (req.body && req.body.condition);
+    const deleteordenservicio =
+      req.query.deleteordenservicio || (req.body && req.body.deleteordenservicio);
     
       if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -63,12 +63,9 @@ router.post("/", async (req, res) => {
       });
     }
 
-    let _condition;
-
-    if (condition) {
-      _condition = await axios
+    let _deleteordenservicio = await axios
         .delete(
-          `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
+          `${tenant}/data/NAVConditionsRequests(ConditionRecId=${deleteordenservicio.ConditionRecId}, dataAreaId='${deleteordenservicio.dataAreaId}')?$format=application/json;odata.metadata=none`,
           {
             headers: { Authorization: "Bearer " + token },
           }
@@ -88,17 +85,17 @@ router.post("/", async (req, res) => {
             throw new Error("Error", error.message);
           }
         });
-    }
+   
 
-    _condition =
-      _condition = _condition.data === "" ? "Deleted" : "Unchanged";
+    console.log(_deleteordenservicio.data);
+    _deleteordenservicio = _deleteordenservicio.data;
 
     
 
     return res.json({
       result: true,
       message: "OK",
-      _condition
+      _deleteordenservicio
     });
    
   } catch (error) {

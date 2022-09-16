@@ -3,7 +3,7 @@ let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
 const moment = require("moment");
-require("moment/locale/es");
+require('moment/locale/es');
 
 router.post("/", async (req, res) => {
   try {
@@ -14,10 +14,10 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const condition =
-      req.query.condition || (req.body && req.body.condition);
-    
-      if (!tenantUrl || tenantUrl.length === 0)
+    const ordenservicio =
+      req.query.ordenservicio || (req.body && req.body.ordenservicio);
+
+    if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
 
     if (!clientId || clientId.length === 0)
@@ -30,6 +30,9 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
+
+    if (!ordenservicio || ordenservicio.length === 0)
+      throw new Error("ordenservicio is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -62,45 +65,39 @@ router.post("/", async (req, res) => {
         EX: 3599,
       });
     }
-
-    let _condition;
-
-    if (condition) {
-      _condition = await axios
-        .delete(
-          `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .catch(function (error) {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.innererror &&
-            error.response.data.error.innererror.message
-          ) {
-            throw new Error(error.response.data.error.innererror.message);
-          } else if (error.request) {
-            throw new Error(error.request);
-          } else {
-            throw new Error("Error", error.message);
-          }
-        });
-    }
-
-    _condition =
-      _condition = _condition.data === "" ? "Deleted" : "Unchanged";
-
     
+    let _ordenservicio = await axios
+      .post(
+        `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none`,
+        {
+          ...ordenservicio,
+          CapacityHours: parseFloat(ordenservicio.CapacityHours)
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      )
+      .catch(function (error) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error &&
+          error.response.data.error.innererror &&
+          error.response.data.error.innererror.message
+        ) {
+          throw new Error(error.response.data.error.innererror.message);
+        } else if (error.request) {
+          throw new Error(error.request);
+        } else {
+          throw new Error("Error", error.message);
+        }
+      });
+
+    _ordenservicio = _ordenservicio.data;
 
     return res.json({
       result: true,
       message: "OK",
-      _condition
+      _ordenservicio,
     });
-   
   } catch (error) {
     return res.status(500).json({
       result: false,
