@@ -45,7 +45,7 @@ var deleteInspections = require("./routes/delete-inspections");
 var deletePartCar = require("./routes/delete-part-car");
 var updatediagnostics = require("./routes/update-diagnostics");
 var updatediagnosticscondition = require("./routes/update-diagnostics-condition");
-
+var updatecaserequestCOT = require("./routes/update-case-request-COT");
 
 var app = express();
 app.use(compression());
@@ -93,6 +93,7 @@ app.use("/delete-inspections", deleteInspections);
 app.use("/delete-part-car", deletePartCar);
 app.use("/update-diagnostics", updatediagnostics);
 app.use("/update-diagnostics-condition", updatediagnosticscondition);
+app.use("/update-case-request-COT", updatecaserequestCOT);
 
 app.use(function (req, res, next) {
   next(createError(404));
