@@ -89,8 +89,7 @@ router.post("/", async (req, res) => {
           }
         });
 
-    _caseRequest =
-      _caseRequest && _caseRequest.data === "" ? "Modified" : "Unchanged";
+    _caseRequest = _caseRequest.data;
 
     return res.json({
       result: true,
