@@ -65,33 +65,6 @@ if (!client.isOpen) client.connect();
     let _clockIn;
     let _clockOut;
 
-    if (clockIn) {
-      _clockIn = await axios
-        .post(
-          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
-          clockIn,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .catch(function (error) {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.innererror &&
-            error.response.data.error.innererror.message
-          ) {
-            throw new Error(error.response.data.error.innererror.message);
-          } else if (error.request) {
-            throw new Error(error.request);
-          } else {
-            throw new Error("Error", error.message);
-          }
-        });
-      _clockIn = _clockIn.data;
-    } 
-    
     if (clockOut) {
       _clockOut = await axios
         .post(
@@ -118,6 +91,33 @@ if (!client.isOpen) client.connect();
         });
       _clockOut = _clockOut.data;
     }
+
+    if (clockIn) {
+      _clockIn = await axios
+        .post(
+          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
+          clockIn,
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
+      _clockIn = _clockIn.data;
+    } 
 
     return res.json({
       result: true,
