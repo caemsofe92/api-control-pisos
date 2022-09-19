@@ -179,7 +179,7 @@ router.post("/", async (req, res) => {
             SRF_DimAttributeWrkCtrTables: responses[6].data.value,
             DeviceBrands: responses[7].data.value,
             CustServiceRegions: responses[8].data.value,
-            Entity10: responses[9].data.value
+            SRF_ServiceRegionAssignments: responses[9].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
