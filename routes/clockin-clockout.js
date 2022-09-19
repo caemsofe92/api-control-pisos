@@ -15,7 +15,6 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const clockIn = req.query.clockIn || (req.body && req.body.clockIn);
     const clockOut = req.query.clockOut || (req.body && req.body.clockOut);
-    const isClockIn = req.query.isClockIn || (req.body && req.body.isClockIn);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -66,7 +65,7 @@ if (!client.isOpen) client.connect();
     let _clockIn;
     let _clockOut;
 
-    if (isClockIn) {
+    if (clockIn) {
       _clockIn = await axios
         .post(
           `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
@@ -91,7 +90,9 @@ if (!client.isOpen) client.connect();
           }
         });
       _clockIn = _clockIn.data;
-    } else {
+    } 
+    
+    if (clockOut) {
       _clockOut = await axios
         .post(
           `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVClockOut`,
