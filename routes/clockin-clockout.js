@@ -15,7 +15,6 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const clockIn = req.query.clockIn || (req.body && req.body.clockIn);
     const clockOut = req.query.clockOut || (req.body && req.body.clockOut);
-    const isClockIn = req.query.isClockIn || (req.body && req.body.isClockIn);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -66,32 +65,7 @@ if (!client.isOpen) client.connect();
     let _clockIn;
     let _clockOut;
 
-    if (isClockIn) {
-      _clockIn = await axios
-        .post(
-          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
-          clockIn,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .catch(function (error) {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.innererror &&
-            error.response.data.error.innererror.message
-          ) {
-            throw new Error(error.response.data.error.innererror.message);
-          } else if (error.request) {
-            throw new Error(error.request);
-          } else {
-            throw new Error("Error", error.message);
-          }
-        });
-      _clockIn = _clockIn.data;
-    } else {
+    if (clockOut) {
       _clockOut = await axios
         .post(
           `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVClockOut`,
@@ -117,6 +91,33 @@ if (!client.isOpen) client.connect();
         });
       _clockOut = _clockOut.data;
     }
+
+    if (clockIn) {
+      _clockIn = await axios
+        .post(
+          `${tenant}/api/services/NAVCaseTimeSheetTransGroup/NAVCaseTimeSheetTransService/NAVclockIn`,
+          clockIn,
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
+      _clockIn = _clockIn.data;
+    } 
 
     return res.json({
       result: true,
