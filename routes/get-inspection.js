@@ -170,6 +170,13 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity13 = axios.get(
+      `${tenant}/data/NAVConditionsRequests?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
 
     await axios
       .all([
@@ -184,7 +191,8 @@ router.post("/", async (req, res) => {
         Entity9,
         Entity10,
         Entity11,
-        Entity12
+        Entity12,
+        Entity13
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -201,7 +209,8 @@ router.post("/", async (req, res) => {
             InspectionCategories: responses[8].data.value,
             InspectionListLines: responses[9].data.value,
             InspectionLists: responses[10].data.value,
-            InspectionFaultTrans: responses[11].data.value
+            InspectionFaultTrans: responses[11].data.value,
+            NAVConditionsRequests: responses[12].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
