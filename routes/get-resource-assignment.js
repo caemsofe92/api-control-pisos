@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$filter=Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Created' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Received' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Approved' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Planned' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'PrePicked' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Awaiting'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -114,20 +114,14 @@ router.post("/", async (req, res) => {
     );
 
     await axios
-      .all([
-        Entity1,
-        Entity2,
-        Entity3,
-        Entity4
-      ])
+      .all([Entity1, Entity2, Entity3, Entity4])
       .then(
         axios.spread(async (...responses) => {
-
           const reply = {
             CaseTables: responses[0].data.value,
             NAVWrkCtrs: responses[1].data.value,
             NAVConditionsRequests: responses[2].data.value,
-            SRF_SystemTables: responses[3].data.value
+            SRF_SystemTables: responses[3].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
