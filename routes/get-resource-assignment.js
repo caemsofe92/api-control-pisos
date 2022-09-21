@@ -112,9 +112,23 @@ router.post("/", async (req, res) => {
       }&$select=SystemId,SystemName`,
       { headers: { Authorization: "Bearer " + token } }
     );
+    const Entity5 = axios.get(
+      `${tenant}/data/TypeConditions?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true${
+        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
+      }&$select=TypeConditionId,TypeConditionName`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+    const Entity6 = axios.get(
+      `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
     await axios
-      .all([Entity1, Entity2, Entity3, Entity4])
+      .all([Entity1, Entity2, Entity3, Entity4, Entity5, Entity6])
       .then(
         axios.spread(async (...responses) => {
           const reply = {
@@ -122,6 +136,8 @@ router.post("/", async (req, res) => {
             NAVWrkCtrs: responses[1].data.value,
             NAVConditionsRequests: responses[2].data.value,
             SRF_SystemTables: responses[3].data.value,
+            TypeConditions: responses[4].data.value,
+            SRF_DeviceTableMasters: responses[5].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
