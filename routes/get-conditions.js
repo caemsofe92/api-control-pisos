@@ -230,8 +230,16 @@ router.post("/", async (req, res) => {
       }&$select=SystemId,SystemName`,
       { headers: { Authorization: "Bearer " + token } }
     );
-
     const Entity21 = axios.get(
+      `${tenant}/data/SRF_CustTable?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true${
+        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
+      }`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
+    const Entity22 = axios.get(
       `${tenant}/data/TypeConditions?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true${
@@ -240,27 +248,20 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
-    const Entity22 = axios.get(
+    const Entity23 = axios.get(
       `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
-    const Entity23 = axios.get(
+    const Entity24 = axios.get(
       `${tenant}/data/NAVWrkCtrResourceGroups?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
-    const Entity24 = axios.get(
-      `${tenant}/data/SRF_CustTable?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true${
-        userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
+    
 
     await axios
       .all([
@@ -313,10 +314,10 @@ router.post("/", async (req, res) => {
             CaseTypes: responses[17].data.value,
             CasePriorities: responses[18].data.value,
             SRF_SystemTables: responses[19].data.value,
-            TypeConditions: responses[20].data.value,
-            SRF_DeviceTableMasters: responses[21].data.value,
-            NAVWrkCtrResourceGroups: responses[22].data.value,
-            SRF_CustTable: responses[23].data.value
+            SRF_CustTable: responses[20].data.value,
+            TypeConditions: responses[21].data.value,
+            SRF_DeviceTableMasters: responses[22].data.value,
+            NAVWrkCtrResourceGroups: responses[23].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
