@@ -49,6 +49,7 @@ var updatestatuscanceled = require("./routes/update-status-canceled");
 var ordenservicio = require("./routes/create-orden-servicio");
 var updateordenservicio = require("./routes/update-orden-servicio");
 var deleteordenservicio = require("./routes/delete-orden-servicio");
+var getIngress = require("./routes/get-ingress");
 
 var app = express();
 app.use(compression());
@@ -100,6 +101,8 @@ app.use("/update-status-canceled", updatestatuscanceled);
 app.use("/create-orden-servicio", ordenservicio);
 app.use("/update-orden-servicio", updateordenservicio);
 app.use("/delete-orden-servicio", deleteordenservicio);
+app.use("/get-ingress", getIngress);
+
 
 app.use(function (req, res, next) {
   next(createError(404));
