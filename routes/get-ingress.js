@@ -98,7 +98,7 @@ router.post("/", async (req, res) => {
     const Entity3 = axios.get(
       `${tenant}/data/NAVTruckEntrances?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true`,
+      }&cross-company=true&$filter=NAVStatusTruck eq Microsoft.Dynamics.DataEntities.NAVStatusTruck'Entry'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
