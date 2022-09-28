@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     if (ingress) {
       _ingress = await axios
         .patch(
-          `${tenant}/data/NAVTruckEntrances(dataAreaId='${ingress.dataAreaId}',NAVEntranceId=${ingress.NAVEntranceId})?$format=application/json;odata.metadata=none`,
+          `${tenant}/data/NAVTruckEntrances(dataAreaId='${ingress.dataAreaId}',NAVEntranceId='${ingress.NAVEntranceId}')?$format=application/json;odata.metadata=none`,
           ingress,
           {
             headers: { Authorization: "Bearer " + token },
