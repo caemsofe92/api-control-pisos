@@ -52,6 +52,9 @@ var deleteordenservicio = require("./routes/delete-orden-servicio");
 var getIngress = require("./routes/get-ingress");
 var createIngress = require("./routes/create-ingress");
 var getExit = require("./routes/get-exit");
+var updateIngressCase = require("./routes/update-ingress-case");
+var updateIngressExit = require("./routes/update-ingress-exit");
+var updateIngressRequest = require("./routes/update-ingress-request");
 
 var app = express();
 app.use(compression());
@@ -106,6 +109,9 @@ app.use("/delete-orden-servicio", deleteordenservicio);
 app.use("/get-ingress", getIngress);
 app.use("/create-ingress", createIngress);
 app.use("/get-exit", getExit);
+app.use("/update-ingress-case", updateIngressCase);
+app.use("/update-ingress-exit", updateIngressExit);
+app.use("/update-ingress-request", updateIngressRequest);
 
 app.use(function (req, res, next) {
   next(createError(404));
