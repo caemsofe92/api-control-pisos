@@ -16,6 +16,8 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const ingress =
       req.query.ingress || (req.body && req.body.ingress);
+    const evidences =
+      req.query.evidences || (req.body && req.body.evidences);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -95,10 +97,89 @@ router.post("/", async (req, res) => {
 
     _ingress = _ingress.data;
 
+    let _evidences = [];
+
+    if (evidences) {
+      const blobServiceClient = BlobServiceClient.fromConnectionString(
+        process.env.BLOBSTORAGECONNECTIONSTRING
+      );
+
+      const containerClient = blobServiceClient.getContainerClient(
+        process.env.BLOBSTORAGEEVIDENCESPATH
+      );
+
+      for (let i = 0; i < evidences.length; i++) {
+        const element = evidences[i];
+
+        if (element.imagePath.length > 0) {
+          const path = JSON.parse(element.imagePath).toString();
+
+          const matches = path.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+          const buffer = new Buffer.from(matches[2], "base64");
+
+          const imageType = matches[1];
+
+          const name =
+            _ingress.RecId1 +
+            moment().format().toString() +
+            "sscingressimage." +
+            imageType.split("/")[1];
+
+          const blockBlobClient = containerClient.getBlockBlobClient(name);
+
+          const responseImage = await blockBlobClient.upload(
+            buffer,
+            buffer.byteLength
+          );
+
+          const imageRequest = {
+            _DataareaId: _ingress.dataAreaId,
+            _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
+            _name: name,
+            _TableId: 68231,
+            _RefRecId: _ingress.RecId1,
+            _FileType: imageType.split("/")[1],
+          };
+
+          if (responseImage) {
+            await axios
+              .post(
+                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                imageRequest,
+                {
+                  headers: { Authorization: "Bearer " + token },
+                }
+              )
+              .catch(function (error) {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.error &&
+                  error.response.data.error.innererror &&
+                  error.response.data.error.innererror.message
+                ) {
+                  throw new Error(error.response.data.error.innererror.message);
+                } else if (error.request) {
+                  throw new Error(error.request);
+                } else {
+                  throw new Error("Error", error.message);
+                }
+              });
+            _evidences.push({
+              RefRecId: _ingress.RecId1,
+              OriginalFileName: name,
+            });
+          }
+        }
+      }
+    }
+
     return res.json({
       result: true,
       message: "OK",
-      _ingress
+      _ingress,
+      _evidences
     });
   } catch (error) {
     return res.status(500).json({
