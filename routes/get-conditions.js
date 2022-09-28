@@ -261,7 +261,13 @@ router.post("/", async (req, res) => {
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
-    
+
+    const Entity25 = axios.get(
+      `${tenant}/data/NAVTruckEntrances?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true&$filter=NAVStatusTruck eq Microsoft.Dynamics.DataEntities.NAVStatusTruck'Entry'`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
     await axios
       .all([
@@ -288,7 +294,8 @@ router.post("/", async (req, res) => {
         Entity21,
         Entity22,
         Entity23,
-        Entity24
+        Entity24,
+        Entity25
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -317,7 +324,8 @@ router.post("/", async (req, res) => {
             SRF_CustTable: responses[20].data.value,
             TypeConditions: responses[21].data.value,
             SRF_DeviceTableMasters: responses[22].data.value,
-            NAVWrkCtrResourceGroups: responses[23].data.value
+            NAVWrkCtrResourceGroups: responses[23].data.value,
+            NAVTruckEntrances: responses[24].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
