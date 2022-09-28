@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
           const imageType = matches[1];
 
           const name =
-            _ingress.RecId1 +
+            _ingress.TruckEntryRecID +
             moment().format().toString() +
             "sscingressimage." +
             imageType.split("/")[1];
@@ -138,7 +138,7 @@ router.post("/", async (req, res) => {
             _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
             _name: name,
             _TableId: 68231,
-            _RefRecId: _ingress.RecId1,
+            _RefRecId: _ingress.TruckEntryRecID,
             _FileType: imageType.split("/")[1],
           };
 
@@ -167,7 +167,7 @@ router.post("/", async (req, res) => {
                 }
               });
             _evidences.push({
-              RefRecId: _ingress.RecId1,
+              RefRecId: _ingress.TruckEntryRecID,
               OriginalFileName: name,
             });
           }
