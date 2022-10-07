@@ -16,6 +16,8 @@ router.post("/", async (req, res) => {
       req.query.environment || (req.body && req.body.environment);
     const inspection =
       req.query.inspection || (req.body && req.body.inspection);
+    const inspectionLines =
+      req.query.inspectionLines || (req.body && req.body.inspectionLines);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -92,10 +94,47 @@ router.post("/", async (req, res) => {
 
     _inspection = _inspection.data;
 
+    let _inspectionLines = [];
+
+    if (inspectionLines && inspectionLines.length > 0) {
+      for (let i = 0; i < inspectionLines.length; i++) {
+        const inspectionLine = inspectionLines[i];
+        const inspectionResponse = await axios
+          .post(
+            `${tenant}/data/SRF_AMInspectionLines?cross-company=true`,
+            {
+              ...inspectionLine,
+              InstanceRelationType: 66094,
+              InspectionId: _inspection.InspectionId
+            },
+            {
+              headers: { Authorization: "Bearer " + token },
+            }
+          )
+          .catch(function (error) {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.error &&
+              error.response.data.error.innererror &&
+              error.response.data.error.innererror.message
+            ) {
+              throw new Error(error.response.data.error.innererror.message);
+            } else if (error.request) {
+              throw new Error(error.request);
+            } else {
+              throw new Error("Error", error.message);
+            }
+          });
+        _inspectionLines.push(inspectionResponse.data);
+      }
+    }
+
     return res.json({
       result: true,
       message: "OK",
-      _inspection
+      _inspection,
+      _inspectionLines
     });
   } catch (error) {
     return res.status(500).json({
