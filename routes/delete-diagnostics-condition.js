@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
     }
 
     let _diagnosticCondition;
-    let _partCar;
+    let _partCar = [];
     if (diagnosticCondition) {
       _diagnosticCondition = await axios
         .delete(
@@ -90,36 +90,40 @@ router.post("/", async (req, res) => {
           }
         });
 
-        _partCar = await axios
-        .delete(
-          `${tenant}/data/PartCarTables(dataAreaId='${diagnosticCondition.dataAreaId}',DiagCondRefRecid=${diagnosticCondition.DiagCondRefRecid},LineNum=${diagnosticCondition.LineNum})?cross-company=true`,
-          {
-            headers: { Authorization: "Bearer " + token },
-          }
-        )
-        .catch(function (error) {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.error &&
-            error.response.data.error.innererror &&
-            error.response.data.error.innererror.message
-          ) {
-            throw new Error(error.response.data.error.innererror.message);
-          } else if (error.request) {
-            throw new Error(error.request);
-          } else {
-            throw new Error("Error", error.message);
-          }
-        });
+    if (diagnosticCondition.PartCarLines && diagnosticCondition.PartCarLines.length > 0) {
+      for (let i = 0; i < diagnosticCondition.PartCarLines.length; i++) {
+        const partCarLine = diagnosticCondition.PartCarLines[i];
+        const partCarLine_Response = await axios
+          .delete(
+            `${tenant}/data/PartCarTables(dataAreaId='${partCarLine.dataAreaId}',DiagCondRefRecid=${partCarLine.DiagCondRefRecid},LineNum=${partCarLine.LineNum})?cross-company=true`,
+            {
+              headers: { Authorization: "Bearer " + token },
+            }
+          )
+          .catch(function (error) {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.error &&
+              error.response.data.error.innererror &&
+              error.response.data.error.innererror.message
+            ) {
+              throw new Error(error.response.data.error.innererror.message);
+            } else if (error.request) {
+              throw new Error(error.request);
+            } else {
+              throw new Error("Error", error.message);
+            }
+          });
+          _partCar.push( partCarLine_Response && partCarLine_Response.data === "" ? "Deleted" : "Unchanged");
+      }
+    }
 
     }
 
     _diagnosticCondition =
     _diagnosticCondition && _diagnosticCondition.data === "" ? "Deleted" : "Unchanged";
-    _partCar =
-    _partCar && _partCar.data === "" ? "Deleted" : "Unchanged";
-
+    
     return res.json({
       result: true,
       message: "OK",
