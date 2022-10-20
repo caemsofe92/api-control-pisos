@@ -20,6 +20,8 @@ router.post("/", async (req, res) => {
     const evidences = req.query.evidences || (req.body && req.body.evidences);
     const inspectionLines =
       req.query.inspectionLines || (req.body && req.body.inspectionLines);
+    const imageEvidences =
+      req.query.imageEvidences || (req.body && req.body.imageEvidences);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -84,7 +86,7 @@ router.post("/", async (req, res) => {
               Checked: inspectionLine.Checked,
               OnSiteRepair: inspectionLine.OnSiteRepair,
               InspectionValue: inspectionLine.InspectionValue,
-              InspectionDateTime: inspectionLine.InspectionDateTime
+              InspectionDateTime: inspectionLine.InspectionDateTime,
             },
             {
               headers: { Authorization: "Bearer " + token },
@@ -105,44 +107,44 @@ router.post("/", async (req, res) => {
               throw new Error("Error", error.message);
             }
           });
-        _inspectionLines.push(inspectionResponse && inspectionResponse.data === ""
-        ? "Modified"
-        : "Unchanged");
+        _inspectionLines.push(
+          inspectionResponse && inspectionResponse.data === ""
+            ? "Modified"
+            : "Unchanged"
+        );
       }
     }
 
     let _inspection;
     if (inspection) {
-    _inspection = await axios
-      .patch(
-        `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
-        {
-          Posted: inspection.Posted,
-          InspectionStatus: inspection.InspectionStatus,
-          InspectionDate: inspection.InspectionDate,
-        },
-        { headers: { Authorization: "Bearer " + token } }
-      )
-      .catch(function (error) {
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.error &&
-          error.response.data.error.innererror &&
-          error.response.data.error.innererror.message
-        ) {
-          throw new Error(error.response.data.error.innererror.message);
-        } else if (error.request) {
-          throw new Error(error.request);
-        } else {
-          throw new Error("Error", error.message);
-        }
-      });
+      _inspection = await axios
+        .patch(
+          `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
+          {
+            Posted: inspection.Posted,
+            InspectionStatus: inspection.InspectionStatus,
+            InspectionDate: inspection.InspectionDate,
+          },
+          { headers: { Authorization: "Bearer " + token } }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
 
-    _inspection = 
-    _inspection && _inspection.data === ""
-      ? "Modified"
-      : "Unchanged";
+      _inspection =
+        _inspection && _inspection.data === "" ? "Modified" : "Unchanged";
     }
 
     let _evidences = [];
@@ -223,12 +225,111 @@ router.post("/", async (req, res) => {
       }
     }
 
+    let _imageEvidences = [];
+
+    if (
+      inspectionLines &&
+      inspectionLines.length > 0 &&
+      imageEvidences &&
+      imageEvidences.length > 0
+    ) {
+      const blobServiceClient = BlobServiceClient.fromConnectionString(
+        process.env.BLOBSTORAGECONNECTIONSTRING
+      );
+
+      const containerClient = blobServiceClient.getContainerClient(
+        process.env.BLOBSTORAGEEVIDENCESPATH
+      );
+
+      if (inspectionLines && inspectionLines.length > 0) {
+        for (let i = 0; i < inspectionLines.length; i++) {
+          const inspectionLine = inspectionLines[i];
+
+          for (let i = 0; i < imageEvidences.length; i++) {
+            const element = imageEvidences[i];
+
+            if ((element.categoryId = inspectionLine.CategoryId)) {
+              if (element.imagePath.length > 0) {
+                const path = JSON.parse(element.imagePath).toString();
+
+                const matches = path.match(
+                  /^data:([A-Za-z-+\/]+);base64,(.+)$/
+                );
+
+                const buffer = new Buffer.from(matches[2], "base64");
+
+                const imageType = matches[1];
+
+                const name =
+                  inspectionLine.RecId1 +
+                  moment().format().toString() +
+                  "sscinspectionimage." +
+                  imageType.split("/")[1];
+
+                const blockBlobClient =
+                  containerClient.getBlockBlobClient(name);
+
+                const responseImage = await blockBlobClient.upload(
+                  buffer,
+                  buffer.byteLength
+                );
+
+                const imageRequest = {
+                  _DataareaId: inspectionLine.dataAreaId,
+                  _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
+                  _name: name,
+                  _TableId: 66094,
+                  _RefRecId: inspectionLine.RecId1,
+                  _FileType: imageType.split("/")[1],
+                };
+
+                if (responseImage) {
+                  await axios
+                    .post(
+                      `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                      imageRequest,
+                      {
+                        headers: { Authorization: "Bearer " + token },
+                      }
+                    )
+                    .catch(function (error) {
+                      if (
+                        error.response &&
+                        error.response.data &&
+                        error.response.data.error &&
+                        error.response.data.error.innererror &&
+                        error.response.data.error.innererror.message
+                      ) {
+                        throw new Error(
+                          error.response.data.error.innererror.message
+                        );
+                      } else if (error.request) {
+                        throw new Error(error.request);
+                      } else {
+                        throw new Error("Error", error.message);
+                      }
+                    });
+                  _imageEvidences.push({
+                    InspectionId: element.InspectionId,
+                    CategoryId: element.CategoryId,
+                    RefRecId: inspectionLine.RecId1,
+                    OriginalFileName: name,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     return res.json({
       result: true,
       message: "OK",
       _inspection,
-      _evidences,
       _inspectionLines,
+      _evidences,
+      _imageEvidences,
     });
   } catch (error) {
     return res.status(500).json({
