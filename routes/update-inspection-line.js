@@ -227,12 +227,7 @@ router.post("/", async (req, res) => {
 
     let _imageEvidences = [];
 
-    if (
-      inspectionLines &&
-      inspectionLines.length > 0 &&
-      imageEvidences &&
-      imageEvidences.length > 0
-    ) {
+    if (imageEvidences && imageEvidences.length > 0) {
       const blobServiceClient = BlobServiceClient.fromConnectionString(
         process.env.BLOBSTORAGECONNECTIONSTRING
       );
@@ -241,83 +236,68 @@ router.post("/", async (req, res) => {
         process.env.BLOBSTORAGEEVIDENCESPATH
       );
 
-      if (inspectionLines && inspectionLines.length > 0) {
-        for (let i = 0; i < inspectionLines.length; i++) {
-          const inspectionLine = inspectionLines[i];
+      for (let i = 0; i < imageEvidences.length; i++) {
+        const element = imageEvidences[i];
 
-          for (let i = 0; i < imageEvidences.length; i++) {
-            const element = imageEvidences[i];
+        if (element.imagePath.length > 0) {
+          const path = JSON.parse(element.imagePath).toString();
 
-            if (element.categoryId === inspectionLine.CategoryId) {
-              if (element.imagePath.length > 0) {
-                const path = JSON.parse(element.imagePath).toString();
+          const matches = path.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
 
-                const matches = path.match(
-                  /^data:([A-Za-z-+\/]+);base64,(.+)$/
-                );
+          const buffer = new Buffer.from(matches[2], "base64");
 
-                const buffer = new Buffer.from(matches[2], "base64");
+          const imageType = matches[1];
 
-                const imageType = matches[1];
+          const name =
+            element.RecId1 +
+            moment().format().toString() +
+            "sscinspectionimage." +
+            imageType.split("/")[1];
 
-                const name =
-                  inspectionLine.RecId1 +
-                  moment().format().toString() +
-                  "sscinspectionimage." +
-                  imageType.split("/")[1];
+          const blockBlobClient = containerClient.getBlockBlobClient(name);
 
-                const blockBlobClient =
-                  containerClient.getBlockBlobClient(name);
+          const responseImage = await blockBlobClient.upload(
+            buffer,
+            buffer.byteLength
+          );
 
-                const responseImage = await blockBlobClient.upload(
-                  buffer,
-                  buffer.byteLength
-                );
+          const imageRequest = {
+            _DataareaId: inspection.dataAreaId,
+            _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
+            _name: name,
+            _TableId: 66094,
+            _RefRecId: element.RecId1,
+            _FileType: imageType.split("/")[1],
+          };
 
-                const imageRequest = {
-                  _DataareaId: inspectionLine.dataAreaId,
-                  _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
-                  _name: name,
-                  _TableId: 66094,
-                  _RefRecId: inspectionLine.RecId1,
-                  _FileType: imageType.split("/")[1],
-                };
-
-                if (responseImage) {
-                  await axios
-                    .post(
-                      `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                      imageRequest,
-                      {
-                        headers: { Authorization: "Bearer " + token },
-                      }
-                    )
-                    .catch(function (error) {
-                      if (
-                        error.response &&
-                        error.response.data &&
-                        error.response.data.error &&
-                        error.response.data.error.innererror &&
-                        error.response.data.error.innererror.message
-                      ) {
-                        throw new Error(
-                          error.response.data.error.innererror.message
-                        );
-                      } else if (error.request) {
-                        throw new Error(error.request);
-                      } else {
-                        throw new Error("Error", error.message);
-                      }
-                    });
-                  _imageEvidences.push({
-                    InspectionId: element.InspectionId,
-                    CategoryId: element.CategoryId,
-                    RefRecId: inspectionLine.RecId1,
-                    OriginalFileName: name,
-                  });
+          if (responseImage) {
+            await axios
+              .post(
+                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                imageRequest,
+                {
+                  headers: { Authorization: "Bearer " + token },
                 }
-              }
-            }
+              )
+              .catch(function (error) {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.error &&
+                  error.response.data.error.innererror &&
+                  error.response.data.error.innererror.message
+                ) {
+                  throw new Error(error.response.data.error.innererror.message);
+                } else if (error.request) {
+                  throw new Error(error.request);
+                } else {
+                  throw new Error("Error", error.message);
+                }
+              });
+            _imageEvidences.push({
+              RefRecId: element.RecId1,
+              OriginalFileName: name,
+            });
           }
         }
       }
