@@ -248,7 +248,7 @@ router.post("/", async (req, res) => {
           for (let i = 0; i < imageEvidences.length; i++) {
             const element = imageEvidences[i];
 
-            if ((element.categoryId = inspectionLine.CategoryId)) {
+            if (element.categoryId === inspectionLine.CategoryId) {
               if (element.imagePath.length > 0) {
                 const path = JSON.parse(element.imagePath).toString();
 
