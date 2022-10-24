@@ -173,7 +173,7 @@ router.post("/", async (req, res) => {
           const name =
             inspection.RecId1 +
             moment().format().toString() +
-            "sscinspectionimage." +
+            "sscinspectionsignatureimage." +
             imageType.split("/")[1];
 
           const blockBlobClient = containerClient.getBlockBlobClient(name);
@@ -251,7 +251,7 @@ router.post("/", async (req, res) => {
           const name =
             element.RecId1 +
             moment().format().toString() +
-            "sscinspectionimage." +
+            "sscinspectionevidenceimage." +
             imageType.split("/")[1];
 
           const blockBlobClient = containerClient.getBlockBlobClient(name);

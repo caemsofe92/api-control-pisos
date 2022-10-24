@@ -108,7 +108,7 @@ router.post("/", async (req, res) => {
     );
 
     const Entity4 = axios.get(
-      `${tenant}/data/SRF_AMInspectionLines?$format=application/json;odata.metadata=none${
+      `${tenant}/data/InspectionLines?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
@@ -177,6 +177,14 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity14 = axios.get(
+      `${tenant}/data/SRF_DocuRef?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true&$select=OriginalFileName,RefRecId&$filter=${
+        userCompany ? `RefCompanyId eq '${userCompany}' and ` : ""
+      }RefTableId eq 66094 and TypeId eq 'File' and OriginalFileName eq '*sscinspectionevidenceimage*'`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
     await axios
       .all([
@@ -192,7 +200,8 @@ router.post("/", async (req, res) => {
         Entity10,
         Entity11,
         Entity12,
-        Entity13
+        Entity13,
+        Entity14
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -210,7 +219,8 @@ router.post("/", async (req, res) => {
             InspectionListLines: responses[9].data.value,
             InspectionLists: responses[10].data.value,
             InspectionFaultTrans: responses[11].data.value,
-            NAVConditionsRequests: responses[12].data.value
+            NAVConditionsRequests: responses[12].data.value,
+            SRF_DocuRef: responses[13].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
