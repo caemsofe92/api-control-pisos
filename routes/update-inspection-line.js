@@ -74,9 +74,10 @@ router.post("/", async (req, res) => {
     if (inspectionLines && inspectionLines.length > 0) {
       for (let i = 0; i < inspectionLines.length; i++) {
         const inspectionLine = inspectionLines[i];
+        
         const inspectionResponse = await axios
           .patch(
-            `${tenant}/data/InspectionLines(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspectionLine.LineNum},AMInspectionCategory_CategoryId='${inspectionLine.CategoryId}')?cross-company=true`,
+            `${tenant}/data/InspectionLines(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspectionLine.LineNum},AMInspectionCategory_CategoryId='${encodeURIComponent(inspectionLine.CategoryId)}')?cross-company=true`,
             {
               CheckPass: inspectionLine.CheckPass,
               ChargeCustomer: inspectionLine.ChargeCustomer,
@@ -102,6 +103,7 @@ router.post("/", async (req, res) => {
             ) {
               throw new Error(error.response.data.error.innererror.message);
             } else if (error.request) {
+              console.log(error);
               throw new Error(error.request);
             } else {
               throw new Error("Error", error.message);
@@ -311,6 +313,7 @@ router.post("/", async (req, res) => {
       _evidences,
       _imageEvidences,
     });
+    
   } catch (error) {
     return res.status(500).json({
       result: false,
