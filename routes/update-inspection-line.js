@@ -76,7 +76,7 @@ router.post("/", async (req, res) => {
         const inspectionLine = inspectionLines[i];
         const inspectionResponse = await axios
           .patch(
-            `${tenant}/data/InspectionLines(dataAreaId='${inspectionLine.dataAreaId}',InspectionId='${inspectionLine.InspectionId}',LineNum=${inspectionLine.LineNum},AMInspectionCategory_CategoryId='${inspectionLine.AMInspectionCategory_CategoryId}')?cross-company=true`,
+            `${tenant}/data/InspectionLines(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspectionLine.LineNum},AMInspectionCategory_CategoryId='${inspectionLine.CategoryId}')?cross-company=true`,
             {
               CheckPass: inspectionLine.CheckPass,
               ChargeCustomer: inspectionLine.ChargeCustomer,
