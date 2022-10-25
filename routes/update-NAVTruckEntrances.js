@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
       .patch(
         `${tenant}/data/CaseTables(dataAreaId='${Ingress.dataAreaId}',CaseId='${Ingress.CaseId}')?cross-company=true`,
         {
-            EndTime: Ingress.EndTime,
+            NAVEndTime: Ingress.EndTime,
             NAVEndDate: Ingress.EndDate
           },
         {
