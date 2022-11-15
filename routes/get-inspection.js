@@ -89,7 +89,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=WorkshopLocationId eq '${WorkshopLocationId}' and Status ne Microsoft.Dynamics.DataEntities.AMCaseStatus'Finished' and Status ne Microsoft.Dynamics.DataEntities.AMCaseStatus'Closed'`,
+      }&cross-company=true&$filter=WorkshopLocationId eq '${WorkshopLocationId}' and Status ne Microsoft.Dynamics.DataEntities.AMCaseStatus'Finished' and Status ne Microsoft.Dynamics.DataEntities.AMCaseStatus'Closed' and Status ne Microsoft.Dynamics.DataEntities.AMCaseStatus'Invoiced' and Status ne Microsoft.Dynamics.DataEntities.AMCaseStatus'Cancelled'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
