@@ -69,7 +69,10 @@ router.post("/", async (req, res) => {
     let _partCar = await axios
       .post(
         `${tenant}/data/PartCarTables?$format=application/json;odata.metadata=none`,
-        partCar,
+        {
+          ...partCar,
+          QtyOrdered: parseFloat(partCar.QtyOrdered)
+        },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
