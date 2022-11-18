@@ -125,6 +125,7 @@ router.post("/", async (req, res) => {
           `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
           {
             Posted: inspection.Posted,
+            PostedDate: inspection.InspectionDate,
             InspectionStatus: inspection.InspectionStatus,
             InspectionDate: inspection.InspectionDate,
           },
