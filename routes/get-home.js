@@ -249,7 +249,6 @@ router.post("/", async (req, res) => {
         } else if (error.request) {
           throw new Error(error.request);
         } else {
-          console.log(error);
           throw new Error("Error", error.message);
         }
       });
