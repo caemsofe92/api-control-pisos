@@ -7,7 +7,7 @@ const moment = require("moment");
 require("moment/locale/es");
 
 router.post("/", async (req, res) => {
-
+  try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -314,7 +314,7 @@ router.post("/", async (req, res) => {
       _evidences,
       _imageEvidences,
     });
-    try {
+
   } catch (error) {
     return res.status(500).json({
       result: false,
