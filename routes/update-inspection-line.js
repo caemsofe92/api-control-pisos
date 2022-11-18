@@ -74,10 +74,11 @@ router.post("/", async (req, res) => {
     if (inspectionLines && inspectionLines.length > 0) {
       for (let i = 0; i < inspectionLines.length; i++) {
         const inspectionLine = inspectionLines[i];
-        
+        //(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspection.LineNum},AMInspectionCategory_CategoryId='${inspection.AMInspectionCategory_CategoryId}') InspectionLines
+        //(dataAreaId='${inspection.dataAreaId}',RecId1=${inspectionLine.RecId1}) SRF_AMInspectionLines
         const inspectionResponse = await axios
           .patch(
-            `${tenant}/data/SRF_AMInspectionLines(dataAreaId='${inspection.dataAreaId}',RecId1=${inspectionLine.RecId1})?cross-company=true`,
+            `${tenant}/data/InspectionLines(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspection.LineNum},AMInspectionCategory_CategoryId='${encodeURIComponent(inspection.AMInspectionCategory_CategoryId)}')?cross-company=true`,
             {
               CheckPass: inspectionLine.CheckPass,
               ChargeCustomer: inspectionLine.ChargeCustomer,
