@@ -1,0 +1,84 @@
+If(Text(
+    DateTimeValue(ThisItem.SchedFromDate);
+    "[$-en-GB]dd-mm-yyyy HH:mm"
+) = "01-01-1900 07:03";"N/D";Text(
+    DateTimeValue(ThisItem.SchedFromDate);
+    "[$-en-GB]dd-mm-yyyy HH:mm"
+))
+
+LookUp(Var_SRF_DeviceTableMasters;MasterId=caseRequestItem.MasterId).RegistrationNumber & " " & "(" &caseRequestItem.RegistrationNumber & ")"
+
+Customer.IdentificationNumber
+Customer.Name
+Party.LogisticsElectronicAddress_Email_Locator
+Customer.CredManAccountStatusId
+Customer.PaymMode
+Customer.Blocked
+PlainText(
+    Text(
+        Customer.CreditMax;
+        "[$-es-ES]$###.###.###"
+    )
+)
+Customer.PaymTermId
+
+Identificación_1
+
+Set(
+    caseRequestItem;
+    LookUp(Var_NAVCaseRequestTables; RequestId = caseRequestItem.RequestId)
+);;
+
+If(
+    !IsBlank(ComboBox2.Selected.PartyNumber);
+    Set(
+        Party;
+        LookUp(
+            Var_SRF_PartyTables;
+            PartyNumber = ComboBox2.Selected.PartyNumber
+        )
+    );;
+    Set(
+        Customer;
+        LookUp(
+            Var_SRF_CustTable;
+            IdentificationNumber = ComboBox1_1.Selected.AccountNum
+        )
+    )
+);;
+Back()
+
+SortByColumns(
+    Var_NAVTruckEntrances;
+    "NAVEntranceId";
+    Descending
+)
+SortByColumns(
+    Var_NAVTruckEntrancesExit;
+    "NAVEntranceId";
+    Descending
+)
+UpdateContext({SortDescending2: !SortDescending2})
+
+If(
+    !IsBlank(OrdendeServicio.CustAccount);
+    LookUp(
+        Var_SRF_PartyTables;
+        PartyNumber = OrdendeServicio.DirPartyTable_PartyNumber
+    ).Name Or LookUp(
+            Var_NAVCaseRequestTables;
+            DirPartyTable_PartyNumber = Party.PartyNumber
+    ).ContactPersonName;
+    LookUp(
+        Var_SRF_CustTable;
+        IdentificationNumber = OrdendeServicio.CustAccount
+    ).Name Or LookUp(
+            Var_NAVCaseRequestTables;
+            CustAccount = Customer.IdentificationNumber
+    ).ContactPersonName
+)
+
+
+Filter(Var_SRF_DeviceTableMasters; !IsBlank(RegistrationNumber))
+ChassisNumber
+
