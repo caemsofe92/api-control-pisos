@@ -86,11 +86,7 @@ router.post("/", async (req, res) => {
           }
         });
    
-
-    console.log(_deleteordenservicio.data);
     _deleteordenservicio = _deleteordenservicio.data;
-
-    
 
     return res.json({
       result: true,

@@ -167,6 +167,13 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity13 = axios.get(
+      `${tenant}/data/DocumentCustTrans?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
+
     await axios
       .all([
         Entity1,
@@ -180,24 +187,45 @@ router.post("/", async (req, res) => {
         Entity9,
         Entity10,
         Entity11,
-        Entity12
+        Entity12,
+        Entity13,
       ])
       .then(
         axios.spread(async (...responses) => {
+          let SRF_CustTable = responses[2].data.value;
+          const DocumentCustTrans = responses[12].data.value;
+
+          for (let i = 0; i < SRF_CustTable.length; i++) {
+            const Customer = SRF_CustTable[i];
+            let TotalAmount = 0;
+            for (let j = 0; j < DocumentCustTrans.length; j++) {
+              const Transaction = DocumentCustTrans[j];
+
+              if (Customer.AccountNum === Transaction.AccountNum) {
+                TotalAmount += Transaction.AmountCur;
+              }
+            }
+            SRF_CustTable[i] = {
+              ...Customer,
+              TotalAmount,
+            };
+          }
 
           const reply = {
             DeviceCustodians: responses[0].data.value,
             SRF_DeviceTableMasters: responses[1].data.value,
-            SRF_CustTable: responses[2].data.value,
+            SRF_CustTable,
             SRF_PartyTables: responses[3].data.value,
-            NAVCaseRequestTables: responses[4].data.value.filter(item => item.Status === "Confirmed"),
+            NAVCaseRequestTables: responses[4].data.value.filter(
+              (item) => item.Status === "Confirmed"
+            ),
             DimAttributeWrkCtrResourceGroups: responses[5].data.value,
             SRF_DimAttributeWrkCtrTables: responses[6].data.value,
             DeviceBrands: responses[7].data.value,
             CustServiceRegions: responses[8].data.value,
             SRF_ServiceRegionAssignments: responses[9].data.value,
             SRF_CtrResourceGroupResources: responses[10].data.value,
-            NAVTruckEntrances: responses[11].data.value
+            NAVTruckEntrances: responses[11].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {

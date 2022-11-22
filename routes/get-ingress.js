@@ -19,6 +19,8 @@ router.post("/", async (req, res) => {
       req.query.userCompany || (req.body && req.body.userCompany);
     const environment =
       req.query.environment || (req.body && req.body.environment);
+    const serviceRegionNumber =
+      req.query.serviceRegionNumber || (req.body && req.body.serviceRegionNumber);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -38,6 +40,9 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
+    
+    if (!serviceRegionNumber || serviceRegionNumber.length === 0)
+      throw new Error("serviceRegionNumber is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -98,7 +103,7 @@ router.post("/", async (req, res) => {
     const Entity3 = axios.get(
       `${tenant}/data/NAVTruckEntrances?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=NAVStatusTruck eq Microsoft.Dynamics.DataEntities.NAVStatusTruck'Entry'`,
+      }&cross-company=true&$filter=NAVStatusTruck eq Microsoft.Dynamics.DataEntities.NAVStatusTruck'Entry' and AMCustServiceRegion_ServiceRegionNumber eq '${encodeURIComponent(serviceRegionNumber)}'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -111,20 +116,12 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
-    const Entity5 = axios.get(
-      `${tenant}/data/SRF_ServiceRegionAssignments?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=ServiceRegionNumber,WorkshopLocationId&$filter=Type eq Microsoft.Dynamics.DataEntities.AMCustServiceType'WorkshopLocation'`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
     await axios
       .all([
         Entity1,
         Entity2,
         Entity3,
-        Entity4,
-        Entity5
+        Entity4
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -133,8 +130,7 @@ router.post("/", async (req, res) => {
             NAVEntryReasons: responses[0].data.value,
             SRF_AMDeviceTable: responses[1].data.value,
             NAVTruckEntrances: responses[2].data.value,
-            SRF_DocuRef: responses[3].data.value,
-            SRF_ServiceRegionAssignments: responses[4].data.value
+            SRF_DocuRef: responses[3].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {

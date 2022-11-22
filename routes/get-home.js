@@ -156,9 +156,13 @@ router.post("/", async (req, res) => {
       `${tenant}/data/PersonUsers?$format=application/json;odata.metadata=none&cross-company=true&$filter=UserEmail eq '${userEmail}'&$select=UserId,PersonName,PartyNumber`,
       { headers: { Authorization: "Bearer " + token } }
     );
+    const Entity3 = axios.get(
+      `${tenant}/data/SRF_ServiceRegionAssignments?$format=application/json;odata.metadata=none&cross-company=true&$select=ServiceRegionNumber,WorkshopLocationId&$filter=Type eq Microsoft.Dynamics.DataEntities.AMCustServiceType'WorkshopLocation'`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
     await axios
-      .all([Entity1, Entity2])
+      .all([Entity1, Entity2, Entity3])
       .then(
         axios.spread(async (...responses) => {
           const _PersonUsers = responses[1].data.value;
@@ -216,11 +220,13 @@ router.post("/", async (req, res) => {
               PersonnelNumber: Workers.PersonnelNumber,
               Company: CaseWorkshopLocationResources.dataAreaId,
               LocationId: CaseWorkshopLocationResources.LocationId,
+              ServiceRegionNumber: responses[2].data.value.filter(item => item.WorkshopLocationId === CaseWorkshopLocationResources.LocationId)[0].ServiceRegionNumber,
               RecId: Workers.RecId1,
               WrkCtrId: _NAVWrkCtrs[0].WrkCtrId,
             },
             Companies: mainReply.Companies,
             SRF_AMCaseWorkshopLocation: mainReply.SRF_AMCaseWorkshopLocation,
+            SRF_ServiceRegionAssignments: responses[2].data.value,
             CaseEmplTables,
           };
 
@@ -243,7 +249,6 @@ router.post("/", async (req, res) => {
         } else if (error.request) {
           throw new Error(error.request);
         } else {
-          console.log(error);
           throw new Error("Error", error.message);
         }
       });

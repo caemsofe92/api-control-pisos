@@ -19,6 +19,9 @@ router.post("/", async (req, res) => {
       req.query.userCompany || (req.body && req.body.userCompany);
     const environment =
       req.query.environment || (req.body && req.body.environment);
+    const serviceRegionNumber =
+      req.query.serviceRegionNumber || (req.body && req.body.serviceRegionNumber);
+      
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -38,6 +41,9 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
+    
+    if (!serviceRegionNumber || serviceRegionNumber.length === 0)
+      throw new Error("serviceRegionNumber is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -84,7 +90,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.get(
       `${tenant}/data/NAVTruckEntrances?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=NAVStatusTruck eq Microsoft.Dynamics.DataEntities.NAVStatusTruck'Entry'`,
+      }&cross-company=true&$filter=NAVStatusTruck eq Microsoft.Dynamics.DataEntities.NAVStatusTruck'Entry' and AMCustServiceRegion_ServiceRegionNumber eq '${encodeURIComponent(serviceRegionNumber)}' and AutExit eq Microsoft.Dynamics.DataEntities.NoYes'Yes'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 

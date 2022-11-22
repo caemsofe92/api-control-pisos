@@ -74,7 +74,8 @@ router.post("/", async (req, res) => {
     if (inspectionLines && inspectionLines.length > 0) {
       for (let i = 0; i < inspectionLines.length; i++) {
         const inspectionLine = inspectionLines[i];
-        
+        //(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspectionLine.LineNum},AMInspectionCategory_CategoryId='${encodeURIComponent(inspectionLine.CategoryId)}') InspectionLines
+        //(dataAreaId='${inspection.dataAreaId}',RecId1=${inspectionLine.RecId1}) SRF_AMInspectionLines
         const inspectionResponse = await axios
           .patch(
             `${tenant}/data/SRF_AMInspectionLines(dataAreaId='${inspection.dataAreaId}',RecId1=${inspectionLine.RecId1})?cross-company=true`,
@@ -103,6 +104,7 @@ router.post("/", async (req, res) => {
             ) {
               throw new Error(error.response.data.error.innererror.message);
             } else if (error.request) {
+              console.log(error);
               throw new Error(error.request);
             } else {
               throw new Error("Error", error.message);
@@ -123,6 +125,7 @@ router.post("/", async (req, res) => {
           `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
           {
             Posted: inspection.Posted,
+            PostedDate: inspection.InspectionDate,
             InspectionStatus: inspection.InspectionStatus,
             InspectionDate: inspection.InspectionDate,
           },
@@ -312,7 +315,7 @@ router.post("/", async (req, res) => {
       _evidences,
       _imageEvidences,
     });
-   
+
   } catch (error) {
     return res.status(500).json({
       result: false,
