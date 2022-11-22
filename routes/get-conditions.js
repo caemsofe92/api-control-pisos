@@ -275,6 +275,13 @@ router.post("/", async (req, res) => {
       }&cross-company=true&$select=dataAreaId,ProjId,ProjGroupId,CustAccount`,
       { headers: { Authorization: "Bearer " + token } }
     );
+
+    const Entity27 = axios.get(
+      `${tenant}/data/DocumentCustTrans?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
     
 
     await axios
@@ -304,11 +311,29 @@ router.post("/", async (req, res) => {
         Entity23,
         Entity24,
         Entity25,
-        Entity26
+        Entity26,
+        Entity27
       ])
       .then(
         axios.spread(async (...responses) => {
+          let SRF_CustTable = responses[20].data.value;
+          const DocumentCustTrans = responses[26].data.value;
 
+          for (let i = 0; i < SRF_CustTable.length; i++) {
+            const Customer = SRF_CustTable[i];
+            let TotalAmount = 0;
+            for (let j = 0; j < DocumentCustTrans.length; j++) {
+              const Transaction = DocumentCustTrans[j];
+
+              if (Customer.AccountNum === Transaction.AccountNum) {
+                TotalAmount += Transaction.AmountCur;
+              }
+            }
+            SRF_CustTable[i] = {
+              ...Customer,
+              TotalAmount,
+            };
+          }
           const reply = {
             NAVConditionsRequests: responses[0].data.value,
             CaseOprModels: responses[1].data.value,
@@ -330,7 +355,7 @@ router.post("/", async (req, res) => {
             CaseTypes: responses[17].data.value,
             CasePriorities: responses[18].data.value,
             SRF_SystemTables: responses[19].data.value,
-            SRF_CustTable: responses[20].data.value,
+            SRF_CustTable,
             TypeConditions: responses[21].data.value,
             SRF_DeviceTableMasters: responses[22].data.value,
             NAVWrkCtrResourceGroups: responses[23].data.value,
