@@ -71,7 +71,7 @@ router.post("/", async (req, res) => {
 
     let _inspectionFaultTrans = [];
 
-    if (inspectionLines && inspectionLines.length > 0) {
+    if (inspection && inspection.Posted === "Yes" && inspectionLines && inspectionLines.length > 0) {
       for (let i = 0; i < inspectionLines.length; i++) {
         const inspectionLine = inspectionLines[i];
 
@@ -179,7 +179,7 @@ router.post("/", async (req, res) => {
     }
 
     let _inspection;
-    if (inspection) {
+    if (inspection && inspection.Posted === "Yes") {
       _inspection = await axios
         .post(
           `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdatePostedAMInspectionTable`,
