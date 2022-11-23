@@ -164,7 +164,7 @@ router.post("/", async (req, res) => {
     );
 
     const Entity12 = axios.get(
-      `${tenant}/data/InspectionFaultTrans?$format=application/json;odata.metadata=none${
+      `${tenant}/data/SRF_InspectionFaultTrans?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true&$filter=RepairStatus eq Microsoft.Dynamics.DataEntities.AMInspectionRepairStatus'Reported'`,
       { headers: { Authorization: "Bearer " + token } }
