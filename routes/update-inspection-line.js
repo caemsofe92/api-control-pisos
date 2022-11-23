@@ -95,9 +95,10 @@ router.post("/", async (req, res) => {
                   inspectionLine.CheckFail === "Yes" ? "Fault" : "Observation",
                 _Comment: inspectionLine.Comment,
                 _CategoryId: inspectionLine.CategoryId,
-                _CaseId: inspection.CaseId,
+                _CaseId: inspectionLine.addToOT ? inspection.CaseId : null,
                 _DeviceMasterId: inspection.DeviceMasterId,
                 _InspectionId: inspection.InspectionId,
+                _OnSiteRepair: inspectionLine.OnSiteRepair
               },
               {
                 headers: { Authorization: "Bearer " + token },
