@@ -69,6 +69,63 @@ router.post("/", async (req, res) => {
       });
     }
 
+    let _inspectionFaultTrans = [];
+
+    if (inspectionLines && inspectionLines.length > 0) {
+      for (let i = 0; i < inspectionLines.length; i++) {
+        const inspectionLine = inspectionLines[i];
+
+        if (
+          inspectionLine.CheckFail === "Yes" ||
+          inspectionLine.CheckObservation === "Yes"
+        ) {
+          const faultTransResponse = await axios
+            .post(
+              `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateInspectionFaultTrans`,
+              {
+                _dataAreaId: inspection.dataAreaId,
+                _Description:
+                  inspectionLine.CategoryId +
+                  ":" +
+                  inspectionLine.InspectionValue,
+                _DeviceId: inspection.DeviceId,
+                _InspectionValue: inspectionLine.InspectionValue,
+                _InspectionLine: inspectionLine.RecId1,
+                _Severity:
+                  inspectionLine.CheckFail === "Yes" ? "Fault" : "Observation",
+                _Comment: inspectionLine.Comment,
+                _CategoryId: inspectionLine.CategoryId,
+                _CaseId: inspection.CaseId,
+                _DeviceMasterId: inspection.DeviceMasterId,
+                _InspectionId: inspection.InspectionId,
+              },
+              {
+                headers: { Authorization: "Bearer " + token },
+              }
+            )
+            .catch(function (error) {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.error &&
+                error.response.data.error.innererror &&
+                error.response.data.error.innererror.message
+              ) {
+                throw new Error(error.response.data.error.innererror.message);
+              } else if (error.request) {
+                throw new Error(error.request);
+              } else {
+                throw new Error("Error", error.message);
+              }
+            });
+          _inspectionFaultTrans.push({
+            InspectionLine: inspectionLine.RecId1,
+            FaultTransId: faultTransResponse.data,
+          });
+        }
+      }
+    }
+
     let _inspectionLines = [];
 
     if (inspectionLines && inspectionLines.length > 0) {
@@ -77,18 +134,26 @@ router.post("/", async (req, res) => {
         //(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}',LineNum=${inspectionLine.LineNum},AMInspectionCategory_CategoryId='${encodeURIComponent(inspectionLine.CategoryId)}') InspectionLines
         //(dataAreaId='${inspection.dataAreaId}',RecId1=${inspectionLine.RecId1}) SRF_AMInspectionLines
         const inspectionResponse = await axios
-          .patch(
-            `${tenant}/data/SRF_AMInspectionLines(dataAreaId='${inspection.dataAreaId}',RecId1=${inspectionLine.RecId1})?cross-company=true`,
+          .post(
+            `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdateAMInspectionTable`,
             {
-              CheckPass: inspectionLine.CheckPass,
-              ChargeCustomer: inspectionLine.ChargeCustomer,
-              Comment: inspectionLine.Comment,
-              CheckFail: inspectionLine.CheckFail,
-              CheckObservation: inspectionLine.CheckObservation,
-              Checked: inspectionLine.Checked,
-              OnSiteRepair: inspectionLine.OnSiteRepair,
-              InspectionValue: inspectionLine.InspectionValue,
-              InspectionDateTime: inspectionLine.InspectionDateTime,
+              _RecId1: inspectionLine.RecId1,
+              _CheckPass: inspectionLine.CheckPass,
+              _ChargeCustomer: inspectionLine.ChargeCustomer,
+              _Comment: inspectionLine.Comment,
+              _CheckFail: inspectionLine.CheckFail,
+              _CheckObservation: inspectionLine.CheckObservation,
+              _Checked: inspectionLine.Checked,
+              _OnSiteRepair: inspectionLine.OnSiteRepair,
+              _InspectionValue: inspectionLine.InspectionValue,
+              _InspectionFaultTransId:
+                _inspectionFaultTrans.filter(
+                  (item) => item.InspectionLine === inspectionLine.RecId1
+                ).length > 0
+                  ? _inspectionFaultTrans.filter(
+                      (item) => item.InspectionLine === inspectionLine.RecId1
+                    )[0].FaultTransId
+                  : "",
             },
             {
               headers: { Authorization: "Bearer " + token },
@@ -104,30 +169,22 @@ router.post("/", async (req, res) => {
             ) {
               throw new Error(error.response.data.error.innererror.message);
             } else if (error.request) {
-              console.log(error);
               throw new Error(error.request);
             } else {
               throw new Error("Error", error.message);
             }
           });
-        _inspectionLines.push(
-          inspectionResponse && inspectionResponse.data === ""
-            ? "Modified"
-            : "Unchanged"
-        );
+        _inspectionLines.push(inspectionResponse.data);
       }
     }
 
     let _inspection;
     if (inspection) {
       _inspection = await axios
-        .patch(
-          `${tenant}/data/SRF_InspectionTables(dataAreaId='${inspection.dataAreaId}',InspectionId='${inspection.InspectionId}')?$format=application/json;odata.metadata=none`,
+        .post(
+          `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdatePostedAMInspectionTable`,
           {
-            Posted: inspection.Posted,
-            PostedDate: inspection.InspectionDate,
-            InspectionStatus: inspection.InspectionStatus,
-            InspectionDate: inspection.InspectionDate,
+            _InspectionId: inspection.InspectionId,
           },
           { headers: { Authorization: "Bearer " + token } }
         )
@@ -147,8 +204,7 @@ router.post("/", async (req, res) => {
           }
         });
 
-      _inspection =
-        _inspection && _inspection.data === "" ? "Modified" : "Unchanged";
+      _inspection = _inspection.data;
     }
 
     let _evidences = [];
@@ -315,7 +371,6 @@ router.post("/", async (req, res) => {
       _evidences,
       _imageEvidences,
     });
-
   } catch (error) {
     return res.status(500).json({
       result: false,
