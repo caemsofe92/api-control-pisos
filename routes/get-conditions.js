@@ -282,6 +282,13 @@ router.post("/", async (req, res) => {
       }&cross-company=true`,
       { headers: { Authorization: "Bearer " + token } }
     );
+
+    const Entity28 = axios.get(
+      `${tenant}/data/ContractGroups?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true&$select=dataAreaId,GroupId,CaseTypeId,CaseGroupId,CustAccount`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
     
 
     await axios
@@ -312,7 +319,8 @@ router.post("/", async (req, res) => {
         Entity24,
         Entity25,
         Entity26,
-        Entity27
+        Entity27,
+        Entity28
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -360,7 +368,8 @@ router.post("/", async (req, res) => {
             SRF_DeviceTableMasters: responses[22].data.value,
             NAVWrkCtrResourceGroups: responses[23].data.value,
             NAVTruckEntrances: responses[24].data.value,
-            SRF_ProjTables: responses[25].data.value
+            SRF_ProjTables: responses[25].data.value,
+            ContractGroups: responses[27].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
