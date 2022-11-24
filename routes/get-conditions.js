@@ -286,7 +286,7 @@ router.post("/", async (req, res) => {
     const Entity28 = axios.get(
       `${tenant}/data/ContractGroups?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=dataAreaId,GroupId,CaseTypeId,CaseGroupId,CustAccount`,
+      }&cross-company=true&$select=dataAreaId,GroupId,CaseTypeId,CaseGroupId`,
       { headers: { Authorization: "Bearer " + token } }
     );
     
