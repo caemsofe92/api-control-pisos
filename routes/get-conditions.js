@@ -227,7 +227,7 @@ router.post("/", async (req, res) => {
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=SystemId,SystemName`,
+      }&$select=SystemName`,
       { headers: { Authorization: "Bearer " + token } }
     );
     const Entity21 = axios.get(
