@@ -289,14 +289,7 @@ router.post("/", async (req, res) => {
       }&cross-company=true&$select=dataAreaId,GroupId,CaseTypeId,CaseGroupId`,
       { headers: { Authorization: "Bearer " + token } }
     );
-    const Entity29 = axios.get(
-      `${tenant}/data/SRF_SystemBrandTables?$format=application/json;odata.metadata=none${
-        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=dataAreaId,GroupId,CaseTypeId,CaseGroupId`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
     
-
     await axios
       .all([
         Entity1,
@@ -326,8 +319,7 @@ router.post("/", async (req, res) => {
         Entity25,
         Entity26,
         Entity27,
-        Entity28,
-        Entity29
+        Entity28
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -376,8 +368,7 @@ router.post("/", async (req, res) => {
             NAVWrkCtrResourceGroups: responses[23].data.value,
             NAVTruckEntrances: responses[24].data.value,
             SRF_ProjTables: responses[25].data.value,
-            ContractGroups: responses[27].data.value,
-            SRF_SystemBrandTables: responses[28].data.value
+            ContractGroups: responses[27].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
