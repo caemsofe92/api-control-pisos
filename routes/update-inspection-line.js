@@ -94,6 +94,7 @@ router.post("/", async (req, res) => {
                 _Severity:
                   inspectionLine.CheckFail === "Yes" ? "Fault" : "Observation",
                 _Comment: inspectionLine.Comment,
+                _InspectionWorker: inspectionLine.InspectionWorker,
                 _CategoryId: inspectionLine.CategoryId,
                 _CaseId: inspectionLine.addToOT ? inspection.CaseId : null,
                 _DeviceMasterId: inspection.DeviceMasterId,
