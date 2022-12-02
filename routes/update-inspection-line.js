@@ -147,6 +147,7 @@ router.post("/", async (req, res) => {
               _Checked: inspectionLine.Checked,
               _OnSiteRepair: inspectionLine.OnSiteRepair,
               _InspectionValue: inspectionLine.InspectionValue,
+              _InspectionWorker: inspectionLine.InspectionWorker,
               _InspectionFaultTransId:
                 _inspectionFaultTrans.filter(
                   (item) => item.InspectionLine === inspectionLine.RecId1
