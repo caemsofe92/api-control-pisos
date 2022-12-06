@@ -82,6 +82,7 @@ router.post("/", async (req, res) => {
         ) {
           throw new Error(error.response.data.error.innererror.message);
         } else if (error.request) {
+          console.log(error)
           throw new Error(error.request);
         } else {
           throw new Error("Error", error.message);
