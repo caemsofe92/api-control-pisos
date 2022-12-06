@@ -7,7 +7,7 @@ const { BlobServiceClient } = require("@azure/storage-blob");
 require('moment/locale/es');
 
 router.post("/", async (req, res) => {
-  try {
+  
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -70,7 +70,10 @@ router.post("/", async (req, res) => {
     let _driverData = await axios
       .post(
         `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateDeviceCustodianJour`,
-        driverData,
+        {
+          ...driverData,
+          dirPartyRecId: !driverData.dirPartyRecId || driverData.dirPartyRecId === 0 ? -1 : driverData.dirPartyRecId
+        },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -83,6 +86,7 @@ router.post("/", async (req, res) => {
         ) {
           throw new Error(error.response.data.error.innererror.message);
         } else if (error.request) {
+          console.log(error);
           throw new Error(error.request);
         } else {
           throw new Error("Error", error.message);
@@ -96,6 +100,7 @@ router.post("/", async (req, res) => {
       message: "OK",
       _driverData
     });
+    try {
   } catch (error) {
     return res.status(500).json({
       result: false,
