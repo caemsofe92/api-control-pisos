@@ -1,0 +1,98 @@
+Filter(
+        SalesOrdersLines;
+        SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+    )
+If(
+    !IsBlank(
+        Filter(
+            SalesOrdersLines;
+            SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+        )
+    );
+    Collect(
+        LineasPedido3;
+        {
+            Name: LookUp(
+                SalesOrdersLines;
+                SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+            ).ProductName;
+            Codigo: LookUp(
+                SalesOrdersLines;
+                SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+            ).ProductNumber;
+            Producto: LookUp(
+                SalesOrdersLines;
+                SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+            ).LineDescription;
+            Combo: Blank();
+            CanitdadDisponible: LookUp(
+                SalesOrdersLines;
+                SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+            ).OrderedSalesQuantity;
+            PedidoVenta: salesOrderItemSelected.SalesOrderNumber;
+            PrecioVenta: LookUp(
+                SalesOrdersLines;
+                SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber
+            ).LineAmount
+        }
+    );
+    Blank()
+);;
+Value(ItemCodProductoLabel_1.Text)
+Filter(
+        LineasPedido3;
+        PedidoVenta = selectedSalesOrder.SalesOrderNumber And IsBlank(Combo) And CanitdadDisponible > 0
+    )
+ClearCollect(
+    LineasPedido3;
+    canitdadDisponible: Lookup(SalesOrdersLines;
+        SalesOrderNumber = salesOrderItemSelected.SalesOrderNumber)
+    
+);;
+
+
+} catch (error) {
+    return res.status(500).json({
+      result: false,
+      message: error.toString()
+    })
+  }
+try {
+
+CredManInCreditControl: {type: string, description: CredManInCreditControl}
+savePartial: {type: boolean, description: savePartial}
+CredManInCreditControl: "No";
+savePartial: false
+
+If(
+    ThisItem.IsSelected;
+    DetallesPedido;
+    Blank()
+)
+Set(
+                selectedSalesOrder;
+                CreateSalesOrderResponse._salesOrder
+            );;
+Set(
+    selectedCustomer;
+    ThisItem
+);;
+selectedSalesOrderLines
+Filter(
+    LineasPedido3;
+    PedidoVenta = selectedSalesOrder.SalesOrderNumber And IsBlank(Combo) And CanitdadDisponible > 0
+);;
+
+Set(
+                selectedSalesOrder;
+                Blank()
+            );;
+            Set(
+                selectedCustomer;
+                Blank()
+            );;
+
+And Value(CantidadPedidaInput_1.Text) = LookUp(
+            LineasPedido3;
+            Codigo = ThisItem.ItemNumber
+        ).CanitdadDisponible

@@ -1,0 +1,153 @@
+CredManInCreditControl
+savePartial
+UpdateContext(
+    {
+        stopTimer: false;
+        creatingSalesOrder: true
+    }
+);;
+Set(
+    isConnected;
+    !IsError(
+        APPVendedoresAPI.checkconnection(
+            {
+                tenantUrl: tenantUrl;
+                clientId: clientId;
+                clientSecret: clientSecret;
+                tenant: tenant;
+                environment: environment
+            }
+        )
+    )
+);;
+If(
+    isConnected;
+    Set(
+        CreateSalesOrderRequest;
+        {
+            tenantUrl: tenantUrl;
+            clientId: clientId;
+            clientSecret: clientSecret;
+            tenant: tenant;
+            environment: environment;
+            salesOrder: {
+                dataAreaId: First(Company).value;
+                OrderingCustomerAccountNumber: PlainText(selectedCustomer.CustomerAccount);
+                DeliveryAddressLocationId: selectedCustomerAddress.LocationId;
+                DeliveryAddressCountryRegionId: selectedCustomer.DeliveryAddressCountryRegionId;
+                SalesUnitId: selectedCustomer.SalesDistrict;
+                DefaultShippingSiteId: Sitio.Text;
+                DefaultShippingWarehouseId: Almacen.Text;
+                OrderTakerPersonnelNumber: First(PersonnelNumber).value;
+                CustomersOrderReference: Referencia.Text;
+                CredManInCreditControl: "No";
+                savePartial: false
+            }
+        }
+    );;
+    IfError(
+        CreateSalesOrderRequest;
+        Patch(
+            COTOMAPEDIDOVENTALOGS;
+            {
+                'User Email': User().Email;
+                Type: "create-sales-order";
+                Environment: environment;
+                Step: "Crear la Pedido de Venta";
+                Company: First(Company).value;
+                'Request Result': false;
+                'Request Message': "Ocurrio un error al crear el Request";
+                Version: version;
+                'Cache Enable': !First(redisCacheCustomersEnable).value
+            }
+        );;
+        Notify(
+            "Ha ocurrido un error al crear la petición, espera unos segundos y vuelve a intentar, si el error persiste comunicate con el administrador";
+            NotificationType.Error;
+            2000
+        );;
+    );;
+    If(
+        !IsError(CreateSalesOrderRequest);
+        Set(
+            CreateSalesOrderResponse;
+            APPVendedoresAPI.createsalesorder(CreateSalesOrderRequest)
+        );;
+        IfError(
+            CreateSalesOrderResponse;
+            Patch(
+                COTOMAPEDIDOVENTALOGS;
+                {
+                    'User Email': User().Email;
+                    Type: "create-sales-order";
+                    Environment: environment;
+                    Step: "Crear el Pedido de Venta";
+                    Request: JSON(
+                        CreateSalesOrderRequest;
+                        JSONFormat.IgnoreBinaryData
+                    );
+                    Response: JSON(
+                        FirstError.Details.HttpResponse;
+                        JSONFormat.IgnoreBinaryData
+                    );
+                    'Request Result': false;
+                    'Request Message': FirstError.Message;
+                    Company: First(Company).value;
+                    Version: version;
+                    'Cache Enable': !First(redisCacheCustomersEnable).value
+                }
+            );;
+            Notify(
+                "Ha ocurrido un error al crear el Pedido de Venta, espera unos segundo y vuelve a intentar, si el error persiste comunicate con el administrador";
+                NotificationType.Error;
+                2000
+            )
+        );;
+        If(
+            !IsError(CreateSalesOrderResponse);
+            Patch(
+                COTOMAPEDIDOVENTALOGS;
+                {
+                    'User Email': User().Email;
+                    Type: "create-sales-order";
+                    Environment: environment;
+                    Step: "Crear el Pedido de Venta";
+                    Request: JSON(
+                        CreateSalesOrderRequest;
+                        JSONFormat.IgnoreBinaryData
+                    );
+                    Response: JSON(
+                        CreateSalesOrderResponse;
+                        JSONFormat.IgnoreBinaryData
+                    );
+                    'Request Result': CreateSalesOrderResponse.result;
+                    'Request Message': CreateSalesOrderResponse.message;
+                    Target: CreateSalesOrderResponse._salesOrder.SalesOrderNumber;
+                    Company: First(Company).value;
+                    Version: version;
+                    'Cache Enable': !First(redisCacheCustomersEnable).value
+                }
+            );;
+            Notify(
+                Concatenate(
+                    "El Pedido de Venta ";
+                    CreateSalesOrderResponse._salesOrder.SalesOrderNumber;
+                    " fue creado satisfactoriamente"
+                );
+                NotificationType.Success;
+                2000
+            );;
+            Set(
+                selectedSalesOrder;
+                CreateSalesOrderResponse._salesOrder
+            );;
+            Reset(DirecciónEntrega);;
+            Reset(Referencia);;
+            Navigate(
+                CargaProductoPrecio;
+                ScreenTransition.Fade
+            );;
+        );;
+    )
+);;
+UpdateContext({creatingSalesOrder: false});;

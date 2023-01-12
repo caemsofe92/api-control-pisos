@@ -1,0 +1,84 @@
+const data = {
+                                        id,
+                                        email,
+                                        displayName,
+                                        roleId
+                                    }
+                                    
+                                    handleSendEmailVerification(data);
+
+ const optionVerification = (verificationemail) => {
+    const values = form.getFieldsValue();
+    const { id, displayName, email, roleId } = values;
+    const data = {
+        id,
+        email,
+        displayName,
+        roleId,
+      };
+    handleSendEmailVerification(data);
+  };
+
+return(
+        <div className="scheduling-close-dialog">
+            <Dialog
+              open={openDialogVerification}
+              className="scheduling-close-dialog"
+            >
+              <DialogTitle className="scheduling-close-dialog-title">
+                Opción de Verificación
+              </DialogTitle>
+              <DialogContent className="scheduling-close-dialog-content">
+                <DialogContentText>
+                  <p>Opción de Verificación de Contraseña</p>
+                </DialogContentText>
+              </DialogContent>
+                <DialogActions className="scheduling-close-dialog-actions">
+                  <Button
+                    onClick={() => {
+                        Swal.fire({
+                            title: 'Enviar Verificación al Correo Electronico',
+                            text: 'Se Enviara al Correo Electronico Registrado una Notificacion de Verificación!',
+                            icon: 'success',
+                            confirmButtonText: 'Aceptar',
+                            willClose: () => {
+                                const data = {
+                                    id,
+                                    email,
+                                    displayName,
+                                    roleId
+                                }
+                                
+                                handleSendEmailVerification(data);
+                            }
+                        });
+                    }}
+                    color="primary"
+                  >
+                    Verificación de Correo
+                  </Button>
+                  <Button
+                    onClick={() => {
+                        Swal.fire({
+                            title: 'Contraseña automatica',
+                            text: 'Su contraseña es su Numero de Documento de Identidad Registrado!',
+                            icon: 'success',
+                            confirmButtonText: 'Cerrar',
+                            willClose: () => {
+                                const data = {
+                                    identificationNumber
+                                }
+                                
+                                handleSendEmailVerification(data);
+                            }
+                        });
+                    }}
+                    color="primary"
+                    autoFocus
+                  >
+                    Contraseña Automatica
+                  </Button>
+                </DialogActions>
+            </Dialog>
+          </div>
+        )
