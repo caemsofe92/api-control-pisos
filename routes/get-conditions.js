@@ -200,7 +200,7 @@ router.post("/", async (req, res) => {
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=GroupId,ProjGroupId,Description`,
+      }&$select=GroupId,ProjGroupId,Description&$orderby=asc`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -209,7 +209,7 @@ router.post("/", async (req, res) => {
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true${
         userCompany ? `&$filter=dataAreaId eq '${userCompany}'` : ""
-      }&$select=TypeId,Description`,
+      }&$select=TypeId,Description&$orderby=asc`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
