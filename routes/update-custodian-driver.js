@@ -72,7 +72,7 @@ router.post("/", async (req, res) => {
         `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdateDeviceCustodianJour`,
         {
           ...driverData,
-          dirPartyRecId: !driverData.dirPartyRecId || driverData.dirPartyRecId === 0 ? -1 : driverData.dirPartyRecId
+          dirPartyRecId: driverData.dirPartyRecId
         },
         { headers: { Authorization: "Bearer " + token } }
       )
