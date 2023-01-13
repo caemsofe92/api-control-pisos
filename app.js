@@ -47,7 +47,8 @@ var updatediagnostics = require("./routes/update-diagnostics");
 var updatediagnosticscondition = require("./routes/update-diagnostics-condition");
 var updatestatuscanceled = require("./routes/update-status-canceled");
 var ordenservicio = require("./routes/create-orden-servicio");
-var updateordenservicio = require("./routes/update-orden-servicio");
+var updateordenservicio = require("./routes/update-orden-servicio");update-custodian-driver
+var updatecustodiandriver = require("./routes/update-custodian-driver");
 var deleteordenservicio = require("./routes/delete-orden-servicio");
 var getIngress = require("./routes/get-ingress");
 var createIngress = require("./routes/create-ingress");
@@ -110,6 +111,7 @@ app.use("/create-ingress", createIngress);
 app.use("/get-exit", getExit);
 app.use("/update-ingress", updateIngress);
 app.use("/update-NAVTruckEntrances", updateNAVTruckEntrances);
+app.use("/update-custodian-driver", updatecustodiandriver);
 
 app.use(function (req, res, next) {
   next(createError(404));
