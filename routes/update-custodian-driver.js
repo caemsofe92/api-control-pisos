@@ -73,6 +73,8 @@ router.post("/", async (req, res) => {
         {
         ...driverData,
         DeviceCustodiansRecId: driverData.DeviceCustodiansRecId,
+        LogisticsElectronicAddressRecId1: driverData.LogisticsElectronicAddressRecId1,
+        LogisticsElectronicAddressRecId2: driverData.LogisticsElectronicAddressRecId2
         },
         { headers: { Authorization: "Bearer " + token } }
       )
