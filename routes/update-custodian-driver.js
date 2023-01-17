@@ -70,7 +70,10 @@ router.post("/", async (req, res) => {
     let _driverData = await axios
       .post(
         `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFUpdateDeviceCustodianJour`,
-        driverData,
+        {
+        ...driverData,
+        DeviceCustodiansRecId: driverData.DeviceCustodiansRecId,
+        },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
