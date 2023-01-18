@@ -93,7 +93,7 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _driverData = _driverData && _driverData.data=== "" ? "Modified" : "Unchanged";
+    _driverData =_driverData.data;
 
     return res.json({
       result: true,
