@@ -33,9 +33,6 @@ router.post("/", async (req, res) => {
     if (!userEmail || userEmail.length === 0)
       throw new Error("userEmail is Mandatory");
 
-    if (!PersonName || PersonName.length === 0)
-      throw new Error("PersonName is Mandatory");
-
     if (!PartyNumber || PartyNumber.length === 0)
       throw new Error("PartyNumber is Mandatory");
 
