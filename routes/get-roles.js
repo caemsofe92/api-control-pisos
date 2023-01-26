@@ -79,7 +79,7 @@ router.post("/", async (req, res) => {
         }else if(Tecnico === true){
             userReply = "Técnico";
         }else{
-            userReply = "Notiene Permisos de Acceso";
+            userReply = "No tiene Permisos de Acceso para la Aplicación de Técnico";
         }     
           return res.json({ result: true, message: "OK", response: userReply });
         })
