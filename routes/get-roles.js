@@ -77,9 +77,9 @@ router.post("/", async (req, res) => {
       .all([Entity1,Entity2,Entity3])
       .then(
         axios.spread(async () => {
-        const System_administrator = Entity1.some(Name === "System administrator");
-        const Asesor_de_Servicio = Entity2.some(Name === "Asesor de Servicio");
-        const Tecnico = Entity3.some(Name === "Técnico"); 
+        const System_administrator = Entity1.some(item => item.Name === "System administrator");
+        const Asesor_de_Servicio = Entity2.some(item => item.Name === "Asesor de Servicio");
+        const Tecnico = Entity3.some(item => item.Name === "Técnico"); 
         if(System_administrator === true){
             userReply = "System administrator";
         }else if(Asesor_de_Servicio === true){
