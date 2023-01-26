@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
         });
       token = tokenResponse.data.access_token;
     }
-    let = userReply;
+    let userReply;
     const Entity1 = axios.get(
       `${tenant}/data/SRFSecurityRoles?$format=application/json;odata.metadata=none&cross-company=true&$filter=Email eq '${userEmail}'&$select=Name`,
       { headers: { Authorization: "Bearer " + token } }
