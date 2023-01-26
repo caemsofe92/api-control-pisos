@@ -55,7 +55,9 @@ var createIngress = require("./routes/create-ingress");
 var getExit = require("./routes/get-exit");
 var updateIngress = require("./routes/update-ingress");
 var updateNAVTruckEntrances = require("./routes/update-NAVTruckEntrances");
-var updatecustodiandrivertree = require("./routes/update-custodian-driver-tree")
+var updatecustodiandrivertree = require("./routes/update-custodian-driver-tree");
+var gethometecnical = require("./routes/get-home-tecnical");
+var getroles = require("./routes/get-roles")
 
 var app = express();
 app.use(compression());
@@ -114,7 +116,8 @@ app.use("/update-ingress", updateIngress);
 app.use("/update-NAVTruckEntrances", updateNAVTruckEntrances);
 app.use("/update-custodian-driver", updatecustodiandriver);
 app.use("/update-custodian-driver-tree", updatecustodiandrivertree);
-
+app.use("/get-home-tecnical", gethometecnical);
+app.use("/get-roles", getroles)
 app.use(function (req, res, next) {
   next(createError(404));
 });
