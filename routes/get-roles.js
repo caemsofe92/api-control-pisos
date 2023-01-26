@@ -64,28 +64,22 @@ router.post("/", async (req, res) => {
       `${tenant}/data/SRFSecurityRoles?$format=application/json;odata.metadata=none&cross-company=true&$filter=Email eq '${userEmail}'&$select=Name`,
       { headers: { Authorization: "Bearer " + token } }
     );
-    const Entity2 = axios.get(
-        `${tenant}/data/SRFSecurityRoles?$format=application/json;odata.metadata=none&cross-company=true&$filter=Email eq '${userEmail}'&$select=Name`,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-    const Entity3 = axios.get(
-        `${tenant}/data/SRFSecurityRoles?$format=application/json;odata.metadata=none&cross-company=true&$filter=Email eq '${userEmail}'&$select=Name`,
-        { headers: { Authorization: "Bearer " + token } }
-      );
-    
+
     await axios
-      .all([Entity1,Entity2,Entity3])
+      .all([Entity1])
       .then(
-        axios.spread(async () => {
-        const System_administrator = Entity1.some(item => item.Name === "System administrator");
-        const Asesor_de_Servicio = Entity2.some(item => item.Name === "Asesor de Servicio");
-        const Tecnico = Entity3.some(item => item.Name === "Técnico"); 
+        axios.spread(async (...responses) => {
+        const System_administrator = responses[0].data.value.some(item => item.Name === "System administrator");
+        const Asesor_de_Servicio = responses[0].data.value.some(item => item.Name === "Asesor de Servicio");
+        const Tecnico = responses[0].data.value.some(item => item.Name === "Técnico"); 
         if(System_administrator === true){
             userReply = "System administrator";
         }else if(Asesor_de_Servicio === true){
             userReply = "Asesor de Servicio";
         }else if(Tecnico === true){
             userReply = "Técnico";
+        }else{
+            userReply = "Notiene Permisos de Acceso";
         }     
           return res.json({ result: true, message: "OK", response: userReply });
         })
