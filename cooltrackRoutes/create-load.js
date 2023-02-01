@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const Shipment =
-      req.query.Shipment || (req.body && req.body.Shipment);
+    const load =
+      req.query.load || (req.body && req.body.load);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -31,8 +31,8 @@ router.post("/", async (req, res) => {
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-    if (!Shipment || Shipment.length === 0)
-      throw new Error("Shipment is Mandatory");;
+    if (!load || load.length === 0)
+      throw new Error("load is Mandatory");;
 
     if (!client.isOpen) client.connect();
 
@@ -66,10 +66,10 @@ router.post("/", async (req, res) => {
       });
     }
     
-    let _Shipment = await axios
+    let _load = await axios
       .post(
         `${tenant}/data/LoadTables?$format=application/json;odata.metadata=none`,
-        Shipment,
+        load,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -88,12 +88,12 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _Shipment = _Shipment.data;
+    _load = _load.data;
 
     return res.json({
       result: true,
       message: "OK",
-      _Shipment,
+      _load,
     });
   } catch (error) {
     return res.status(500).json({
