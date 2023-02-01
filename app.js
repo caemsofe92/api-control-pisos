@@ -60,7 +60,8 @@ var gethometecnical = require("./routes/get-home-tecnical");
 var getroles = require("./routes/get-roles");
 
 var createload = require("./cooltrackRoutes/create-load");
-var createShipment = require("./cooltrackRoutes/create-Shipment")
+var createShipment = require("./cooltrackRoutes/create-Shipment");
+var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment")
 
 var app = express();
 app.use(compression());
@@ -123,7 +124,8 @@ app.use("/get-home-tecnical", gethometecnical);
 app.use("/get-roles", getroles);
 
 app.use("/create-load", createload);
-app.use("/create-Shipment", createShipment)
+app.use("/create-Shipment", createShipment);
+app.use("/get-Load-Shipment", getLoadShipment);
 
 app.use(function (req, res, next) {
   next(createError(404));
