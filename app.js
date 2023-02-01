@@ -125,7 +125,7 @@ app.use("/get-roles", getroles);
 
 app.use("/create-load", createload);
 app.use("/create-Shipment", createShipment);
-app.use("/get-Load-Shipment", getLoadShipment);
+app.use("/get-Load-Shipment", getLoadShipment)
 
 app.use(function (req, res, next) {
   next(createError(404));
