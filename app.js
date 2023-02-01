@@ -59,8 +59,8 @@ var updatecustodiandrivertree = require("./routes/update-custodian-driver-tree")
 var gethometecnical = require("./routes/get-home-tecnical");
 var getroles = require("./routes/get-roles");
 
-var createload = require("./cooltrackRoutes/create-load");
-var createShipment = require("./cooltrackRoutes/create-Shipment");
+var updateload = require("./cooltrackRoutes/update-load");
+var updateShipment = require("./cooltrackRoutes/update-Shipment");
 var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment")
 
 var app = express();
@@ -123,8 +123,8 @@ app.use("/update-custodian-driver-tree", updatecustodiandrivertree);
 app.use("/get-home-tecnical", gethometecnical);
 app.use("/get-roles", getroles);
 
-app.use("/create-load", createload);
-app.use("/create-Shipment", createShipment);
+app.use("/update-load", updateload);
+app.use("/update-Shipment", updateShipment);
 app.use("/get-Load-Shipment", getLoadShipment)
 
 app.use(function (req, res, next) {
