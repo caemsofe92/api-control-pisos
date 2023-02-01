@@ -61,7 +61,9 @@ var getroles = require("./routes/get-roles");
 
 var updateload = require("./cooltrackRoutes/update-load");
 var updateShipment = require("./cooltrackRoutes/update-Shipment");
-var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment")
+var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment");
+var deleteload = require("./cooltrackRoutes/delete-load");
+var deleteShipment = require("./cooltrackRoutes/delete-Shipment")
 
 var app = express();
 app.use(compression());
@@ -125,7 +127,9 @@ app.use("/get-roles", getroles);
 
 app.use("/update-load", updateload);
 app.use("/update-Shipment", updateShipment);
-app.use("/get-Load-Shipment", getLoadShipment)
+app.use("/get-Load-Shipment", getLoadShipment);
+app.use("/delete-load", deleteload);
+app.use("/delete-Shipment", deleteShipment)
 
 app.use(function (req, res, next) {
   next(createError(404));
