@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
     }
     
     let _Shipment = await axios
-      .patch(
+      .delete(
         `${tenant}/data/WHSShipmentTables(dataAreaId='${Shipment.dataAreaId}',ShipmentId=${Shipment.ShipmentId})?$format=application/json;odata.metadata=none`,
         { headers: { Authorization: "Bearer " + token } }
       )

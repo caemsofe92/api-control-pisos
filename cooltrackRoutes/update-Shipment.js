@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     
     let _Shipment = await axios
       .patch(
-        `${tenant}/data/WHSShipmentTables(dataAreaId='${Shipment.dataAreaId}',LoadId=${Shipment.ShipmentId})?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/WHSShipmentTables(dataAreaId='${Shipment.dataAreaId}',ShipmentId=${Shipment.ShipmentId})?$format=application/json;odata.metadata=none`,
         Shipment,
         { headers: { Authorization: "Bearer " + token } }
       )
