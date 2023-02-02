@@ -1,7 +1,7 @@
 const { createClient } = require("redis");
 
-var cacheHostName = process.env.CACHEHOSTNAME;
-var cachePassword = process.env.CACHEPASSWORD;
+var cacheHostName = "multitenant-redis-cache.redis.cache.windows.net";
+var cachePassword = "gTGv1yve3wOpTUNZmeTSAHGfcF4mVJ4ueAzCaO80MaI=";
 
 try {
   // Connecting to redis

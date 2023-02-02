@@ -219,7 +219,7 @@ router.post("/", async (req, res) => {
             }),
             UserData: {
               UserId: PersonUsers.UserId,
-              PersonName: PersonUsers.PersonName,
+              PersonName: Workers.Name,
               PartyNumber: PartyNumber,
               PersonnelNumber: Workers.PersonnelNumber,
               Company: CaseWorkshopLocationResources.dataAreaId,
@@ -242,6 +242,7 @@ router.post("/", async (req, res) => {
         })
       )
       .catch(function (error) {
+        console.log(error);
         if (
           error.response &&
           error.response.data &&
@@ -253,10 +254,11 @@ router.post("/", async (req, res) => {
         } else if (error.request) {
           throw new Error(error.request);
         } else {
+          console.log(error.message);
           throw new Error("Error", error.message);
         }
       });
-  } catch (error) {
+      } catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),

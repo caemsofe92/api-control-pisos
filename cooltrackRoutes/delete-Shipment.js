@@ -6,7 +6,7 @@ const moment = require("moment");
 require('moment/locale/es');
 
 router.post("/", async (req, res) => {
-  try {
+try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -68,10 +68,11 @@ router.post("/", async (req, res) => {
     
     let _Shipment = await axios
       .delete(
-        `${tenant}/data/WHSShipmentTables(ShipmentId=${Shipment.ShipmentId})?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/WHSShipmentTables(dataAreaId=${Shipment.dataAreaId},ShipmentId=${Shipment.ShipmentId})?$format=application/json;odata.metadata=none`,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
+        console.log(error);
         if (
           error.response &&
           error.response.data &&
@@ -94,7 +95,7 @@ router.post("/", async (req, res) => {
       message: "OK",
       _Shipment,
     });
-  } catch (error) {
+    } catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),

@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     
     let _load = await axios
       .delete(
-        `${tenant}/data/LoadTables(LoadId=${load.LoadId})?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/LoadTables(dataAreaId=${load.dataAreaId},LoadId=${load.LoadId})?$format=application/json;odata.metadata=none`,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {

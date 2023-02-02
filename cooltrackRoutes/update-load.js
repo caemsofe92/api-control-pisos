@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     
     let _load = await axios
       .patch(
-        `${tenant}/data/LoadTables(LoadId=${load.LoadId})?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/LoadTables(dataAreaId='${load.dataAreaId}',LoadId='${load.LoadId}')?$format=application/json;odata.metadata=none`,
         load,
         { headers: { Authorization: "Bearer " + token } }
       )
@@ -80,7 +80,8 @@ router.post("/", async (req, res) => {
           error.response.data.error.innererror &&
           error.response.data.error.innererror.message
         ) {
-          throw new Error(error.response.data.error.innererror.message);
+          console.log(error.response.data.error.innererror.message);
+          throw new Error(error.response.data.error.innererror.message);  
         } else if (error.request) {
           throw new Error(error.request);
         } else {
@@ -88,14 +89,14 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _load = _load.data;
+    _load =  _load && _load.data === "" ? "Modified" : "Unchanged";
 
     return res.json({
       result: true,
       message: "OK",
       _load,
     });
-  } catch (error) {
+    } catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),
