@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     
     let _load = await axios
       .patch(
-        `${tenant}/data/LoadTables(dataAreaId='${load.dataAreaId}',LoadId=${load.LoadId})?$format=application/json;odata.metadata=none`,
+        `${tenant}/data/LoadTables(LoadId=${load.LoadId})?$format=application/json;odata.metadata=none`,
         load,
         { headers: { Authorization: "Bearer " + token } }
       )
