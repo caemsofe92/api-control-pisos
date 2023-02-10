@@ -85,14 +85,14 @@ router.post("/", async (req, res) => {
       `${tenant}/data/LoadTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true&`,
-      { headers: { Authorization: "Bearer " + token } }
+      { headers: { Authorization: "Bearer " + token} }
     );
 
     const Entity2 = axios.get(
       `${tenant}/data/WHSShipmentTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true`,
-      { headers: { Authorization: "Bearer " + token } }
+      { headers: { Authorization: "Bearer " + token}}
     );
 
     await axios

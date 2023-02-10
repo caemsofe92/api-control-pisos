@@ -1,5 +1,6 @@
 var createError = require("http-errors");
 var express = require("express");
+var cors = require('cors');
 var cookieParser = require("cookie-parser");
 const compression = require("compression");
 const dotenv = require('dotenv');
@@ -66,6 +67,7 @@ var deleteload = require("./cooltrackRoutes/delete-load");
 var deleteShipment = require("./cooltrackRoutes/delete-Shipment")
 
 var app = express();
+app.use(cors({origin:'*', methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']}));
 app.use(compression());
 app.use(cookieParser());
 app.use(express.json({ limit: '50mb' }));

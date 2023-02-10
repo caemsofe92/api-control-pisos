@@ -4,7 +4,7 @@ const axios = require("axios");
 const client = require("../bin/redis-client");
 
 router.post("/", async (req, res) => {
-  
+  try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -35,10 +35,10 @@ router.post("/", async (req, res) => {
 
     if (!token) {
       const tokenResponse = await axios
-        .post(
-          `https://login.microsoftonline.com/${tenantUrl}/oauth2/token`,
-          `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&resource=${tenant}/`,
-          { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      .post(
+        `https://login.microsoftonline.com/${tenantUrl}/oauth2/token`,
+        `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&resource=${tenant}/`,
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         )
         .catch(function (error) {
           if (
@@ -48,6 +48,7 @@ router.post("/", async (req, res) => {
             error.response.data.error.innererror &&
             error.response.data.error.innererror.message
           ) {
+            
             throw new Error(error.response.data.error.innererror.message);
           } else if (error.request) {
             throw new Error(error.request);
@@ -81,6 +82,7 @@ router.post("/", async (req, res) => {
           }
         )
         .catch(function (error) {
+          console.log(error);
           if (
             error.response &&
             error.response.data &&
@@ -107,8 +109,8 @@ router.post("/", async (req, res) => {
       message: "OK",
       _caseRequest
     });
-    try {
-  } catch (error) {
+    
+    } catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),
