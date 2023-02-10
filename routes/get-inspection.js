@@ -186,6 +186,12 @@ router.post("/", async (req, res) => {
       { headers: { Authorization: "Bearer " + token } }
     );
 
+    const Entity15 = axios.get(
+      `${tenant}/data/SRF_DocuValue?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
     await axios
       .all([
         Entity1,
@@ -201,7 +207,8 @@ router.post("/", async (req, res) => {
         Entity11,
         Entity12,
         Entity13,
-        Entity14
+        Entity14,
+        Entity15
       ])
       .then(
         axios.spread(async (...responses) => {
@@ -220,7 +227,8 @@ router.post("/", async (req, res) => {
             InspectionLists: responses[10].data.value,
             InspectionFaultTrans: responses[11].data.value,
             NAVConditionsRequests: responses[12].data.value,
-            SRF_DocuRef: responses[13].data.value
+            SRF_DocuRef: responses[13].data.value,
+            SRF_DocuValue: responses[14].data.value
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
