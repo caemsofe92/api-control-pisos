@@ -94,12 +94,53 @@ router.post("/", async (req, res) => {
     _ingress =
       _ingress && _ingress.data === "" ? "Modified" : "Unchanged";
 
-    
+      let _IngressRequest = null;
+   
+      let RequestEntrances = await axios
+      .get(
+        `${tenant}/data/TruckCaseRequests?$format=application/json;odata.metadata=none&cross-company=true&$filter=dataAreaId eq '${ingress.dataAreaId}' and RequestId eq '${ingress.RequestId}' and NAVTruckEntrance_NAVEntranceId eq '${ingress.NAVEntranceId}'`,
+        {
+          headers: { Authorization: "Bearer " + token },
+        }
+      );
+
+      if(ingress.RequestId && RequestEntrances.data.value.length === 0){
+        _IngressRequest = await axios
+        .post(
+          `${tenant}/data/TruckCaseRequests?cross-company=true`,
+          {
+            dataAreaId: ingress.dataAreaId,
+            RequestId: ingress.RequestId,
+            NAVTruckEntrance_NAVEntranceId: ingress.NAVEntranceId
+          },
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        )
+        .catch(function (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.error &&
+            error.response.data.error.innererror &&
+            error.response.data.error.innererror.message
+          ) {
+            throw new Error(error.response.data.error.innererror.message);
+          } else if (error.request) {
+            throw new Error(error.request);
+          } else {
+            throw new Error("Error", error.message);
+          }
+        });
+  
+      _IngressRequest = _IngressRequest.data;
+      }
 
     return res.json({
       result: true,
       message: "OK",
-      _ingress
+      _ingress,
+      _IngressRequest
     });
    
   } catch (error) {
