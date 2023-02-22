@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.get(
       `${tenant}/data/CaseTables?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$filter=Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Created' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Received' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Approved' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Planned' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'PrePicked' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Awaiting'`,
+      }&cross-company=true&$filter=Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'InProcess' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Created' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Received' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Approved' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Planned' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'PrePicked' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Awaiting' or Status eq Microsoft.Dynamics.DataEntities.AMCaseStatus'Arrived'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 

@@ -92,14 +92,12 @@ router.post("/", async (req, res) => {
     _caseRequest =
       _caseRequest && _caseRequest.data === "" ? "Modified" : "Unchanged";
 
-    
-
     return res.json({
       result: true,
       message: "OK",
       _caseRequest
     });
-  } catch (error) {
+    } catch (error) {
     return res.status(500).json({
       result: false,
       message: error.toString(),
