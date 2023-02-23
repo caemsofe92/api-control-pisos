@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     if (updateordenservicio) {
       _updateordenservicio = await axios
         .patch(
-          `${tenant}/data/NAVConditionsRequests(dataAreaId='${updateordenservicio.dataAreaId}',ConditionRecId=${updateordenservicio.ConditionRecId})?$format=application/json;odata.metadata=none`,
+          `${tenant}/data/NAVConditionsRequests(dataAreaId='${updateordenservicio.dataAreaId}',ConditionId='${updateordenservicio.ConditionId}',ConditionRecId=${updateordenservicio.ConditionRecId})?$format=application/json;odata.metadata=none`,
           {
             ...updateordenservicio,
             CapacityHours: parseFloat(updateordenservicio.CapacityHours)
