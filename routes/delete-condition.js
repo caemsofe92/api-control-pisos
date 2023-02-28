@@ -68,7 +68,7 @@ router.post("/", async (req, res) => {
     if (condition) {
       _condition = await axios
         .delete(
-          `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
+          `${tenant}/data/NAVConditionsRequests(dataAreaId='${condition.dataAreaId}',ConditionId='${condition.ConditionId}',ConditionRecId=${condition.ConditionRecId})?$format=application/json;odata.metadata=none`,
           {
             headers: { Authorization: "Bearer " + token },
           }
