@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
     const Entity2 = axios.get(
       `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
-      }&cross-company=true&$select=RegistrationNumber,DeviceId,ChassisNumber,VINSerialNumber`,
+      }&cross-company=true&$select=RegistrationNumber,DeviceId,ChassisNumber,VINSerialNumber&$filter=RegistrationNumber ne ''`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
@@ -115,22 +115,30 @@ router.post("/", async (req, res) => {
       }RefTableId eq 68231 and TypeId eq 'File' and OriginalFileName eq '*sscingressimage*'`,
       { headers: { Authorization: "Bearer " + token } }
     );
+    const Entity5 = axios.get(
+      `${tenant}/data/SRF_AMDeviceTable?$format=application/json;odata.metadata=none${
+        isTest && numberOfElements ? "&$top=" + numberOfElements : ""
+      }&cross-company=true&$select=RegistrationNumber,DeviceId,ChassisNumber,VINSerialNumber&$filter=ChassisNumber ne ''`,
+      { headers: { Authorization: "Bearer " + token } }
+    );
 
     await axios
       .all([
         Entity1,
         Entity2,
         Entity3,
-        Entity4
+        Entity4,
+        Entity5
       ])
       .then(
         axios.spread(async (...responses) => {
 
           const reply = {
             NAVEntryReasons: responses[0].data.value,
-            SRF_AMDeviceTable: responses[1].data.value,
+            SRF_AMDeviceTableRegistrationNumber: responses[1].data.value,
             NAVTruckEntrances: responses[2].data.value,
-            SRF_DocuRef: responses[3].data.value
+            SRF_DocuRef: responses[3].data.value,
+            SRF_AMDeviceTableChasisNumber: responses[4].data.value,
           };
 
           await client.set(entity + userCompany, JSON.stringify(reply), {
