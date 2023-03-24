@@ -182,7 +182,7 @@ router.post("/", async (req, res) => {
         isTest && numberOfElements ? "&$top=" + numberOfElements : ""
       }&cross-company=true&$select=OriginalFileName,RefRecId&$filter=${
         userCompany ? `RefCompanyId eq '${userCompany}' and ` : ""
-      }RefTableId eq 66416 and TypeId eq 'File' and OriginalFileName eq '*sscinsevimage*'`,
+      }RefTableId eq 66094 and TypeId eq 'File' and OriginalFileName eq '*sscinsevimage*'`,
       { headers: { Authorization: "Bearer " + token } }
     );
 

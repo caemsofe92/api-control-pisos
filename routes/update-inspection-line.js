@@ -328,7 +328,7 @@ router.post("/", async (req, res) => {
             _DataareaId: inspection.dataAreaId,
             _AccesInformation: `${process.env.BLOBSTORAGEURL}/${process.env.BLOBSTORAGEEVIDENCESPATH}/${name}`,
             _name: name,
-            _TableId: 66416,
+            _TableId: 66094,
             _RefRecId: element.RecId1,
             _FileType: imageType.split("/")[1],
           };
