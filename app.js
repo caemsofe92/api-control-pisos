@@ -65,7 +65,7 @@ var updateShipment = require("./cooltrackRoutes/update-Shipment");
 var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment");
 var deleteload = require("./cooltrackRoutes/delete-load");
 var deleteShipment = require("./cooltrackRoutes/delete-Shipment")
-
+var getLinesTMS=require("./cooltrackRoutes/get-LinesTMS")
 var app = express();
 app.use(cors({origin:'*', methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']}));
 app.use(compression());
@@ -132,7 +132,7 @@ app.use("/update-Shipment", updateShipment);
 app.use("/get-Load-Shipment", getLoadShipment);
 app.use("/delete-load", deleteload);
 app.use("/delete-Shipment", deleteShipment)
-
+app.use("/get-LinesTMS", getLinesTMS)
 app.use(function (req, res, next) {
   next(createError(404));
 });
