@@ -66,6 +66,7 @@ var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment");
 var deleteload = require("./cooltrackRoutes/delete-load");
 var deleteShipment = require("./cooltrackRoutes/delete-Shipment")
 var getLinesTMS=require("./cooltrackRoutes/get-LinesTMS")
+
 var app = express();
 app.use(cors({origin:'*', methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']}));
 app.use(compression());

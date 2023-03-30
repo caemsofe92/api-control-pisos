@@ -3,8 +3,8 @@ let router = express.Router();
 const client = require("../bin/redis-client");
 const axios = require("axios");
 
-export default async function handler (req, res) {
-  
+router.post("/", async (req, res) => {
+try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -97,10 +97,10 @@ export default async function handler (req, res) {
       _TMSLines
     });
     
-    try {} catch (error) {
+    } catch (error) {
     return res.status(500).json({
       result: false,
       message: JSON.stringify(),
     });
   }
-};
+});
