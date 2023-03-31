@@ -139,7 +139,7 @@ router.post("/", async (req, res) => {
             loadId: consecutiveBurden,
             shipmentId: consecutiveShipping,
             salesId: consecutiveSaleOrder,
-            itemId: orderLine.itemId,
+            itemId: orderLine.productNumber,
             collectionDate: moment(transaction.new.startDateTime).format(
               "YYYY/MM/DD HH:mm:ss"
             ),
