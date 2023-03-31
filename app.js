@@ -61,12 +61,13 @@ var gethometecnical = require("./routes/get-home-tecnical");
 var getroles = require("./routes/get-roles");
 
 var updateload = require("./cooltrackRoutes/update-load");
-var updateShipment = require("./cooltrackRoutes/update-Shipment");
-var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment");
+var updateShipment = require("./cooltrackRoutes/update-shipment");
+var getLoadShipment = require("./cooltrackRoutes/get-load-shipment");
 var deleteload = require("./cooltrackRoutes/delete-load");
-var deleteShipment = require("./cooltrackRoutes/delete-Shipment")
-var getLinesTMS=require("./cooltrackRoutes/get-LinesTMS")
-var SetLoadLine=require("./cooltrackRoutes/Set-Load-Line")
+var deleteShipment = require("./cooltrackRoutes/delete-shipment")
+var getLinesTMS=require("./cooltrackRoutes/get-lines-tms")
+var SetLoadLine=require("./cooltrackRoutes/set-load-line")
+var GetWHSShipment=require("./cooltrackRoutes/get-whs-shipment")
 
 var app = express();
 app.use(cors({origin:'*', methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']}));
@@ -130,12 +131,13 @@ app.use("/get-home-tecnical", gethometecnical);
 app.use("/get-roles", getroles);
 
 app.use("/update-load", updateload);
-app.use("/update-Shipment", updateShipment);
-app.use("/get-Load-Shipment", getLoadShipment);
+app.use("/update-shipment", updateShipment);
+app.use("/get-load-shipment", getLoadShipment);
 app.use("/delete-load", deleteload);
-app.use("/delete-Shipment", deleteShipment)
-app.use("/get-LinesTMS", getLinesTMS)
-app.use("/Set-Load-Line", SetLoadLine)
+app.use("/delete-shipment", deleteShipment)
+app.use("/get-lines-tms", getLinesTMS)
+app.use("/set-load-line", SetLoadLine)
+app.use("/get-whs-shipment", GetWHSShipment)
 
 app.use(function (req, res, next) {
   next(createError(404));

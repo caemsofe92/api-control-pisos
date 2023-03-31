@@ -4,20 +4,18 @@ const client = require("../bin/redis-client");
 const axios = require("axios");
 
 router.post("/", async (req, res) => {
-  
-  const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
-  const clientId = req.query.clientId || (req.body && req.body.clientId);
-  const clientSecret =
-    req.query.clientSecret || (req.body && req.body.clientSecret);
-  const tenant = req.query.tenant || (req.body && req.body.tenant);
-  const entity = req.query.entity || (req.body && req.body.entity);
-  const userCompany =
-    req.query.userCompany || (req.body && req.body.userCompany);
-  const environment =
-    req.query.environment || (req.body && req.body.environment);
-    const setLoadLine =
-      req.query.setLoadLine || (req.body && req.body.setLoadLine);
-      if (!tenantUrl || tenantUrl.length === 0)
+  try {
+    const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
+    const clientId = req.query.clientId || (req.body && req.body.clientId);
+    const clientSecret =
+      req.query.clientSecret || (req.body && req.body.clientSecret);
+    const tenant = req.query.tenant || (req.body && req.body.tenant);
+    const environment =
+      req.query.environment || (req.body && req.body.environment);
+    const deliveryData =
+      req.query.deliveryData || (req.body && req.body.deliveryData);
+
+    if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
 
     if (!clientId || clientId.length === 0)
@@ -28,19 +26,13 @@ router.post("/", async (req, res) => {
 
     if (!tenant || tenant.length === 0) throw new Error("tenant is Mandatory");
 
-    if (!entity || entity.length === 0) throw new Error("entity is Mandatory");
-
-    if (!userCompany || userCompany.length === 0)
-      throw new Error("userCompany is Mandatory");
-
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-    if (!setLoadLine || setLoadLine.length === 0)
-      throw new Error("setLoadLine is Mandatory");
+    if (!deliveryData || deliveryData.length === 0)
+      throw new Error("deliveryData is Mandatory");
 
     if (!client.isOpen) client.connect();
-
 
     let token = await client.get(environment);
 
@@ -72,25 +64,25 @@ router.post("/", async (req, res) => {
       });
     }
 
-    let _setLoadLine = await axios
+    let _deliveryData = await axios
       .post(
-        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine?$format=application/json;odata.metadata=none`,
+        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
         {
-          _NAVPackingControlCollectionDate: setLoadLine._NAVPackingControlCollectionDate,
-          _NAVPackingControlDeliveredCode:setLoadLine._NAVPackingControlDeliveredCode,
-          _NAVPackingControlDeliveredTo:setLoadLine._NAVPackingControlDeliveredTo,
-          _NAVPackingControlRecipientCode:setLoadLine._NAVPackingControlRecipientCode,
-          _NAVPackingControlRecipientDateTime2:setLoadLine._NAVPackingControlRecipientDateTime2,
-          _NAVPackingControlRecipientName:setLoadLine._NAVPackingControlRecipientName,
-          _loadId:setLoadLine._loadId,
-          _shipmentId:setLoadLine._shipmentId,
-          _salesId:setLoadLine._salesId,
-          _itemId:setLoadLine._itemId
+          _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+          _NAVPackingControlDeliveredCode: deliveryData.deliveredOrderNumber,
+          _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
+          _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
+          _NAVPackingControlRecipientDateTime2: deliveryData.recipientDateTime,
+          _NAVPackingControlRecipientName: deliveryData.recipientName,
+          _loadId: deliveryData.loadId,
+          _shipmentId: deliveryData.shipmentId,
+          _salesId: deliveryData.salesId,
+          _itemId: deliveryData.itemId,
         },
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
-        console.log(error)
+        console.log(error);
         if (
           error.response &&
           error.response.data &&
@@ -106,15 +98,14 @@ router.post("/", async (req, res) => {
         }
       });
 
-      _setLoadLine = _setLoadLine.data;
+    _deliveryData = _deliveryData.data;
 
     return res.json({
       result: true,
       message: "OK",
-      _setLoadLine
+      response: _deliveryData,
     });
-    
-    try {} catch (error) {
+  } catch (error) {
     return res.status(500).json({ result: false, message: error.toString() });
   }
 });

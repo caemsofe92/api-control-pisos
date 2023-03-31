@@ -12,6 +12,9 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
+    const loadId = req.query.loadId || (req.body && req.body.loadId);
+    const shipmentId =
+      req.query.shipmentId || (req.body && req.body.shipmentId);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -59,21 +62,14 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const Entity1 = axios.get(
-      `${tenant}/data/LoadTables?$format=application/json;odata.metadata=none&cross-company=true&$filter=CarrierCode eq 'NAVITRANS' and (LoadStatus eq Microsoft.Dynamics.DataEntities.WHSLoadStatus'Shipped' or LoadStatus eq Microsoft.Dynamics.DataEntities.WHSLoadStatus'Loaded')`,
-      { headers: { Authorization: "Bearer " + token } }
-    );
-
-    await axios
-      .all([Entity1])
-      .then(
-        axios.spread(async (...responses) => {
-          return res.json({
-            result: true,
-            message: "OK",
-            response: responses[0].data.value,
-          });
-        })
+    let TMSLines = await axios
+      .post(
+        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFGetLoadLine?$format=application/json;odata.metadata=none`,
+        {
+          _loadId: loadId,
+          _shipmentId: shipmentId,
+        },
+        { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
         if (
@@ -90,6 +86,12 @@ router.post("/", async (req, res) => {
           throw new Error("Error", error.message);
         }
       });
+
+    return res.json({
+      result: true,
+      message: "OK",
+      response: TMSLines.data,
+    });
   } catch (error) {
     return res.status(500).json({ result: false, message: error.toString() });
   }
