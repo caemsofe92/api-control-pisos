@@ -4,6 +4,9 @@ const client = require("../bin/redis-client");
 const axios = require("axios");
 
 router.post("/", async (req, res) => {
+  console.log(JSON.stringify(req.body));
+  res.send("OK");
+  /*
   try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
@@ -108,6 +111,7 @@ router.post("/", async (req, res) => {
   } catch (error) {
     return res.status(500).json({ result: false, message: error.toString() });
   }
+  */
 });
 
 module.exports = router;
