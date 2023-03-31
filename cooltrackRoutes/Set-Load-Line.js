@@ -2,9 +2,38 @@ let express = require("express");
 let router = express.Router();
 const client = require("../bin/redis-client");
 const axios = require("axios");
+const { createLogger, format } = require("winston");
+const { winstonAzureBlob, extensions } = require("winston-azure-blob");
+
+const { combine, timestamp, label } = format;
+
+const myFormat = format.printf(({ level, message, label, timestamp }) => {
+  return `${timestamp} [${label}] ${level}: ${message}`;
+});
+
+const logger = createLogger({
+  format: combine(label({ label: "transaction-log" }), timestamp(), myFormat),
+  level: "info",
+  transports: [
+    winstonAzureBlob({
+      account: {
+        name: "multitenantappsstorage",
+        key: "dUEqKBrzMOB0qzOSZMADxP4ywLWJnmTh4s2ar5hh3yhkKmlgaQUlsIDmdB89EMG00fCu2lIIYFiJYfpjZ3duJQ==",
+      },
+      blobName: "transaction-log",
+      bufferLogSize: 1,
+      containerName: "nav-transactions-logs",
+      eol: "\n",
+      extension: extensions.LOG,
+      level: "info",
+      rotatePeriod: "YYYY-MM-DD",
+      syncTimeout: 0,
+    }),
+  ],
+});
 
 router.post("/", async (req, res) => {
-  console.log(JSON.stringify(req.body));
+  logger.info(JSON.stringify(req.body));
   res.send("OK");
   /*
   try {
