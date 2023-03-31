@@ -134,7 +134,7 @@ router.post("/", async (req, res) => {
           transaction.new.status === "partial_delivered" ||
           transaction.new.status === "rescheduled_delivery")
       ) {
-        order.ordersTable[0].ordersLines.forEach(async (orderLine) => {
+        ordersLines.forEach(async (orderLine) => {
           const deliveryData = {
             loadId: consecutiveBurden,
             shipmentId: consecutiveShipping,
