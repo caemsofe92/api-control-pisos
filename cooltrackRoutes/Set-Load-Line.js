@@ -148,7 +148,7 @@ router.post("/", async (req, res) => {
             recipientDocument: transaction.new.receivedDocument,
             recipientDateTime: moment(transaction.new.endDateTime).format(
               "YYYY/MM/DD HH:mm:ss"
-            ).add(5, "hours"),
+            ),
             recipientName: transaction.new.receivedPerson,
           };
 
