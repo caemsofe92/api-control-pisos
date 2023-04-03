@@ -60,7 +60,7 @@ router.post("/", async (req, res) => {
     }
 
     const Entity1 = axios.get(
-      `${tenant}/data/LoadTables?$format=application/json;odata.metadata=none&cross-company=true&$filter=CarrierCode eq 'Navitrans' and (LoadStatus eq Microsoft.Dynamics.DataEntities.WHSLoadStatus'Shipped' or LoadStatus eq Microsoft.Dynamics.DataEntities.WHSLoadStatus'Loaded')`,
+      `${tenant}/data/LoadTables?$format=application/json;odata.metadata=none&cross-company=true&$filter=CarrierCode ne '' and (LoadStatus eq Microsoft.Dynamics.DataEntities.WHSLoadStatus'Shipped' or LoadStatus eq Microsoft.Dynamics.DataEntities.WHSLoadStatus'Loaded')`,
       { headers: { Authorization: "Bearer " + token } }
     );
 
