@@ -40,25 +40,48 @@ const getOrderTable = async (variables) => {
   const options = {
     method: "POST",
     headers: { "x-hasura-admin-secret": "Srf2020***" },
+    data: {
+      query: `
+              query GET_ORDER_TABLE($orderTableId: uuid!, $userId: uuid!) {
+                ordersTable (where: {id: {_eq: $orderTableId}}) {
+                  orderNumber
+                  consecutiveBurden
+                  consecutiveShipping
+                  consecutiveSaleOrder
+                  ordersLines {
+                    productName
+                    productNumber
+                    orderedQuantity
+                    deliveredQuantity
+                    externalId
+                  }
+              }
+                users(where: {id: {_eq: $userId}}){
+                  displayName
+                }
+              }`,
+      variables,
+    },
+    url: apiURL,
+  };
+
+  const fetchResponse = await axios(options);
+  return fetchResponse.data;
+};
+
+const getEvidences = async (variables) => {
+  const options = {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "Srf2020***" },
     data: JSON.stringify({
       query: `
-            query GET_ORDER_TABLE($orderTableId: uuid!, $userId: uuid!) {
-              ordersTable (where: {id: {_eq: $orderTableId}}) {
-                orderNumber
-                consecutiveBurden
-                consecutiveShipping
-                consecutiveSaleOrder
-                ordersLines {
-                  productName
-                  productNumber
-                  orderedQuantity
-                  deliveredQuantity
-                }
-            }
-              users(where: {id: {_eq: $userId}}){
-                displayName
-              }
-            }`,
+        query getEvidences($ordersTableId: uuid!){
+          evidences(where: {ordersTableId: {_eq: $ordersTableId}}){
+            evidenceURL
+            evidenceType
+            id
+          }
+        }`,
       variables,
     }),
     url: apiURL,
@@ -123,7 +146,14 @@ router.post("/", async (req, res) => {
       const consecutiveSaleOrder = order.ordersTable[0].consecutiveSaleOrder;
       const ordersLines = order.ordersTable[0].ordersLines;
       const courier = order.users[0].displayName;
-      logger.log(orderNumber, consecutiveBurden, consecutiveShipping, consecutiveSaleOrder, ordersLines, courier);
+      logger.log(
+        orderNumber,
+        consecutiveBurden,
+        consecutiveShipping,
+        consecutiveSaleOrder,
+        ordersLines,
+        courier
+      );
       if (
         consecutiveBurden &&
         consecutiveShipping &&
@@ -134,21 +164,22 @@ router.post("/", async (req, res) => {
           transaction.new.status === "partial_delivered" ||
           transaction.new.status === "rescheduled_delivery")
       ) {
+        const responses = [];
         ordersLines.forEach(async (orderLine) => {
           const deliveryData = {
             loadId: consecutiveBurden,
             shipmentId: consecutiveShipping,
             salesId: consecutiveSaleOrder,
             itemId: orderLine.productNumber,
-            collectionDate: moment(transaction.new.startDateTime).format(
-              "YYYY/MM/DD HH:mm:ss"
-            ),
+            collectionDate: moment(transaction.new.startDateTime)
+              .add(5, "hours")
+              .format("YYYY/MM/DD HH:mm:ss"),
             deliveredOrderNumber: orderNumber,
             deliveredTo: courier,
             recipientDocument: transaction.new.receivedDocument,
-            recipientDateTime: moment(transaction.new.endDateTime).format(
-              "YYYY/MM/DD HH:mm:ss"
-            ),
+            recipientDateTime: moment(transaction.new.endDateTime)
+              .add(5, "hours")
+              .format("YYYY/MM/DD HH:mm:ss"),
             recipientName: transaction.new.receivedPerson,
           };
 
@@ -172,7 +203,6 @@ router.post("/", async (req, res) => {
               { headers: { Authorization: "Bearer " + token } }
             )
             .catch(function (error) {
-              console.log(error);
               if (
                 error.response &&
                 error.response.data &&
@@ -190,16 +220,76 @@ router.post("/", async (req, res) => {
 
           _deliveryData = _deliveryData.data;
 
+          const evidences = await getEvidences({
+            ordersTableId: transaction.old.orderTableId,
+          });
+
+          const evidencesList = evidences?.data?.evidences;
+
+          let _evidences = [];
+
+          if (evidencesList && evidencesList.length > 0) {
+            for (let i = 0; i < evidencesList.length; i++) {
+              const element = evidencesList[i];
+
+              const imageRequest = {
+                _DataareaId: "navi",
+                _AccesInformation: element.evidenceURL,
+                _name:
+                  element.evidenceType +
+                  "_" +
+                  element.id +
+                  "." +
+                  element.evidenceURL.split(".")[3],
+                _TableId: 7309,
+                _RefRecId: parseInt(orderLine.externalId),
+                _FileType: element.evidenceURL.split(".")[3],
+              };
+
+              await axios
+                .post(
+                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                  imageRequest,
+                  {
+                    headers: { Authorization: "Bearer " + token },
+                  }
+                )
+                .catch(function (error) {
+                  if (
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.innererror &&
+                    error.response.data.error.innererror.message
+                  ) {
+                    throw new Error(
+                      error.response.data.error.innererror.message
+                    );
+                  } else if (error.request) {
+                    throw new Error(error.request);
+                  } else {
+                    throw new Error("Error", error.message);
+                  }
+                });
+              _evidences.push({
+                RefRecId: orderLine.externalId,
+                OriginalFileName: element.evidenceType + "_" + element.id,
+              });
+            }
+          }
+
           logger.info(JSON.stringify(transaction));
           logger.info(JSON.stringify(order));
           logger.info(JSON.stringify(_deliveryData));
 
-          return res.json({
-            result: true,
-            message: "OK",
+          responses.push({
+            itemId: deliveryData.itemId,
             response: _deliveryData,
+            _evidences: _evidences,
           });
         });
+
+        return res.json(responses);
       } else {
         res.status(400).json({
           result: false,
