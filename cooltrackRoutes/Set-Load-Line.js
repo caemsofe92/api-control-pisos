@@ -157,6 +157,8 @@ router.post("/", async (req, res) => {
           transaction.new.status === "rescheduled_delivery")
       ) {
         const responses = [];
+        let evidencesUploaded = false;
+
         await ordersLines.forEach(async (orderLine, index) => {
           const deliveryData = {
             loadId: consecutiveBurden,
@@ -170,7 +172,7 @@ router.post("/", async (req, res) => {
             deliveredTo: courier,
             recipientDocument: transaction.new.receivedDocument,
             recipientDateTime: moment(transaction.new.endDateTime).format(
-              "YYYY/MM/DD HH:mm:ss"
+              "YYYY-MM-DDTHH:mm:ss"
             ),
             recipientName: transaction.new.receivedPerson,
           };
@@ -212,7 +214,7 @@ router.post("/", async (req, res) => {
 
           _deliveryData = _deliveryData.data;
 
-          if (index === 0) {
+          if (!evidencesUploaded) {
             const evidences = await getEvidences({
               ordersTableId: transaction.old.orderTableId,
             });
@@ -270,6 +272,7 @@ router.post("/", async (req, res) => {
                 });
               }
             }
+            evidencesUploaded = true;
           }
 
           logger.info(
