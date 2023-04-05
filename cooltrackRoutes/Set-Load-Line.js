@@ -146,10 +146,10 @@ router.post("/", async (req, res) => {
       const consecutiveSaleOrder = order.ordersTable[0].consecutiveSaleOrder;
       const ordersLines = order.ordersTable[0].ordersLines;
       const courier = order.users[0].displayName;
+      
       if (
         consecutiveBurden &&
         consecutiveShipping &&
-        consecutiveSaleOrder &&
         ordersLines.length > 0 &&
         (transaction.new.status === "delivered" ||
           transaction.new.status === "undelivered" ||
@@ -166,7 +166,7 @@ router.post("/", async (req, res) => {
             salesId: consecutiveSaleOrder,
             itemId: orderLine.productNumber,
             collectionDate: moment(transaction.new.startDateTime).format(
-              "YYYY/MM/DD HH:mm:ss"
+              "YYYY/MM/DD"
             ),
             deliveredOrderNumber: orderNumber,
             deliveredTo: courier,
@@ -176,6 +176,8 @@ router.post("/", async (req, res) => {
             ),
             recipientName: transaction.new.receivedPerson,
           };
+
+          console.log(deliveryData);
 
           let _deliveryData = await axios
             .post(
@@ -214,7 +216,7 @@ router.post("/", async (req, res) => {
 
           _deliveryData = _deliveryData.data;
 
-          if (!evidencesUploaded) {
+          if (!evidencesUploaded && index === 0) {
             const evidences = await getEvidences({
               ordersTableId: transaction.old.orderTableId,
             });
