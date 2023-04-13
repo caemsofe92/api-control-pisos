@@ -3,7 +3,7 @@ let router = express.Router();
 const axios = require("axios");
 const client = require("../bin/redis-client");
 const moment = require("moment");
-require("moment/locale/es");
+require('moment/locale/es');
 
 router.post("/", async (req, res) => {
   
@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const caseTable =
-      req.query.caseTable || (req.body && req.body.caseTable);
+    const activity =
+      req.query.activity || (req.body && req.body.activity);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -31,8 +31,8 @@ router.post("/", async (req, res) => {
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
 
-    if (!caseTable || caseTable.length === 0)
-      throw new Error("caseTable is Mandatory");
+    if (!activity || activity.length === 0)
+      throw new Error("diagnostics is Mandatory");;
 
     if (!client.isOpen) client.connect();
 
@@ -65,11 +65,11 @@ router.post("/", async (req, res) => {
         EX: 3599,
       });
     }
-
-    let _caseTable = await axios
+    
+    let _activity = await axios
       .post(
-        `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFCreateAMCaseTable?$format=application/json;odata.metadata=none`,
-        caseTable,
+        `${tenant}/data/SRF_smmActivities?$format=application/json;odata.metadata=none`,
+        activity,
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
@@ -89,14 +89,13 @@ router.post("/", async (req, res) => {
         }
       });
 
-    _caseTable = _caseTable.data;
+    _activity = _activity.data;
 
     return res.json({
       result: true,
       message: "OK",
-      _caseTable,
+      _activity,
     });
-    
     try {} catch (error) {
     return res.status(500).json({
       result: false,
