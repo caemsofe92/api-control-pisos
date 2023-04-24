@@ -59,10 +59,11 @@ var updateNAVTruckEntrances = require("./routes/update-NAVTruckEntrances");
 var updatecustodiandrivertree = require("./routes/update-custodian-driver-tree");
 var gethometecnical = require("./routes/get-home-tecnical");
 var getroles = require("./routes/get-roles");
+var createactivity = require("./routes/create-activity");
 
 var updateload = require("./cooltrackRoutes/update-load");
 var updateShipment = require("./cooltrackRoutes/update-shipment");
-var getLoadShipment = require("./cooltrackRoutes/get-load-shipment");
+var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment");
 var deleteload = require("./cooltrackRoutes/delete-load");
 var deleteShipment = require("./cooltrackRoutes/delete-shipment");
 var getLinesTMS=require("./cooltrackRoutes/get-lines-tms");
@@ -130,6 +131,7 @@ app.use("/update-custodian-driver", updatecustodiandriver);
 app.use("/update-custodian-driver-tree", updatecustodiandrivertree);
 app.use("/get-home-tecnical", gethometecnical);
 app.use("/get-roles", getroles);
+app.use("/create-activity", createactivity);
 
 app.use("/update-load", updateload);
 app.use("/update-shipment", updateShipment);
