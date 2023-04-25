@@ -94,6 +94,10 @@ const getEvidences = async (variables) => {
 router.post("/", async (req, res) => {
   const transaction = req.body.event.data;
 
+  if(transaction.new.status !== "delivered" && transaction.new.status !== "undelivered" && transaction.new.status !== "partial_delivered" && transaction.new.status !== "rescheduled_delivery"){
+    return res.status(200).send("Transaction already processed");
+  }
+
   const tenantUrl = "navitrans.com.co";
   const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
   const clientSecret = "31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
@@ -133,9 +137,10 @@ router.post("/", async (req, res) => {
   }
 
   const orderData = await getOrderTable({
-    orderTableId: transaction.old.orderTableId,
-    userId: transaction.old.userId,
+    orderTableId: transaction.new.orderTableId,
+    userId: transaction.new.userId,
   });
+
   const order = orderData.data;
 
   if (order.ordersTable.length > 0) {
@@ -146,17 +151,8 @@ router.post("/", async (req, res) => {
     const ordersLines = order.ordersTable[0].ordersLines;
     const courier = order.users[0].displayName;
 
-    if (
-      consecutiveBurden &&
-      consecutiveShipping &&
-      ordersLines.length > 0 &&
-      (transaction.new.status === "delivered" ||
-        transaction.new.status === "undelivered" ||
-        transaction.new.status === "partial_delivered" ||
-        transaction.new.status === "rescheduled_delivery")
-    ) {
+    if (consecutiveBurden?.length > 0 && consecutiveShipping?.length > 0 && ordersLines.length > 0) {
       const responses = [];
-      let evidencesUploaded = false;
 
       await ordersLines.forEach(async (orderLine, index) => {
         const deliveryData = {
@@ -176,6 +172,24 @@ router.post("/", async (req, res) => {
           recipientName: transaction.new.receivedPerson,
         };
 
+        let statusNew = "";
+
+        switch (transaction.new.status) {
+          case "delivered":
+            statusNew = "Entregado";
+            break;
+          case "undelivered":
+            statusNew = "No entregado";
+            break;
+          case "partial_delivered":
+            statusNew = "Entrega parcial";
+            break;
+          case "rescheduled_delivery":
+            statusNew = "Entrega reprogramada";
+            break;
+          default:
+        }
+
         let _deliveryData = await axios
           .post(
             `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
@@ -183,7 +197,7 @@ router.post("/", async (req, res) => {
               _NAVPackingControlCollectionDate: deliveryData.collectionDate,
               _NAVPackingControlDeliveredCode:
                 deliveryData.deliveredOrderNumber,
-              _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
+              _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew}(${deliveryData.deliveredQuantity})`,
               _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
               _NAVPackingControlRecipientDateTime2:
                 deliveryData.recipientDateTime,
@@ -194,115 +208,78 @@ router.post("/", async (req, res) => {
               _itemId: deliveryData.itemId,
             },
             { headers: { Authorization: "Bearer " + token } }
-          )
-          .catch(function (error) {
-            if (
-              error.response &&
-              error.response.data &&
-              error.response.data.error &&
-              error.response.data.error.innererror &&
-              error.response.data.error.innererror.message
-            ) {
-              throw new Error(error.response.data.error.innererror.message);
-            } else if (error.request) {
-              throw new Error(error.request);
-            } else {
-              throw new Error("Error", error.message);
-            }
-          });
+          );
 
         _deliveryData = _deliveryData.data;
 
-        if (!evidencesUploaded && index === 0) {
-          const evidences = await getEvidences({
-            ordersTableId: transaction.old.orderTableId,
-          });
-
-          const evidencesList = evidences?.data?.evidences;
-
-          let _evidences = [];
-
-          if (evidencesList && evidencesList.length > 0) {
-            for (let i = 0; i < evidencesList.length; i++) {
-              const element = evidencesList[i];
-
-              const imageRequest = {
-                _DataareaId: "navi",
-                _AccesInformation: element.evidenceURL,
-                _name:
-                  element.evidenceType +
-                  "_" +
-                  element.id +
-                  "." +
-                  element.evidenceURL.split(".")[3],
-                _TableId: 7309,
-                _RefRecId: parseInt(orderLine.externalId),
-                _FileType: element.evidenceURL.split(".")[3],
-              };
-
-              await axios
-                .post(
-                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                  imageRequest,
-                  {
-                    headers: { Authorization: "Bearer " + token },
-                  }
-                )
-                .catch(function (error) {
-                  if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.innererror &&
-                    error.response.data.error.innererror.message
-                  ) {
-                    throw new Error(
-                      error.response.data.error.innererror.message
-                    );
-                  } else if (error.request) {
-                    throw new Error(error.request);
-                  } else {
-                    throw new Error("Error", error.message);
-                  }
-                });
-              _evidences.push({
-                RefRecId: orderLine.externalId,
-                OriginalFileName: element.evidenceType + "_" + element.id,
-              });
-            }
-          }
-          evidencesUploaded = true;
-        }
-
-        logger.info(
-          JSON.stringify({
-            orderNumber,
-            consecutiveBurden,
-            consecutiveShipping,
-            consecutiveSaleOrder,
-            ordersLines,
-            courier,
-          })
-        );
-
-        logger.info(
-          JSON.stringify({
-            ...transaction,
-            old: { ...transaction.old, polylines: "" },
-            new: { ...transaction.new, polylines: "" },
-          })
-        );
-        logger.info(JSON.stringify(order));
-        logger.info(JSON.stringify(_deliveryData));
-        logger.info(
-          "---------------------------------------------------------------------"
-        );
+        console.log(_deliveryData);
 
         responses.push({
           itemId: deliveryData.itemId,
           response: _deliveryData,
         });
       });
+
+      const evidences = await getEvidences({
+        ordersTableId: transaction.new.orderTableId,
+      });
+
+      const evidencesList = evidences?.data?.evidences;
+
+        let _evidences = [];
+
+        if (evidencesList && evidencesList.length > 0) {
+          for (let i = 0; i < evidencesList.length; i++) {
+            const element = evidencesList[i];
+
+            const imageRequest = {
+              //_DataareaId: "navi", //UAT
+              _DataareaId: "navt", //DEV
+              _AccesInformation: element.evidenceURL,
+              _name:
+                element.evidenceType +
+                "_" +
+                element.id +
+                "." +
+                element.evidenceURL.split(".")[3],
+              //_TableId: 7309, //UAT
+              _TableId: 7312, //DEV
+              _RefRecId: parseInt(ordersLines[0].externalId),
+              _FileType: element.evidenceURL.split(".")[3],
+            };
+
+            await axios
+              .post(
+                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                imageRequest,
+                {
+                  headers: { Authorization: "Bearer " + token },
+                }
+              )
+              .catch(function (error) {
+                console.log(error);
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.error &&
+                  error.response.data.error.innererror &&
+                  error.response.data.error.innererror.message
+                ) {
+                  throw new Error(
+                    error.response.data.error.innererror.message
+                  );
+                } else if (error.request) {
+                  throw new Error(error.request);
+                } else {
+                  throw new Error("Error", error.message);
+                }
+              });
+            _evidences.push({
+              RefRecId: ordersLines[0].externalId,
+              OriginalFileName: element.evidenceType + "_" + element.id,
+            });
+          }
+        }
 
       res.send("OK");
     } else {
