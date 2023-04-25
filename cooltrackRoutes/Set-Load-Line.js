@@ -161,15 +161,16 @@ router.post("/", async (req, res) => {
           salesId: consecutiveSaleOrder,
           itemId: orderLine.productNumber,
           collectionDate: moment(transaction.new.startDateTime).format(
-            "YYYY/MM/DD"
+            "MM/DD/YYYY"
           ),
           deliveredOrderNumber: orderNumber,
           deliveredTo: courier,
           recipientDocument: transaction.new.receivedDocument,
           recipientDateTime: moment(transaction.new.endDateTime).format(
-            "YYYY-MM-DDTHH:mm:ss"
+            "MM/DD/YYYY HH:mm:ss"
           ),
           recipientName: transaction.new.receivedPerson,
+          deliveredQuantity: orderLine.deliveredQuantity,
         };
 
         let statusNew = "";
@@ -188,7 +189,7 @@ router.post("/", async (req, res) => {
             statusNew = "Entrega reprogramada";
             break;
           default:
-        }
+        };
 
         let _deliveryData = await axios
           .post(
@@ -197,7 +198,7 @@ router.post("/", async (req, res) => {
               _NAVPackingControlCollectionDate: deliveryData.collectionDate,
               _NAVPackingControlDeliveredCode:
                 deliveryData.deliveredOrderNumber,
-              _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew}(${deliveryData.deliveredQuantity})`,
+              _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew} (${deliveryData.deliveredQuantity})`,
               _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
               _NAVPackingControlRecipientDateTime2:
                 deliveryData.recipientDateTime,
