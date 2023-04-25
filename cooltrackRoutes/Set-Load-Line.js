@@ -161,13 +161,13 @@ router.post("/", async (req, res) => {
           salesId: consecutiveSaleOrder,
           itemId: orderLine.productNumber,
           collectionDate: moment(transaction.new.startDateTime).format(
-            "MM/DD/YYYY"
+            "YYYY/DD/MM"
           ),
           deliveredOrderNumber: orderNumber,
           deliveredTo: courier,
           recipientDocument: transaction.new.receivedDocument,
           recipientDateTime: moment(transaction.new.endDateTime).format(
-            "MM/DD/YYYY HH:mm:ss"
+            "YYYY/DD/MM HH:mm:ss"
           ),
           recipientName: transaction.new.receivedPerson,
           deliveredQuantity: orderLine.deliveredQuantity,
@@ -183,7 +183,7 @@ router.post("/", async (req, res) => {
             statusNew = "No entregado";
             break;
           case "partial_delivered":
-            statusNew = "Entrega parcial";
+            statusNew = `Entrega parcial (${deliveryData.deliveredQuantity})`;
             break;
           case "rescheduled_delivery":
             statusNew = "Entrega reprogramada";
@@ -198,7 +198,7 @@ router.post("/", async (req, res) => {
               _NAVPackingControlCollectionDate: deliveryData.collectionDate,
               _NAVPackingControlDeliveredCode:
                 deliveryData.deliveredOrderNumber,
-              _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew} (${deliveryData.deliveredQuantity})`,
+              _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew}`,
               _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
               _NAVPackingControlRecipientDateTime2:
                 deliveryData.recipientDateTime,
