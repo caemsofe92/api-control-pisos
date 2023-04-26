@@ -161,14 +161,15 @@ router.post("/", async (req, res) => {
           salesId: consecutiveSaleOrder,
           itemId: orderLine.productNumber,
           collectionDate: moment(transaction.new.startDateTime).format(
-            "YYYY/DD/MM"
+            "YYYY/MM/DD HH:mm:ss"
           ),
           deliveredOrderNumber: orderNumber,
           deliveredTo: courier,
           recipientDocument: transaction.new.receivedDocument,
-          recipientDateTime: moment(transaction.new.endDateTime).format("YYYYMMDDHHmmss"),
+          recipientDateTime: moment(transaction.new.endDateTime).format("YYYY/MM/DD HH:mm:ss"),
           recipientName: transaction.new.receivedPerson,
           deliveredQuantity: orderLine.deliveredQuantity,
+          orderedQuantity: orderLine.orderedQuantity
         };
 
         let statusNew = "";
@@ -181,7 +182,7 @@ router.post("/", async (req, res) => {
             statusNew = "No entregado";
             break;
           case "partial_delivered":
-            statusNew = `Entrega parcial (${deliveryData.deliveredQuantity})`;
+            statusNew = `Entrega parcial (${deliveryData.deliveredQuantity} de ${deliveryData.orderedQuantity})`;
             break;
           case "rescheduled_delivery":
             statusNew = "Entrega reprogramada";
