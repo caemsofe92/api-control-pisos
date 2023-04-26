@@ -166,7 +166,7 @@ router.post("/", async (req, res) => {
           deliveredOrderNumber: orderNumber,
           deliveredTo: courier,
           recipientDocument: transaction.new.receivedDocument,
-          recipientDateTime: moment(transaction.new.endDateTime).format("YYYY/MM/DD HH:mm:ss"),
+          recipientDateTime: moment(transaction.new.endDateTime).add(5, "hours").format("YYYY/MM/DD HH:mm:ss"),
           recipientName: transaction.new.receivedPerson,
           deliveredQuantity: orderLine.deliveredQuantity,
           orderedQuantity: orderLine.orderedQuantity
