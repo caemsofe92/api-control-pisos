@@ -151,7 +151,7 @@ router.post("/", async (req, res) => {
     const ordersLines = order.ordersTable[0].ordersLines;
     const courier = order.users[0].displayName;
 
-    if (consecutiveBurden?.length > 0 && consecutiveShipping?.length > 0 && ordersLines.length > 0) {
+    if (consecutiveBurden?.length > 0 && consecutiveShipping?.length > 0 && ordersLines.length > 0 && transaction.new?.endDateTime) {
       const responses = [];
 
       await ordersLines.forEach(async (orderLine, index) => {
@@ -212,8 +212,6 @@ router.post("/", async (req, res) => {
 
         _deliveryData = _deliveryData.data;
 
-        console.log(_deliveryData);
-
         responses.push({
           itemId: deliveryData.itemId,
           response: _deliveryData,
@@ -257,7 +255,6 @@ router.post("/", async (req, res) => {
                 }
               )
               .catch(function (error) {
-                console.log(error);
                 if (
                   error.response &&
                   error.response.data &&
