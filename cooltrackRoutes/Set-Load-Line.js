@@ -160,8 +160,8 @@ router.post("/", async (req, res) => {
           shipmentId: consecutiveShipping,
           salesId: consecutiveSaleOrder,
           itemId: orderLine.productNumber,
-          collectionDate: moment(transaction.new.startDateTime).add(5, "hours").format(
-            "YYYY/MM/DD HH:mm:ss"
+          collectionDate: moment(transaction.new.startDateTime).format(
+            "YYYY/MM/DD"
           ),
           deliveredOrderNumber: orderNumber,
           deliveredTo: courier,
