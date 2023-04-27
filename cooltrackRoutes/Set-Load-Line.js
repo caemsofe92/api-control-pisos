@@ -94,7 +94,12 @@ const getEvidences = async (variables) => {
 router.post("/", async (req, res) => {
   const transaction = req.body.event.data;
 
-  if(transaction.new.status !== "delivered" && transaction.new.status !== "undelivered" && transaction.new.status !== "partial_delivered" && transaction.new.status !== "rescheduled_delivery"){
+  if (
+    transaction.new.status !== "delivered" &&
+    transaction.new.status !== "undelivered" &&
+    transaction.new.status !== "partial_delivered" &&
+    transaction.new.status !== "rescheduled_delivery"
+  ) {
     return res.status(200).send("Transaction already processed");
   }
 
@@ -151,7 +156,12 @@ router.post("/", async (req, res) => {
     const ordersLines = order.ordersTable[0].ordersLines;
     const courier = order.users[0].displayName;
 
-    if (consecutiveBurden?.length > 0 && consecutiveShipping?.length > 0 && ordersLines.length > 0 && transaction.new?.endDateTime) {
+    if (
+      consecutiveBurden?.length > 0 &&
+      consecutiveShipping?.length > 0 &&
+      ordersLines.length > 0 &&
+      transaction.new?.endDateTime
+    ) {
       const responses = [];
 
       await ordersLines.forEach(async (orderLine, index) => {
@@ -166,10 +176,12 @@ router.post("/", async (req, res) => {
           deliveredOrderNumber: orderNumber,
           deliveredTo: courier,
           recipientDocument: transaction.new.receivedDocument,
-          recipientDateTime: moment(transaction.new.endDateTime).add(5, "hours").format("YYYY/MM/DD HH:mm:ss"),
+          recipientDateTime: moment(transaction.new.endDateTime)
+            .add(5, "hours")
+            .format("YYYY/MM/DD HH:mm:ss"),
           recipientName: transaction.new.receivedPerson,
           deliveredQuantity: orderLine.deliveredQuantity,
-          orderedQuantity: orderLine.orderedQuantity
+          orderedQuantity: orderLine.orderedQuantity,
         };
 
         let statusNew = "";
@@ -188,27 +200,25 @@ router.post("/", async (req, res) => {
             statusNew = "Entrega reprogramada";
             break;
           default:
-        };
+        }
 
-        let _deliveryData = await axios
-          .post(
-            `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
-            {
-              _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-              _NAVPackingControlDeliveredCode:
-                deliveryData.deliveredOrderNumber,
-              _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew}`,
-              _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
-              _NAVPackingControlRecipientDateTime2:
-                deliveryData.recipientDateTime,
-              _NAVPackingControlRecipientName: deliveryData.recipientName,
-              _loadId: deliveryData.loadId,
-              _shipmentId: deliveryData.shipmentId,
-              _salesId: deliveryData.salesId,
-              _itemId: deliveryData.itemId,
-            },
-            { headers: { Authorization: "Bearer " + token } }
-          );
+        let _deliveryData = await axios.post(
+          `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
+          {
+            _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+            _NAVPackingControlDeliveredCode: deliveryData.deliveredOrderNumber,
+            _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew}`,
+            _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
+            _NAVPackingControlRecipientDateTime2:
+              deliveryData.recipientDateTime,
+            _NAVPackingControlRecipientName: deliveryData.recipientName,
+            _loadId: deliveryData.loadId,
+            _shipmentId: deliveryData.shipmentId,
+            _salesId: deliveryData.salesId,
+            _itemId: deliveryData.itemId,
+          },
+          { headers: { Authorization: "Bearer " + token } }
+        );
 
         _deliveryData = _deliveryData.data;
 
@@ -218,65 +228,75 @@ router.post("/", async (req, res) => {
         });
       });
 
-      const evidences = await getEvidences({
+      let evidences = await getEvidences({
         ordersTableId: transaction.new.orderTableId,
       });
 
-      const evidencesList = evidences?.data?.evidences;
+      let evidencesList = evidences?.data?.evidences;
 
-        let _evidences = [];
+      let breakCount = 0;
 
-        if (evidencesList && evidencesList.length > 0) {
-          for (let i = 0; i < evidencesList.length; i++) {
-            const element = evidencesList[i];
+      while (evidencesList?.length === 0 && breakCount < 3) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
-            const imageRequest = {
-              //_DataareaId: "navi", //UAT
-              _DataareaId: "navt", //DEV
-              _AccesInformation: element.evidenceURL,
-              _name:
-                element.evidenceType +
-                "_" +
-                element.id +
-                "." +
-                element.evidenceURL.split(".")[3],
-              //_TableId: 7309, //UAT
-              _TableId: 7312, //DEV
-              _RefRecId: parseInt(ordersLines[0].externalId),
-              _FileType: element.evidenceURL.split(".")[3],
-            };
+        evidences = await getEvidences({
+          ordersTableId: transaction.new.orderTableId,
+        });
+        evidencesList = evidences?.data?.evidences;
+        breakCount++;
+      }
 
-            await axios
-              .post(
-                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                imageRequest,
-                {
-                  headers: { Authorization: "Bearer " + token },
-                }
-              )
-              .catch(function (error) {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.error &&
-                  error.response.data.error.innererror &&
-                  error.response.data.error.innererror.message
-                ) {
-                  throw new Error(
-                    error.response.data.error.innererror.message
-                  );
-                } else if (error.request) {
-                  throw new Error(error.request);
-                } else {
-                  throw new Error("Error", error.message);
-                }
-              });
-            _evidences.push({
-              RefRecId: ordersLines[0].externalId,
-              OriginalFileName: element.evidenceType + "_" + element.id,
+      let _evidences = [];
+
+      if (evidencesList && evidencesList.length > 0) {
+        for (let i = 0; i < evidencesList.length; i++) {
+          const element = evidencesList[i];
+
+          const imageRequest = {
+            //_DataareaId: "navi", //UAT
+            _DataareaId: "navt", //DEV
+            _AccesInformation: element.evidenceURL,
+            _name:
+              element.evidenceType +
+              "_" +
+              element.id +
+              "." +
+              element.evidenceURL.split(".")[3],
+            //_TableId: 7309, //UAT
+            _TableId: 7312, //DEV
+            _RefRecId: parseInt(ordersLines[0].externalId),
+            _FileType: element.evidenceURL.split(".")[3],
+          };
+
+          await axios
+            .post(
+              `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+              imageRequest,
+              {
+                headers: { Authorization: "Bearer " + token },
+              }
+            )
+            .catch(function (error) {
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.error &&
+                error.response.data.error.innererror &&
+                error.response.data.error.innererror.message
+              ) {
+                throw new Error(error.response.data.error.innererror.message);
+              } else if (error.request) {
+                throw new Error(error.request);
+              } else {
+                throw new Error("Error", error.message);
+              }
             });
-          }
+          _evidences.push({
+            RefRecId: ordersLines[0].externalId,
+            OriginalFileName: element.evidenceType + "_" + element.id,
+          });
         }
+      }
 
       res.send("OK");
     } else {
