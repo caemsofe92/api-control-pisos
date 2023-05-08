@@ -262,8 +262,8 @@ router.post("/", async (req, res) => {
               element.id +
               "." +
               element.evidenceURL.split(".")[3],
-            //_TableId: 7309, //UAT
-            _TableId: 7312, //DEV
+            _TableId: 7309, //UAT
+            //_TableId: 7312, //DEV
             _RefRecId: parseInt(ordersLines[0].externalId),
             _FileType: element.evidenceURL.split(".")[3],
           };
