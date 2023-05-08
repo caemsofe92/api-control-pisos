@@ -253,8 +253,8 @@ router.post("/", async (req, res) => {
           const element = evidencesList[i];
 
           const imageRequest = {
-            //_DataareaId: "navi", //UAT
-            _DataareaId: "navt", //DEV
+            _DataareaId: "navi", //UAT
+            //_DataareaId: "navt", //DEV
             _AccesInformation: element.evidenceURL,
             _name:
               element.evidenceType +
