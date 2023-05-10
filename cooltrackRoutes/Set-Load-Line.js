@@ -106,8 +106,8 @@ router.post("/", async (req, res) => {
   const tenantUrl = "navitrans.com.co";
   const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
   const clientSecret = "31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
-  const tenant = "https://nav-devpa63a793dcc9b33505devaos.axcloud.dynamics.com";
-  const environment = "Development";
+  const tenant = "https://uat-navitrans.sandbox.operations.dynamics.com";
+  const environment = "UAT";
 
   if (!client.isOpen) client.connect();
 
@@ -253,8 +253,8 @@ router.post("/", async (req, res) => {
           const element = evidencesList[i];
 
           const imageRequest = {
-            //_DataareaId: "navi", //UAT
-            _DataareaId: "navt", //DEV
+            _DataareaId: "navi", //UAT
+            //_DataareaId: "navt", //DEV
             _AccesInformation: element.evidenceURL,
             _name:
               element.evidenceType +
@@ -262,8 +262,8 @@ router.post("/", async (req, res) => {
               element.id +
               "." +
               element.evidenceURL.split(".")[3],
-            //_TableId: 7309, //UAT
-            _TableId: 7312, //DEV
+            _TableId: 7309, //UAT
+            //_TableId: 7312, //DEV
             _RefRecId: parseInt(ordersLines[0].externalId),
             _FileType: element.evidenceURL.split(".")[3],
           };
