@@ -213,7 +213,7 @@ router.post("/", async (req, res) => {
               deliveryData.recipientDateTime,
             _NAVPackingControlRecipientName: deliveryData.recipientName,
             _NAVPackingControlDeliveredStatus: statusNew,
-            _NAVPackingControlDeliveredQty: deliveryData.deliveredQuantity,
+            _NAVPackingControlDeliveredQty: transaction.new.status === "delivered" ? deliveryData.orderedQuantity : deliveryData.deliveredQuantity,
             _loadId: deliveryData.loadId,
             _shipmentId: deliveryData.shipmentId,
             _salesId: deliveryData.salesId,
