@@ -4,14 +4,14 @@ const client = require("../bin/redis-client");
 const axios = require("axios");
 
 router.post("/", async (req, res) => {
-  try {
+  
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
       req.query.clientSecret || (req.body && req.body.clientSecret);
     const tenant = req.query.tenant || (req.body && req.body.tenant);
-    const environment =
-      req.query.environment || (req.body && req.body.environment);
+    const environment = req.query.environment || (req.body && req.body.environment);
+    const inventLocationId =[req.query.inventLocationId || (req.body && req.body.inventLocationId)];  
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -26,6 +26,9 @@ router.post("/", async (req, res) => {
 
     if (!environment || environment.length === 0)
       throw new Error("environment is Mandatory");
+
+    if (!inventLocationId || inventLocationId.length === 0)
+      throw new Error("inventLocationId is Mandatory");
 
     if (!client.isOpen) client.connect();
 
@@ -58,11 +61,12 @@ router.post("/", async (req, res) => {
         EX: 3599,
       });
     }
-
+    
     const Entity1 = axios.post(
       `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFGetLoadShipment?$format=application/json;odata.metadata=none`,
       {
-        _loadId: ""
+        _loadId: "",
+        _inventLocationId: inventLocationId.toString()
       },
       { headers: { Authorization: "Bearer " + token } }
     );
@@ -79,6 +83,7 @@ router.post("/", async (req, res) => {
         })
       )
       .catch(function (error) {
+        console.log(error);
         if (
           error.response &&
           error.response.data &&
@@ -93,7 +98,7 @@ router.post("/", async (req, res) => {
           throw new Error("Error", error.message);
         }
       });
-  } catch (error) {
+      try {} catch (error) {
     return res.status(500).json({ result: false, message: error.toString() });
   }
 });
