@@ -106,8 +106,8 @@ router.post("/", async (req, res) => {
   const tenantUrl = "navitrans.com.co";
   const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
   const clientSecret = "31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
-  const tenant = "https://uat-navitrans.sandbox.operations.dynamics.com";
-  const environment = "UAT";
+  const tenant = "https://nav-devpa63a793dcc9b33505devaos.axcloud.dynamics.com";
+  const environment = "Development";
 
   if (!client.isOpen) client.connect();
 
@@ -194,7 +194,7 @@ router.post("/", async (req, res) => {
             statusNew = "No entregado";
             break;
           case "partial_delivered":
-            statusNew = `Entrega parcial (${deliveryData.deliveredQuantity} de ${deliveryData.orderedQuantity})`;
+            statusNew = `Entrega parcial`;
             break;
           case "rescheduled_delivery":
             statusNew = "Entrega reprogramada";
@@ -207,11 +207,13 @@ router.post("/", async (req, res) => {
           {
             _NAVPackingControlCollectionDate: deliveryData.collectionDate,
             _NAVPackingControlDeliveredCode: deliveryData.deliveredOrderNumber,
-            _NAVPackingControlDeliveredTo: `${deliveryData.deliveredTo} - ${statusNew}`,
+            _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
             _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
             _NAVPackingControlRecipientDateTime2:
               deliveryData.recipientDateTime,
             _NAVPackingControlRecipientName: deliveryData.recipientName,
+            _NAVPackingControlDeliveredStatus: statusNew,
+            _NAVPackingControlDeliveredQty: deliveryData.deliveredQuantity,
             _loadId: deliveryData.loadId,
             _shipmentId: deliveryData.shipmentId,
             _salesId: deliveryData.salesId,
