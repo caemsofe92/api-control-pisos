@@ -12,6 +12,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment = req.query.environment || (req.body && req.body.environment);
     const inventLocationId =[req.query.inventLocationId || (req.body && req.body.inventLocationId)];  
+    const pageSize = req.query.pageSize || (req.body && req.body.pageSize);
+    const pageId = req.query.pageId || (req.body && req.body.pageId);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -66,7 +68,9 @@ router.post("/", async (req, res) => {
       `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFGetLoadShipment?$format=application/json;odata.metadata=none`,
       {
         _loadId: "",
-        _inventLocationId: inventLocationId.toString()
+        _inventLocationId: inventLocationId.toString(),
+        _pageSize: pageSize,
+        _pageId: pageId
       },
       { headers: { Authorization: "Bearer " + token } }
     );
