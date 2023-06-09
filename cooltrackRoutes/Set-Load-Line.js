@@ -53,6 +53,7 @@ const getOrderTable = async (variables) => {
                     productNumber
                     orderedQuantity
                     deliveredQuantity
+                    summationQuantity
                     externalId
                   }
               }
@@ -182,6 +183,7 @@ router.post("/", async (req, res) => {
           recipientName: transaction.new.receivedPerson,
           deliveredQuantity: orderLine.deliveredQuantity,
           orderedQuantity: orderLine.orderedQuantity,
+          summationQuantity: orderLine.summationQuantity
         };
 
         let statusNew = "";
@@ -213,7 +215,7 @@ router.post("/", async (req, res) => {
               deliveryData.recipientDateTime,
             _NAVPackingControlRecipientName: deliveryData.recipientName,
             _NAVPackingControlDeliveredStatus: statusNew,
-            _NAVPackingControlDeliveredQty: transaction.new.status === "delivered" ? deliveryData.orderedQuantity : deliveryData.deliveredQuantity,
+            _NAVPackingControlDeliveredQty: transaction.new.status === "delivered" ? deliveryData.orderedQuantity : deliveryData.summationQuantity,
             _loadId: deliveryData.loadId,
             _shipmentId: deliveryData.shipmentId,
             _salesId: deliveryData.salesId,
