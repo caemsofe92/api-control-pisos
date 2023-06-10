@@ -215,7 +215,7 @@ router.post("/", async (req, res) => {
               deliveryData.recipientDateTime,
             _NAVPackingControlRecipientName: deliveryData.recipientName,
             _NAVPackingControlDeliveredStatus: statusNew,
-            _NAVPackingControlDeliveredQty: transaction.new.status === "delivered" ? sumQuantity : transaction.new.status === "partial_delivered" ? deliveryData.summationQuantity: deliveryData.deliveredQuantity,
+            _NAVPackingControlDeliveredQty: transaction.new.status === "delivered" ? sumQuantity : transaction.new.status === "partial_delivered" ? deliveryData.summationQuantity === 0 ? deliveryData.deliveredQuantity: deliveryData.summationQuantity : deliveryData.deliveredQuantity,
             _loadId: deliveryData.loadId,
             _shipmentId: deliveryData.shipmentId,
             _salesId: deliveryData.salesId,
