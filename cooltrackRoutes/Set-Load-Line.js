@@ -94,9 +94,23 @@ const getEvidences = async (variables) => {
 
 router.post("/", async (req, res) => {
   const transaction = req.body.event.data;
-  
+  let step = 0;
+
+  if(transaction.old.status === "none" && transaction.new.status === "start"){
+    step = 1;
+  }else if(transaction.old.status === "start" && transaction.new.status === "started"){
+    step = 2;
+  }else if(transaction.old.status === "started" && (transaction.new.status === "delivered" || transaction.new.status === "undelivered" || transaction.new.status === "partial_delivered" || transaction.new.status === "rescheduled_delivery")){
+    step = 3;
+  }else if(transaction.old.status === transaction.new.status && transaction.new.endDateTime){
+    step = 4;
+  }else{
+    step = 5;
+  }
+
   await axios.post("https://prod-10.westus.logic.azure.com:443/workflows/54030259d3984ae2828e9130c3e8adee/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0tOsiqt-tHTND83dqpqalkIu70EP3HnNKRGBB_A_WNE", {
-    currentDate: moment().format("YYYY/MM/DD HH:mm:ss"),  
+    currentDate: moment().format("YYYY/MM/DD HH:mm:ss"),
+    step,
     transaction
   });
 
