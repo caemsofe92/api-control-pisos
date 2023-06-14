@@ -94,6 +94,11 @@ const getEvidences = async (variables) => {
 
 router.post("/", async (req, res) => {
   const transaction = req.body.event.data;
+  
+  await axios.post("https://prod-10.westus.logic.azure.com:443/workflows/54030259d3984ae2828e9130c3e8adee/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0tOsiqt-tHTND83dqpqalkIu70EP3HnNKRGBB_A_WNE", {
+    currentDate: moment().format("YYYY/MM/DD HH:mm:ss"),  
+    transaction
+  });
 
   if (
     transaction.new.status !== "delivered" &&
