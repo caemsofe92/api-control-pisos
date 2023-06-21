@@ -57,6 +57,7 @@ const getOrderTable = async (variables) => {
                     summationQuantity
                     externalId
                     externalInvoiceId
+                    externalSalesId
                     Invoice
                   }
               }
@@ -432,12 +433,12 @@ router.post("/", async (req, res) => {
                 "_" +
                 element.id +
                 "." +
-                element.evidenceURL.split(".")[3],
+                element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
               //_TableId : 7309, //UAT3
               //_TableId: 7309, //UAT
               _TableId: 7312, //DEV
               _RefRecId: parseInt(ordersLines[0].externalId),
-              _FileType: element.evidenceURL.split(".")[3],
+              _FileType: element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
             };
 
             await axios
@@ -464,7 +465,7 @@ router.post("/", async (req, res) => {
               }
             });
 
-
+            
             if(element.evidenceType === "COMPROBANTE DE PAGO"){
               const imageRequest2 = {
                 //_DataareaId: "navi", //UAT UAT3
@@ -475,18 +476,59 @@ router.post("/", async (req, res) => {
                   "_" +
                   element.id +
                   "." +
-                  element.evidenceURL.split(".")[3],
+                  element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
                 //_TableId : 6597, //UAT3
                 //_TableId: 6597, //UAT
-                _TableId: 6597, //DEV
-                _RefRecId: parseInt(ordersLines[0].externalInvoiceId),
-                _FileType: element.evidenceURL.split(".")[3],
+                _TableId: 2905, //DEV
+                _RefRecId: parseInt(ordersLines[0].externalSalesId),
+                _FileType: element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
               };
-  
+              
               await axios
               .post(
                 `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
                 imageRequest2,
+                {
+                  headers: { Authorization: "Bearer " + token },
+                }
+              )
+              .catch(function (error) {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.error &&
+                  error.response.data.error.innererror &&
+                  error.response.data.error.innererror.message
+                ) {
+                  throw new Error(error.response.data.error.innererror.message);
+                } else if (error.request) {
+                  throw new Error(error.request);
+                } else {
+                  throw new Error("Error", error.message);
+                }
+              });
+
+              const imageRequest3 = {
+                //_DataareaId: "navi", //UAT UAT3
+                _DataareaId: "navt", //DEV
+                _AccesInformation: element.evidenceURL,
+                _name:
+                  element.evidenceType +
+                  "_" +
+                  element.id +
+                  "." +
+                  element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
+                //_TableId : 6597, //UAT3
+                //_TableId: 6597, //UAT
+                _TableId: 6597, //DEV
+                _RefRecId: parseInt(ordersLines[0].externalInvoiceId),
+                _FileType: element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
+              };
+              
+              await axios
+              .post(
+                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                imageRequest3,
                 {
                   headers: { Authorization: "Bearer " + token },
                 }
