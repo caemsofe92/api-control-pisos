@@ -96,38 +96,11 @@ router.post("/", async (req, res) => {
   const transaction = req.body.event.data;
   let step = 0;
 
-  if(transaction.old.status === "none" && transaction.new.status === "start"){
-    step = 1;
-  }else if(transaction.old.status === "start" && transaction.new.status === "started"){
-    step = 2;
-  }else if(transaction.old.status === "started" && (transaction.new.status === "delivered" || transaction.new.status === "undelivered" || transaction.new.status === "partial_delivered" || transaction.new.status === "rescheduled_delivery")){
-    step = 3;
-  }else if(transaction.old.status === transaction.new.status && transaction.new.endDateTime){
-    step = 4;
-  }else{
-    step = 5;
-  }
-
-  await axios.post("https://prod-10.westus.logic.azure.com:443/workflows/54030259d3984ae2828e9130c3e8adee/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0tOsiqt-tHTND83dqpqalkIu70EP3HnNKRGBB_A_WNE", {
-    currentDate: moment().format("YYYY/MM/DD HH:mm:ss"),
-    step,
-    transaction
-  });
-
-  if (
-    transaction.new.status !== "delivered" &&
-    transaction.new.status !== "undelivered" &&
-    transaction.new.status !== "partial_delivered" &&
-    transaction.new.status !== "rescheduled_delivery"
-  ) {
-    return res.status(200).send("Transaction already processed");
-  }
-
   const tenantUrl = "navitrans.com.co";
   const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
   const clientSecret = "31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
-  const tenant = "https://uat3-navitrans.sandbox.operations.dynamics.com";
-  const environment = "UAT3";
+  const tenant = "https://nav-devpa63a793dcc9b33505devaos.axcloud.dynamics.com";
+  const environment = "Desarrollo";
 
   if (!client.isOpen) client.connect();
 
@@ -167,6 +140,35 @@ router.post("/", async (req, res) => {
   });
 
   const order = orderData.data;
+
+  if(transaction.old.status === "none" && transaction.new.status === "start"){
+    step = 1;
+  }else if(transaction.old.status === "start" && transaction.new.status === "started"){
+    step = 2;
+  }else if(transaction.old.status === "started" && (transaction.new.status === "delivered" || transaction.new.status === "undelivered" || transaction.new.status === "partial_delivered" || transaction.new.status === "rescheduled_delivery")){
+    step = 3;
+  }else if(transaction.old.status === transaction.new.status && transaction.new.endDateTime){
+    step = 4;
+  }else{
+    step = 5;
+  }
+
+  await axios.post("https://prod-10.westus.logic.azure.com:443/workflows/54030259d3984ae2828e9130c3e8adee/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0tOsiqt-tHTND83dqpqalkIu70EP3HnNKRGBB_A_WNE", {
+    currentDate: moment().format("YYYY/MM/DD HH:mm:ss"),
+    step,
+    transaction
+  });
+
+  if (
+    transaction.new.status !== "delivered" &&
+    transaction.new.status !== "undelivered" &&
+    transaction.new.status !== "partial_delivered" &&
+    transaction.new.status !== "rescheduled_delivery"
+  ) {
+    return res.status(200).send("Transaction already processed");
+  }
+
+  
 
   if (order.ordersTable.length > 0) {
     const orderNumber = order.ordersTable[0].orderNumber;
@@ -276,8 +278,8 @@ router.post("/", async (req, res) => {
           const element = evidencesList[i];
 
           const imageRequest = {
-            _DataareaId: "navi", //UAT UAT3
-            //_DataareaId: "navt", //DEV
+            //_DataareaId: "navi", //UAT UAT3
+            _DataareaId: "navt", //DEV
             _AccesInformation: element.evidenceURL,
             _name:
               element.evidenceType +
@@ -285,9 +287,9 @@ router.post("/", async (req, res) => {
               element.id +
               "." +
               element.evidenceURL.split(".")[3],
-              _TableId : 7309, //UAT3
+              //_TableId : 7309, //UAT3
               //_TableId: 7309, //UAT
-            //_TableId: 7312, //DEV
+            _TableId: 7312, //DEV
             _RefRecId: parseInt(ordersLines[0].externalId),
             _FileType: element.evidenceURL.split(".")[3],
           };
