@@ -263,7 +263,7 @@ router.post("/", async (req, res) => {
               itemId: orderLine.productNumber,
             };
 
-            const deliveryResponse = await axios.post(
+            await axios.post(
               `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
               {
                 _NAVPackingControlCollectionDate: deliveryData.collectionDate,
@@ -433,8 +433,8 @@ router.post("/", async (req, res) => {
             const element = evidencesList[i];
 
             const imageRequest = {
-              //_DataareaId: "navi", //UAT UAT3
-              _DataareaId: "navt", //DEV
+              _DataareaId: "navi", //UAT UAT3
+              //_DataareaId: "navt", //DEV
               _AccesInformation: element.evidenceURL,
               _name:
                 element.evidenceType +
@@ -444,9 +444,8 @@ router.post("/", async (req, res) => {
                 element.evidenceURL.split(".")[
                   element.evidenceURL.split(".").length - 1
                 ],
-              //_TableId : 7309, //UAT3
-              //_TableId: 7309, //UAT
-              _TableId: 7312, //DEV
+              _TableId : 7309, //UAT UAT3
+              //_TableId: 7312, //DEV
               _RefRecId: parseInt(ordersLines[0].externalId),
               _FileType:
                 element.evidenceURL.split(".")[
@@ -480,8 +479,8 @@ router.post("/", async (req, res) => {
 
             if (element.evidenceType === "COMPROBANTE DE PAGO") {
               const imageRequest2 = {
-                //_DataareaId: "navi", //UAT UAT3
-                _DataareaId: "navt", //DEV
+                _DataareaId: "navi", //UAT UAT3
+                //_DataareaId: "navt", //DEV
                 _AccesInformation: element.evidenceURL,
                 _name:
                   element.evidenceType +
@@ -491,9 +490,7 @@ router.post("/", async (req, res) => {
                   element.evidenceURL.split(".")[
                     element.evidenceURL.split(".").length - 1
                   ],
-                //_TableId : 6597, //UAT3
-                //_TableId: 6597, //UAT
-                _TableId: 2905, //DEV
+                _TableId : 2905, //DEV UAT UAT3
                 _RefRecId: parseInt(ordersLines[0].externalSalesId),
                 _FileType:
                   element.evidenceURL.split(".")[
@@ -528,8 +525,8 @@ router.post("/", async (req, res) => {
                 });
 
               const imageRequest3 = {
-                //_DataareaId: "navi", //UAT UAT3
-                _DataareaId: "navt", //DEV
+                _DataareaId: "navi", //UAT UAT3
+                //_DataareaId: "navt", //DEV
                 _AccesInformation: element.evidenceURL,
                 _name:
                   element.evidenceType +
@@ -539,9 +536,7 @@ router.post("/", async (req, res) => {
                   element.evidenceURL.split(".")[
                     element.evidenceURL.split(".").length - 1
                   ],
-                //_TableId : 6597, //UAT3
-                //_TableId: 6597, //UAT
-                _TableId: 6597, //DEV
+                _TableId : 6597, //DEV UAT UAT3
                 _RefRecId: parseInt(ordersLines[0].externalInvoiceId),
                 _FileType:
                   element.evidenceURL.split(".")[
@@ -593,7 +588,7 @@ router.post("/", async (req, res) => {
     } else {
       step = 5;
     }
-
+    /*
     await axios.post(
       "https://prod-10.westus.logic.azure.com:443/workflows/54030259d3984ae2828e9130c3e8adee/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0tOsiqt-tHTND83dqpqalkIu70EP3HnNKRGBB_A_WNE",
       {
@@ -602,6 +597,7 @@ router.post("/", async (req, res) => {
         transaction,
       }
     );
+    */
   } else {
     res.status(404).json({
       result: false,
