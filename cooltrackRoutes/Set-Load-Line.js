@@ -187,7 +187,9 @@ router.post("/", async (req, res) => {
         );
 
         if (ordersLines.length > 0) {
-          await ordersLines.forEach(async (orderLine, index) => {
+          for (let i = 0; i < ordersLines.length; i++) {
+            const orderLine = ordersLines[i];
+
             const deliveryData = {
               loadId: deliveryHeaderData.loadId,
               collectionDate: deliveryHeaderData.collectionDate,
@@ -208,7 +210,7 @@ router.post("/", async (req, res) => {
                 _NAVPackingControlRecipientCode: "",
                 _NAVPackingControlRecipientDateTime2: "",
                 _NAVPackingControlRecipientName: "",
-                _NAVPackingControlDeliveredStatus: "Mensajero Asignado",
+                _NAVPackingControlDeliveredStatus: "Próximo a Despachar",
                 _NAVPackingControlDeliveredQty: 0,
                 _loadId: deliveryData.loadId,
                 _shipmentId: deliveryData.shipmentId,
@@ -217,7 +219,7 @@ router.post("/", async (req, res) => {
               },
               { headers: { Authorization: "Bearer " + token } }
             );
-          });
+          }
         }
 
         res.send("OK");
@@ -247,7 +249,9 @@ router.post("/", async (req, res) => {
         };
 
         if (ordersLines.length > 0) {
-          await ordersLines.forEach(async (orderLine, index) => {
+          for (let i = 0; i < ordersLines.length; i++) {
+            const orderLine = ordersLines[i];
+
             const deliveryData = {
               loadId: deliveryHeaderData.loadId,
               collectionDate: deliveryHeaderData.collectionDate,
@@ -277,7 +281,7 @@ router.post("/", async (req, res) => {
               },
               { headers: { Authorization: "Bearer " + token } }
             );
-          });
+          };
         }
 
         res.send("OK");
@@ -309,7 +313,9 @@ router.post("/", async (req, res) => {
       ) {
         const responses = [];
 
-        await ordersLines.forEach(async (orderLine, index) => {
+        for (let i = 0; i < ordersLines.length; i++) {
+          const orderLine = ordersLines[i];
+
           const deliveryData = {
             loadId: consecutiveBurden,
             shipmentId: consecutiveShipping,
@@ -389,16 +395,17 @@ router.post("/", async (req, res) => {
             `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetInvoiceHeader`,
             {
               _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
-              _NAVPackingControlRecipientDateTime2: deliveryData.recipientDateTime,
+              _NAVPackingControlRecipientDateTime2:
+                deliveryData.recipientDateTime,
               _NAVPackingControlRecipientName: deliveryData.recipientName,
               _NAVPackingControlCollectionDate: deliveryData.collectionDate,
               _NAVPackingControlPaymentMethod: paymentMethod,
               _invoiceId: orderLine.Invoice,
-              _salesId: deliveryData.salesId
+              _salesId: deliveryData.salesId,
             },
             { headers: { Authorization: "Bearer " + token } }
           );
-        });
+        };
 
         let evidences = await getEvidences({
           ordersTableId: transaction.new.orderTableId,
@@ -433,61 +440,23 @@ router.post("/", async (req, res) => {
                 "_" +
                 element.id +
                 "." +
-                element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
+                element.evidenceURL.split(".")[
+                  element.evidenceURL.split(".").length - 1
+                ],
               //_TableId : 7309, //UAT3
               //_TableId: 7309, //UAT
               _TableId: 7312, //DEV
               _RefRecId: parseInt(ordersLines[0].externalId),
-              _FileType: element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
+              _FileType:
+                element.evidenceURL.split(".")[
+                  element.evidenceURL.split(".").length - 1
+                ],
             };
 
             await axios
-            .post(
-              `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-              imageRequest,
-              {
-                headers: { Authorization: "Bearer " + token },
-              }
-            )
-            .catch(function (error) {
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.error &&
-                error.response.data.error.innererror &&
-                error.response.data.error.innererror.message
-              ) {
-                throw new Error(error.response.data.error.innererror.message);
-              } else if (error.request) {
-                throw new Error(error.request);
-              } else {
-                throw new Error("Error", error.message);
-              }
-            });
-
-            
-            if(element.evidenceType === "COMPROBANTE DE PAGO"){
-              const imageRequest2 = {
-                //_DataareaId: "navi", //UAT UAT3
-                _DataareaId: "navt", //DEV
-                _AccesInformation: element.evidenceURL,
-                _name:
-                  element.evidenceType +
-                  "_" +
-                  element.id +
-                  "." +
-                  element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
-                //_TableId : 6597, //UAT3
-                //_TableId: 6597, //UAT
-                _TableId: 2905, //DEV
-                _RefRecId: parseInt(ordersLines[0].externalSalesId),
-                _FileType: element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
-              };
-              
-              await axios
               .post(
                 `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                imageRequest2,
+                imageRequest,
                 {
                   headers: { Authorization: "Bearer " + token },
                 }
@@ -507,6 +476,55 @@ router.post("/", async (req, res) => {
                   throw new Error("Error", error.message);
                 }
               });
+
+            if (element.evidenceType === "COMPROBANTE DE PAGO") {
+              const imageRequest2 = {
+                //_DataareaId: "navi", //UAT UAT3
+                _DataareaId: "navt", //DEV
+                _AccesInformation: element.evidenceURL,
+                _name:
+                  element.evidenceType +
+                  "_" +
+                  element.id +
+                  "." +
+                  element.evidenceURL.split(".")[
+                    element.evidenceURL.split(".").length - 1
+                  ],
+                //_TableId : 6597, //UAT3
+                //_TableId: 6597, //UAT
+                _TableId: 2905, //DEV
+                _RefRecId: parseInt(ordersLines[0].externalSalesId),
+                _FileType:
+                  element.evidenceURL.split(".")[
+                    element.evidenceURL.split(".").length - 1
+                  ],
+              };
+
+              await axios
+                .post(
+                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                  imageRequest2,
+                  {
+                    headers: { Authorization: "Bearer " + token },
+                  }
+                )
+                .catch(function (error) {
+                  if (
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.innererror &&
+                    error.response.data.error.innererror.message
+                  ) {
+                    throw new Error(
+                      error.response.data.error.innererror.message
+                    );
+                  } else if (error.request) {
+                    throw new Error(error.request);
+                  } else {
+                    throw new Error("Error", error.message);
+                  }
+                });
 
               const imageRequest3 = {
                 //_DataareaId: "navi", //UAT UAT3
@@ -517,37 +535,44 @@ router.post("/", async (req, res) => {
                   "_" +
                   element.id +
                   "." +
-                  element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
+                  element.evidenceURL.split(".")[
+                    element.evidenceURL.split(".").length - 1
+                  ],
                 //_TableId : 6597, //UAT3
                 //_TableId: 6597, //UAT
                 _TableId: 6597, //DEV
                 _RefRecId: parseInt(ordersLines[0].externalInvoiceId),
-                _FileType: element.evidenceURL.split(".")[(element.evidenceURL.split(".")).length - 1],
+                _FileType:
+                  element.evidenceURL.split(".")[
+                    element.evidenceURL.split(".").length - 1
+                  ],
               };
-              
+
               await axios
-              .post(
-                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                imageRequest3,
-                {
-                  headers: { Authorization: "Bearer " + token },
-                }
-              )
-              .catch(function (error) {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.error &&
-                  error.response.data.error.innererror &&
-                  error.response.data.error.innererror.message
-                ) {
-                  throw new Error(error.response.data.error.innererror.message);
-                } else if (error.request) {
-                  throw new Error(error.request);
-                } else {
-                  throw new Error("Error", error.message);
-                }
-              });
+                .post(
+                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                  imageRequest3,
+                  {
+                    headers: { Authorization: "Bearer " + token },
+                  }
+                )
+                .catch(function (error) {
+                  if (
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.innererror &&
+                    error.response.data.error.innererror.message
+                  ) {
+                    throw new Error(
+                      error.response.data.error.innererror.message
+                    );
+                  } else if (error.request) {
+                    throw new Error(error.request);
+                  } else {
+                    throw new Error("Error", error.message);
+                  }
+                });
             }
 
             _evidences.push({
