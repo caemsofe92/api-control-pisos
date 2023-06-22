@@ -230,8 +230,9 @@ router.post("/", async (req, res) => {
         });
       }
     } else if (
-      transaction.old.status === "start" &&
-      transaction.new.status === "started"
+      (transaction.old.status === "start" &&
+      transaction.new.status === "started") || (transaction.old.status === "none" &&
+      transaction.new.status === "started")
     ) {
       step = 2;
       if (
@@ -262,7 +263,7 @@ router.post("/", async (req, res) => {
               itemId: orderLine.productNumber,
             };
 
-            await axios.post(
+            const deliveryResponse = await axios.post(
               `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
               {
                 _NAVPackingControlCollectionDate: deliveryData.collectionDate,
