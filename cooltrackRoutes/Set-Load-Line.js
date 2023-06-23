@@ -261,6 +261,7 @@ router.post("/", async (req, res) => {
               shipmentId: consecutiveShipping,
               salesId: consecutiveSaleOrder,
               itemId: orderLine.productNumber,
+              summationQuantity: orderLine.summationQuantity
             };
 
             await axios.post(
@@ -274,7 +275,7 @@ router.post("/", async (req, res) => {
                 _NAVPackingControlRecipientDateTime2: "",
                 _NAVPackingControlRecipientName: "",
                 _NAVPackingControlDeliveredStatus: "En Reparto",
-                _NAVPackingControlDeliveredQty: 0,
+                _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
                 _loadId: deliveryData.loadId,
                 _shipmentId: deliveryData.shipmentId,
                 _salesId: deliveryData.salesId,
