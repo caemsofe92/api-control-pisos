@@ -198,14 +198,15 @@ router.post("/", async (req, res) => {
               shipmentId: consecutiveShipping,
               salesId: consecutiveSaleOrder,
               itemId: orderLine.productNumber,
-              summationQuantity: orderLine.summationQuantity
+              summationQuantity: orderLine.summationQuantity,
             };
 
             await axios.post(
               `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
               {
                 _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-                _NAVPackingControlDeliveredCode: deliveryData.deliveredOrderNumber,
+                _NAVPackingControlDeliveredCode:
+                  deliveryData.deliveredOrderNumber,
                 _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
                 _NAVPackingControlRecipientCode: "",
                 _NAVPackingControlRecipientDateTime2: "",
@@ -231,8 +232,9 @@ router.post("/", async (req, res) => {
       }
     } else if (
       (transaction.old.status === "start" &&
-      transaction.new.status === "started") || (transaction.old.status === "none" &&
-      transaction.new.status === "started")
+        transaction.new.status === "started") ||
+      (transaction.old.status === "none" &&
+        transaction.new.status === "started")
     ) {
       step = 2;
       if (
@@ -261,7 +263,7 @@ router.post("/", async (req, res) => {
               shipmentId: consecutiveShipping,
               salesId: consecutiveSaleOrder,
               itemId: orderLine.productNumber,
-              summationQuantity: orderLine.summationQuantity
+              summationQuantity: orderLine.summationQuantity,
             };
 
             await axios.post(
@@ -283,7 +285,7 @@ router.post("/", async (req, res) => {
               },
               { headers: { Authorization: "Bearer " + token } }
             );
-          };
+          }
         }
 
         res.send("OK");
@@ -407,7 +409,7 @@ router.post("/", async (req, res) => {
             },
             { headers: { Authorization: "Bearer " + token } }
           );
-        };
+        }
 
         let evidences = await getEvidences({
           ordersTableId: transaction.new.orderTableId,
@@ -433,143 +435,178 @@ router.post("/", async (req, res) => {
           for (let i = 0; i < evidencesList.length; i++) {
             const element = evidencesList[i];
 
-            const imageRequest = {
-              _DataareaId: "navi", //UAT UAT3
-              //_DataareaId: "navt", //DEV
-              _AccesInformation: element.evidenceURL,
-              _name:
+            const imageRequestName =
+              element.evidenceType +
+              "_" +
+              element.id +
+              "." +
+              element.evidenceURL.split(".")[
+                element.evidenceURL.split(".").length - 1
+              ];
+
+            const docuRefEvidences = await axios.get(
+              `${tenant}/data/SRF_DocuRef?$filter=RefTableId eq 7309 and RefRecId eq ${parseInt(
+                ordersLines[0].externalId
+              )} and Name eq '${imageRequestName}'`,
+              { headers: { Authorization: "Bearer " + token } }
+            );
+
+            if (docuRefEvidences.data.value.length === 0) {
+              const imageRequest = {
+                _DataareaId: "navi", //UAT UAT3
+                //_DataareaId: "navt", //DEV
+                _AccesInformation: element.evidenceURL,
+                _name: imageRequestName,
+                _TableId: 7309, //UAT UAT3
+                //_TableId: 7312, //DEV
+                _RefRecId: parseInt(ordersLines[0].externalId),
+                _FileType:
+                  element.evidenceURL.split(".")[
+                    element.evidenceURL.split(".").length - 1
+                  ],
+              };
+
+              await axios
+                .post(
+                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                  imageRequest,
+                  {
+                    headers: { Authorization: "Bearer " + token },
+                  }
+                )
+                .catch(function (error) {
+                  if (
+                    error.response &&
+                    error.response.data &&
+                    error.response.data.error &&
+                    error.response.data.error.innererror &&
+                    error.response.data.error.innererror.message
+                  ) {
+                    throw new Error(
+                      error.response.data.error.innererror.message
+                    );
+                  } else if (error.request) {
+                    throw new Error(error.request);
+                  } else {
+                    throw new Error("Error", error.message);
+                  }
+                });
+            }
+
+            if (element.evidenceType === "COMPROBANTE DE PAGO") {
+              const imageRequestName2 =
                 element.evidenceType +
                 "_" +
                 element.id +
                 "." +
                 element.evidenceURL.split(".")[
                   element.evidenceURL.split(".").length - 1
-                ],
-              _TableId : 7309, //UAT UAT3
-              //_TableId: 7312, //DEV
-              _RefRecId: parseInt(ordersLines[0].externalId),
-              _FileType:
+                ];
+
+              const docuRefEvidences2 = await axios.get(
+                `${tenant}/data/SRF_DocuRef?$filter=RefTableId eq 2905 and RefRecId eq ${parseInt(
+                  ordersLines[0].externalSalesId
+                )} and Name eq '${imageRequestName2}'`,
+                { headers: { Authorization: "Bearer " + token } }
+              );
+
+              if (docuRefEvidences2.data.value.length === 0) {
+                const imageRequest2 = {
+                  _DataareaId: "navi", //UAT UAT3
+                  //_DataareaId: "navt", //DEV
+                  _AccesInformation: element.evidenceURL,
+                  _name: imageRequestName2,
+                  _TableId: 2905, //DEV UAT UAT3
+                  _RefRecId: parseInt(ordersLines[0].externalSalesId),
+                  _FileType:
+                    element.evidenceURL.split(".")[
+                      element.evidenceURL.split(".").length - 1
+                    ],
+                };
+
+                await axios
+                  .post(
+                    `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                    imageRequest2,
+                    {
+                      headers: { Authorization: "Bearer " + token },
+                    }
+                  )
+                  .catch(function (error) {
+                    if (
+                      error.response &&
+                      error.response.data &&
+                      error.response.data.error &&
+                      error.response.data.error.innererror &&
+                      error.response.data.error.innererror.message
+                    ) {
+                      throw new Error(
+                        error.response.data.error.innererror.message
+                      );
+                    } else if (error.request) {
+                      throw new Error(error.request);
+                    } else {
+                      throw new Error("Error", error.message);
+                    }
+                  });
+              }
+
+              const imageRequestName3 =
+                element.evidenceType +
+                "_" +
+                element.id +
+                "." +
                 element.evidenceURL.split(".")[
                   element.evidenceURL.split(".").length - 1
-                ],
-            };
+                ];
 
-            await axios
-              .post(
-                `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                imageRequest,
-                {
-                  headers: { Authorization: "Bearer " + token },
-                }
-              )
-              .catch(function (error) {
-                if (
-                  error.response &&
-                  error.response.data &&
-                  error.response.data.error &&
-                  error.response.data.error.innererror &&
-                  error.response.data.error.innererror.message
-                ) {
-                  throw new Error(error.response.data.error.innererror.message);
-                } else if (error.request) {
-                  throw new Error(error.request);
-                } else {
-                  throw new Error("Error", error.message);
-                }
-              });
+              const docuRefEvidences3 = await axios.get(
+                `${tenant}/data/SRF_DocuRef?$filter=RefTableId eq 6597 and RefRecId eq ${parseInt(
+                  ordersLines[0].externalInvoiceId
+                )} and Name eq '${imageRequestName3}'`,
+                { headers: { Authorization: "Bearer " + token } }
+              );
 
-            if (element.evidenceType === "COMPROBANTE DE PAGO") {
-              const imageRequest2 = {
-                _DataareaId: "navi", //UAT UAT3
-                //_DataareaId: "navt", //DEV
-                _AccesInformation: element.evidenceURL,
-                _name:
-                  element.evidenceType +
-                  "_" +
-                  element.id +
-                  "." +
-                  element.evidenceURL.split(".")[
-                    element.evidenceURL.split(".").length - 1
-                  ],
-                _TableId : 2905, //DEV UAT UAT3
-                _RefRecId: parseInt(ordersLines[0].externalSalesId),
-                _FileType:
-                  element.evidenceURL.split(".")[
-                    element.evidenceURL.split(".").length - 1
-                  ],
-              };
+              if (docuRefEvidences3.data.value.length === 0) {
+                const imageRequest3 = {
+                  _DataareaId: "navi", //UAT UAT3
+                  //_DataareaId: "navt", //DEV
+                  _AccesInformation: element.evidenceURL,
+                  _name: imageRequestName3,
+                  _TableId: 6597, //DEV UAT UAT3
+                  _RefRecId: parseInt(ordersLines[0].externalInvoiceId),
+                  _FileType:
+                    element.evidenceURL.split(".")[
+                      element.evidenceURL.split(".").length - 1
+                    ],
+                };
 
-              await axios
-                .post(
-                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                  imageRequest2,
-                  {
-                    headers: { Authorization: "Bearer " + token },
-                  }
-                )
-                .catch(function (error) {
-                  if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.innererror &&
-                    error.response.data.error.innererror.message
-                  ) {
-                    throw new Error(
+                await axios
+                  .post(
+                    `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
+                    imageRequest3,
+                    {
+                      headers: { Authorization: "Bearer " + token },
+                    }
+                  )
+                  .catch(function (error) {
+                    if (
+                      error.response &&
+                      error.response.data &&
+                      error.response.data.error &&
+                      error.response.data.error.innererror &&
                       error.response.data.error.innererror.message
-                    );
-                  } else if (error.request) {
-                    throw new Error(error.request);
-                  } else {
-                    throw new Error("Error", error.message);
-                  }
-                });
-
-              const imageRequest3 = {
-                _DataareaId: "navi", //UAT UAT3
-                //_DataareaId: "navt", //DEV
-                _AccesInformation: element.evidenceURL,
-                _name:
-                  element.evidenceType +
-                  "_" +
-                  element.id +
-                  "." +
-                  element.evidenceURL.split(".")[
-                    element.evidenceURL.split(".").length - 1
-                  ],
-                _TableId : 6597, //DEV UAT UAT3
-                _RefRecId: parseInt(ordersLines[0].externalInvoiceId),
-                _FileType:
-                  element.evidenceURL.split(".")[
-                    element.evidenceURL.split(".").length - 1
-                  ],
-              };
-
-              await axios
-                .post(
-                  `${tenant}/api/services/NAVDocuRefServices/NAVDocuRefService/FillDocuRef`,
-                  imageRequest3,
-                  {
-                    headers: { Authorization: "Bearer " + token },
-                  }
-                )
-                .catch(function (error) {
-                  if (
-                    error.response &&
-                    error.response.data &&
-                    error.response.data.error &&
-                    error.response.data.error.innererror &&
-                    error.response.data.error.innererror.message
-                  ) {
-                    throw new Error(
-                      error.response.data.error.innererror.message
-                    );
-                  } else if (error.request) {
-                    throw new Error(error.request);
-                  } else {
-                    throw new Error("Error", error.message);
-                  }
-                });
+                    ) {
+                      throw new Error(
+                        error.response.data.error.innererror.message
+                      );
+                    } else if (error.request) {
+                      throw new Error(error.request);
+                    } else {
+                      throw new Error("Error", error.message);
+                    }
+                  });
+              }
             }
 
             _evidences.push({
