@@ -357,9 +357,7 @@ router.post("/", async (req, res) => {
               break;
             default:
           }
-          const sumQuantity =
-            parseInt(deliveryData.orderedQuantity) +
-            parseInt(deliveryData.summationQuantity);
+          
           let _deliveryData = await axios.post(
             `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
             {
@@ -372,14 +370,7 @@ router.post("/", async (req, res) => {
                 deliveryData.recipientDateTime,
               _NAVPackingControlRecipientName: deliveryData.recipientName,
               _NAVPackingControlDeliveredStatus: statusNew,
-              _NAVPackingControlDeliveredQty:
-                transaction.new.status === "delivered"
-                  ? sumQuantity
-                  : transaction.new.status === "partial_delivered"
-                  ? deliveryData.summationQuantity === 0
-                    ? deliveryData.deliveredQuantity
-                    : deliveryData.summationQuantity
-                  : deliveryData.deliveredQuantity,
+              _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
               _loadId: deliveryData.loadId,
               _shipmentId: deliveryData.shipmentId,
               _salesId: deliveryData.salesId,
