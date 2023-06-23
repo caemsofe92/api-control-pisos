@@ -198,20 +198,20 @@ router.post("/", async (req, res) => {
               shipmentId: consecutiveShipping,
               salesId: consecutiveSaleOrder,
               itemId: orderLine.productNumber,
+              summationQuantity: orderLine.summationQuantity
             };
 
             await axios.post(
               `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
               {
                 _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-                _NAVPackingControlDeliveredCode:
-                  deliveryData.deliveredOrderNumber,
+                _NAVPackingControlDeliveredCode: deliveryData.deliveredOrderNumber,
                 _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
                 _NAVPackingControlRecipientCode: "",
                 _NAVPackingControlRecipientDateTime2: "",
                 _NAVPackingControlRecipientName: "",
                 _NAVPackingControlDeliveredStatus: "Próximo a Despachar",
-                _NAVPackingControlDeliveredQty: 0,
+                _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
                 _loadId: deliveryData.loadId,
                 _shipmentId: deliveryData.shipmentId,
                 _salesId: deliveryData.salesId,
