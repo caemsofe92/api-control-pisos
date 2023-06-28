@@ -7,13 +7,11 @@ require("moment/locale/es");
 
 router.post("/", async (req, res) => {
   
-    const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
-    const clientId = req.query.clientId || (req.body && req.body.clientId);
-    const clientSecret =
-      req.query.clientSecret || (req.body && req.body.clientSecret);
-    const tenant = req.query.tenant || (req.body && req.body.tenant);
-    const environment =
-      req.query.environment || (req.body && req.body.environment);
+    const tenantUrl = "navitrans.com.co";
+    const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
+    const clientSecret ="31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
+    const tenant = "https://nav-devpa63a793dcc9b33505devaos.axcloud.dynamics.com";
+    const environment ="Development";
     const search =
       req.query.search || (req.body && req.body.search);
 
