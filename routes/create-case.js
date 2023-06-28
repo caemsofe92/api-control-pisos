@@ -73,7 +73,7 @@ router.post("/", async (req, res) => {
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
-        console.log(error);
+        
         if (
           error.response &&
           error.response.data &&

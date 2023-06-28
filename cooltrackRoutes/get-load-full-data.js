@@ -44,6 +44,7 @@ router.post("/", async (req, res) => {
           { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
         )
         .catch(function (error) {
+          
           if (
             error.response &&
             error.response.data &&
@@ -87,7 +88,7 @@ router.post("/", async (req, res) => {
         })
       )
       .catch(function (error) {
-        console.log(error);
+        
         if (
           error.response &&
           error.response.data &&
