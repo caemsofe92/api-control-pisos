@@ -14,8 +14,8 @@ router.post("/", async (req, res) => {
     const tenant = req.query.tenant || (req.body && req.body.tenant);
     const environment =
       req.query.environment || (req.body && req.body.environment);
-    const _Search =
-      req.query._Search || (req.body && req.body._Search);
+    const search =
+      req.query.search || (req.body && req.body.search);
 
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
     let _search = await axios
       .post(
         `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRF_CustInvoiceJour?$format=application/json;odata.metadata=none`,
-        {search: _Search.search},
+       {search},
         { headers: { Authorization: "Bearer " + token } }
       )
       .catch(function (error) {
