@@ -67,9 +67,10 @@ var getLoadShipment = require("./cooltrackRoutes/get-Load-Shipment");
 var deleteload = require("./cooltrackRoutes/delete-load");
 var deleteShipment = require("./cooltrackRoutes/delete-shipment");
 var getLinesTMS=require("./cooltrackRoutes/get-lines-tms");
-var SetLoadLine=require("./cooltrackRoutes/set-load-line");
+var SetLoadLine=require("./cooltrackRoutes/Set-Load-Line");
 var GetWHSShipment=require("./cooltrackRoutes/get-whs-shipment");
 var getLoadFullData = require("./cooltrackRoutes/get-load-full-data");
+var searchinvoicepakingslip = require("./cooltrackRoutes/search-invoice-pakingslip");
 
 var app = express();
 app.use(cors({origin:'*', methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']}));
@@ -143,7 +144,7 @@ app.use("/set-load-line", SetLoadLine);
 app.use("/get-whs-shipment", GetWHSShipment);
 
 app.use("/get-load-full-data", getLoadFullData);
-
+app.use("/search-invoice-pakingslip", searchinvoicepakingslip);
 app.use(function (req, res, next) {
   next(createError(404));
 });
