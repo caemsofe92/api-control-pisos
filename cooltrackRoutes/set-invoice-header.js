@@ -88,14 +88,6 @@ const getEvidences = async (variables) => {
 router.post("/", async (req, res) => {
   const transaction = req.body.event.data;
 
-  await axios.post(
-    "https://prod-10.westus.logic.azure.com:443/workflows/54030259d3984ae2828e9130c3e8adee/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=0tOsiqt-tHTND83dqpqalkIu70EP3HnNKRGBB_A_WNE",
-    {
-      currentDate: moment().format("YYYY/MM/DD HH:mm:ss"),
-      transaction,
-    }
-  );
-
   const tenantUrl = "navitrans.com.co";
   const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
   const clientSecret = "31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
