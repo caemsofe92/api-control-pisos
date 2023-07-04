@@ -211,8 +211,8 @@ router.post("/", async (req, res) => {
 
           if (docuRefEvidences2.data.value.length === 0) {
             const imageRequest2 = {
-              _DataareaId: "navi", //UAT UAT3
-              //_DataareaId: "navt", //DEV
+              //_DataareaId: "navi", //UAT UAT3
+              _DataareaId: "navt", //DEV
               _AccesInformation: element.evidenceURL,
               _name: imageRequestName2,
               _TableId: 2905, //DEV UAT UAT3
@@ -266,8 +266,8 @@ router.post("/", async (req, res) => {
 
           if (docuRefEvidences3.data.value.length === 0) {
             const imageRequest3 = {
-              _DataareaId: "navi", //UAT UAT3
-              //_DataareaId: "navt", //DEV
+              //_DataareaId: "navi", //UAT UAT3
+              _DataareaId: "navt", //DEV
               _AccesInformation: element.evidenceURL,
               _name: imageRequestName3,
               _TableId: 6597, //DEV UAT UAT3
@@ -304,7 +304,7 @@ router.post("/", async (req, res) => {
           }
 
           _evidences.push({
-            RefRecId: ordersLines[0].externalId,
+            RefRecId: externalInvoiceId,
             OriginalFileName: element.evidenceType + "_" + element.id,
           });
         }
