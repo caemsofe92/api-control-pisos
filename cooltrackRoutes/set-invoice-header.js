@@ -187,8 +187,6 @@ router.post("/", async (req, res) => {
         breakCount++;
       }
 
-      let _evidences = [];
-
       if (evidencesList && evidencesList.length > 0) {
         for (let i = 0; i < evidencesList.length; i++) {
           const element = evidencesList[i];
@@ -202,14 +200,15 @@ router.post("/", async (req, res) => {
               element.evidenceURL.split(".").length - 1
             ];
 
+            /*
           const docuRefEvidences2 = await axios.get(
             `${tenant}/data/SRF_DocuRef?$filter=RefTableId eq 2905 and RefRecId eq ${parseInt(
               externalSalesId
             )} and Name eq '${imageRequestName2}'`,
             { headers: { Authorization: "Bearer " + token } }
           );
-
-          if (docuRefEvidences2.data.value.length === 0) {
+        */
+        //  if (docuRefEvidences2.data.value.length === 0) {
             const imageRequest2 = {
               //_DataareaId: "navi", //UAT UAT3
               _DataareaId: "navt", //DEV
@@ -246,7 +245,7 @@ router.post("/", async (req, res) => {
                   throw new Error("Error", error.message);
                 }
               });
-          }
+         // }
 
           const imageRequestName3 =
             element.evidenceType +
@@ -257,14 +256,14 @@ router.post("/", async (req, res) => {
               element.evidenceURL.split(".").length - 1
             ];
 
-          const docuRefEvidences3 = await axios.get(
+        /*  const docuRefEvidences3 = await axios.get(
             `${tenant}/data/SRF_DocuRef?$filter=RefTableId eq 6597 and RefRecId eq ${parseInt(
               externalInvoiceId
             )} and Name eq '${imageRequestName3}'`,
             { headers: { Authorization: "Bearer " + token } }
           );
-
-          if (docuRefEvidences3.data.value.length === 0) {
+        */
+        //  if (docuRefEvidences3.data.value.length === 0) {
             const imageRequest3 = {
               //_DataareaId: "navi", //UAT UAT3
               _DataareaId: "navt", //DEV
@@ -301,12 +300,7 @@ router.post("/", async (req, res) => {
                   throw new Error("Error", error.message);
                 }
               });
-          }
-
-          _evidences.push({
-            RefRecId: externalInvoiceId,
-            OriginalFileName: element.evidenceType + "_" + element.id,
-          });
+          //}
         }
       }
 
