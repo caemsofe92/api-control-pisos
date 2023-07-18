@@ -83,6 +83,7 @@ router.post("/", async (req, res) => {
           return res.json({
             result: true,
             message: "OK",
+            count: responses[0].data[0].Count,
             response: responses[0].data,
           });
         })
