@@ -14,7 +14,8 @@ router.post("/", async (req, res) => {
     const inventLocationId =[req.query.inventLocationId || (req.body && req.body.inventLocationId)];  
     const pageSize = req.query.pageSize || (req.body && req.body.pageSize);
     const pageId = req.query.pageId || (req.body && req.body.pageId);
-
+    const loadId = req.query.loadId || (req.body && req.body.loadId);
+    
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
 
@@ -68,7 +69,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.post(
       `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFGetLoadShipment?$format=application/json;odata.metadata=none`,
       {
-        _loadId: "",
+        _loadId: loadId,
         _inventLocationId: inventLocationId.toString(),
         _pageSize: pageSize,
         _pageId: pageId
@@ -89,7 +90,6 @@ router.post("/", async (req, res) => {
         })
       )
       .catch(function (error) {
-        
         if (
           error.response &&
           error.response.data &&
