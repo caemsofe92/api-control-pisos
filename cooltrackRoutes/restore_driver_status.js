@@ -63,6 +63,7 @@ router.post("/", async (req, res) => {
       });
     
       const order = orderData.data;   
+      console.log(order);
 });
 
 module.exports = router;
