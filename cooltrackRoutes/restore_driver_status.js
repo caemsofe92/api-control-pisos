@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
     const transaction = req.body.event.data;
     console.log(transaction);
     const orderData = await getRoutes({
-        batch: transaction.new,
+        batch: transaction.new.batch,
       });
     
       const order = orderData.data;   
