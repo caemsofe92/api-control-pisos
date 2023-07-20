@@ -3,7 +3,7 @@ let router = express.Router();
 const axios = require("axios");
 
 const apiURL =
-  "http://cooltrack-api.politecoast-9b114af7.eastus2.azurecontainerapps.io/v1/graphql";
+  "https://cooltrack-api.politecoast-9b114af7.eastus2.azurecontainerapps.io/v1/graphql";
 
 const getRoutes = async (variables) => {
   const options = {
