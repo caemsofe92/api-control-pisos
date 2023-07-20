@@ -86,14 +86,15 @@ const updateUser = async (variables) => {
 router.post("/", async (req, res) => {
     const transaction = req.body.event.data;
     console.log(transaction);
-    const orderData = await getRoutes({
+    const routesData = await getRoutes({
         batch: transaction.new.batch,
       });
     
-      const order = orderData.data;   
-  if (order.routes.length > 0) {    
-      for (let i = 0; i < order.length; i++) {
-        const element = order[i];
+      const routes = routesData.data;   
+      console.log(routes);
+  if (routes.routes.length > 0) {    
+      for (let i = 0; i < routes.length; i++) {
+        const element = routes[i];
         if(element.routes.status != "none" || element.routes.status != "started"){
           const variable= element.routes?.user?.userVehicle?.id;
           updateUser(variable);
