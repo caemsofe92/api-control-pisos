@@ -1,7 +1,5 @@
 let express = require("express");
-const moment = require("moment");
 let router = express.Router();
-const client = require("../bin/redis-client");
 const axios = require("axios");
 
 const apiURL =
@@ -13,29 +11,40 @@ const getRoutes = async (variables) => {
     headers: { "x-hasura-admin-secret": "Srf2020***" },
     data: {
       query: `
-              query GET_ORDER_TABLE($orderTableId: uuid!, $userId: uuid!) {
-                ordersTable (where: {id: {_eq: $orderTableId}}) {
-                  orderNumber
-                  paymentMethod
-                  consecutiveBurden
-                  consecutiveShipping
-                  consecutiveSaleOrder
-                  ordersLines {
-                    productName
-                    productNumber
-                    orderedQuantity
-                    deliveredQuantity
-                    summationQuantity
-                    externalId
-                    externalInvoiceId
-                    externalSalesId
-                    Invoice
-                  }
+      query fetchCompletedRoutes($batch: uuid!) {
+        routesBatch(order_by: {endDateRoute: desc}, where: {batch: { _eq: $batch }}) {
+            id
+            batch
+            createdAt
+            startDateRoute
+            endDateRoute
+            user {
+                identificationNumber
+                displayName
+                distributionCenterId
+               userDeliveryCenters{
+                distributionCenterId
               }
-                users(where: {id: {_eq: $userId}}){
-                  displayName
-                }
-              }`,
+            }
+            licencePlate
+            routes(order_by: {endDateTime: desc}) {
+                id
+                status
+                startDateTime
+                endDateTime
+                userId
+                distanceText
+                distanceValue
+                durationText
+                durationValue
+                receivedPerson
+                receivedDocument
+                polylines
+                orderTableId
+                reasonId
+            }
+        }
+      }`,
       variables,
     },
     url: apiURL,
@@ -47,7 +56,13 @@ const getRoutes = async (variables) => {
 
 
 router.post("/", async (req, res) => {
+    const transaction = req.body.event.data;
+    console.log(transaction);
+    const orderData = await getRoutes({
+        batch: transaction.new,
+      });
     
+      const order = orderData.data;   
 });
 
 module.exports = router;
