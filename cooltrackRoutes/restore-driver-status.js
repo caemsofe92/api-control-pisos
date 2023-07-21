@@ -12,47 +12,18 @@ const getRoutes = async (variables) => {
     data: {
       query: `
       query fetchCompletedRoutes($batch: uuid!) {
-        routesBatch(order_by: {endDateRoute: desc}, where: {batch: { _eq: $batch }}) {
-            id
-            batch
-            createdAt
-            startDateRoute
-            endDateRoute
-            user {
-                identificationNumber
-                displayName
-                distributionCenterId
-               userDeliveryCenters{
-                distributionCenterId
-              }
-            }
-            licencePlate
-            routes(order_by: {endDateTime: desc}) {
+        routes(order_by: {endDateTime: desc}, where: {batch: { _eq: $batch }}) {
                 id
                 status
-                startDateTime
-                endDateTime
-                userId
-                distanceText
-                distanceValue
-                durationText
-                durationValue
-                receivedPerson
-                receivedDocument
-                polylines
-                orderTableId
-                reasonId
                 user {
-                    displayName
-                    identificationNumber
-                    phoneNumber
+                    id
                     userVehicle{
                         id
+                        hasAssignedRoute
                     }
                 }
             }
-        }
-      }`,
+        }`,
       variables,
     },
     url: apiURL,
@@ -85,27 +56,35 @@ const updateUser = async (variables) => {
 }
 router.post("/", async (req, res) => {
     const transaction = req.body.event.data;
-    console.log(transaction);
-    const routesData = await getRoutes({
-        batch: transaction.new.batch,
-      });
-    
-      const routes = routesData.data;   
-      console.log(routes);
-  if (routes.routes.length > 0) {    
-      for (let i = 0; i < routes.length; i++) {
-        const element = routes[i];
-        if(element.routes.status != "none" || element.routes.status != "started"){
-          const variable= element.routes?.user?.userVehicle?.id;
-          updateUser(variable);
+
+    if(transaction.new.status === "delivered" ||
+      transaction.new.status === "undelivered" ||
+      transaction.new.status === "partial_delivered" ||
+      transaction.new.status === "rescheduled_delivery"){
+        const routesData = await getRoutes({
+          batch: transaction.new.batch
+        });
+        let allComplete = true;
+        let userVehicle;
+        const routes = routesData.data; 
+
+        for (let i = 0; i < routes.routes.length; i++) {
+          const element = routes.routes[i];
+          if(element.status === "delivered" ||
+          element.status === "undelivered" ||
+          element.status === "partial_delivered" ||
+          element.status === "rescheduled_delivery"){
+            userVehicle = element.user.userVehicle;
+          }else{
+            allComplete = false;
+            break;
+          }
         }
-      }
-  }else {
-    res.status(404).json({
-    result: false,
-    message: "routes not found",
-      });
+        if(allComplete === true && userVehicle?.hasAssignedRoute === true){
+          await updateUser({id: userVehicle.id})
+        }
     }
+    res.send("OK")
 });
 
 module.exports = router;
