@@ -4,7 +4,7 @@ const client = require("../bin/redis-client");
 const axios = require("axios");
 
 router.post("/", async (req, res) => {
-  
+  try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
           return res.json({
             result: true,
             message: "OK",
-            count: responses[0].data[0].Count,
+            count: responses[0].data[0]?.Count,
             response: responses[0].data,
           });
         })
@@ -104,7 +104,7 @@ router.post("/", async (req, res) => {
           throw new Error("Error", error.message);
         }
       });
-      try {} catch (error) {
+      } catch (error) {
     return res.status(500).json({ result: false, message: error.toString() });
   }
 });
