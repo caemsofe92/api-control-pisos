@@ -71,7 +71,7 @@ var SetLoadLine=require("./cooltrackRoutes/Set-Load-Line");
 var GetWHSShipment=require("./cooltrackRoutes/get-whs-shipment");
 var getLoadFullData = require("./cooltrackRoutes/get-load-full-data");
 var searchinvoicepakingslip = require("./cooltrackRoutes/search-invoice-pakingslip");
-
+var restoredriverstatus = require("./cooltrackRoutes/restore-driver-status");
 var setInvoiceHeader = require("./cooltrackRoutes/set-invoice-header");
 
 var app = express();
@@ -148,6 +148,7 @@ app.use("/get-whs-shipment", GetWHSShipment);
 app.use("/get-load-full-data", getLoadFullData);
 app.use("/search-invoice-pakingslip", searchinvoicepakingslip);
 app.use("/set-invoice-header", setInvoiceHeader);
+app.use("/restore-driver-status", restoredriverstatus);
 app.use(function (req, res, next) {
   next(createError(404));
 });

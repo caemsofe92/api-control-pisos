@@ -4,7 +4,7 @@ const client = require("../bin/redis-client");
 const axios = require("axios");
 
 router.post("/", async (req, res) => {
-  
+  try {
     const tenantUrl = req.query.tenantUrl || (req.body && req.body.tenantUrl);
     const clientId = req.query.clientId || (req.body && req.body.clientId);
     const clientSecret =
@@ -14,7 +14,8 @@ router.post("/", async (req, res) => {
     const inventLocationId =[req.query.inventLocationId || (req.body && req.body.inventLocationId)];  
     const pageSize = req.query.pageSize || (req.body && req.body.pageSize);
     const pageId = req.query.pageId || (req.body && req.body.pageId);
-
+    const loadId = req.query.loadId || (req.body && req.body.loadId);
+    
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
 
@@ -68,7 +69,7 @@ router.post("/", async (req, res) => {
     const Entity1 = axios.post(
       `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFGetLoadShipment?$format=application/json;odata.metadata=none`,
       {
-        _loadId: "",
+        _loadId: loadId,
         _inventLocationId: inventLocationId.toString(),
         _pageSize: pageSize,
         _pageId: pageId
@@ -83,12 +84,12 @@ router.post("/", async (req, res) => {
           return res.json({
             result: true,
             message: "OK",
+            count: responses[0].data[0]?.Count,
             response: responses[0].data,
           });
         })
       )
       .catch(function (error) {
-        
         if (
           error.response &&
           error.response.data &&
@@ -103,7 +104,7 @@ router.post("/", async (req, res) => {
           throw new Error("Error", error.message);
         }
       });
-      try {} catch (error) {
+      } catch (error) {
     return res.status(500).json({ result: false, message: error.toString() });
   }
 });
