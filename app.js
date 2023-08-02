@@ -73,6 +73,7 @@ var getLoadFullData = require("./cooltrackRoutes/get-load-full-data");
 var searchinvoicepakingslip = require("./cooltrackRoutes/search-invoice-pakingslip");
 var restoredriverstatus = require("./cooltrackRoutes/restore-driver-status");
 var setInvoiceHeader = require("./cooltrackRoutes/set-invoice-header");
+var SetNameTMSLine = require("./cooltrackRoutes/Set-Name-TMS-Line");
 
 var app = express();
 app.use(cors({origin:'*', methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']}));
@@ -149,6 +150,7 @@ app.use("/get-load-full-data", getLoadFullData);
 app.use("/search-invoice-pakingslip", searchinvoicepakingslip);
 app.use("/set-invoice-header", setInvoiceHeader);
 app.use("/restore-driver-status", restoredriverstatus);
+app.use("/Set-Name-TMS-Line", SetNameTMSLine);
 app.use(function (req, res, next) {
   next(createError(404));
 });
