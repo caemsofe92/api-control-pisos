@@ -103,7 +103,7 @@ router.post("/", async (req, res) => {
     const courier = order.users[0].displayName;
 
     if (
-      transaction.old.status === null &&
+      transaction.old === null &&
       transaction.new.status === "none"
     ) {
       step = 1;
