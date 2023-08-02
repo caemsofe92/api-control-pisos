@@ -347,7 +347,7 @@ router.post("/", async (req, res) => {
               statusNew = "Entregado";
               break;
             case "undelivered":
-              statusNew = "No entregado";
+              statusNew = "Devuelto";
               break;
             case "partial_delivered":
               const deliveryValue = deliveryData.orderedQuantity - deliveryData.deliveredQuantity;
