@@ -78,6 +78,11 @@ var SetNameTMSLine = require("./cooltrackRoutes/Set-Name-TMS-Line");
 //TodoList Angelo
 
 var CreatedUserTodoList = require("./TodoListAngelo/Created-User-TodoList");
+var LoginUserControlTareas = require("./TodoListAngelo/Login-User-ControlTareas");
+var PostTareasControlTareas = require("./TodoListAngelo/Post-Tareas-ControlTareas");
+var PathTareasControlTareas = require("./TodoListAngelo/Patch-Tareas-ControlTareas");
+var DeleteTareasControlTareas = require("./TodoListAngelo/Delete-Tareas-ControlTareas");
+var GetTareasControlTareas = require("./TodoListAngelo/Get-Tareas-ControlTareas");
 
 //************ */
 
@@ -161,6 +166,11 @@ app.use("/Set-Name-TMS-Line", SetNameTMSLine);
 //TodoList Angelo
 
 app.use("/Created-User-TodoList", CreatedUserTodoList);
+app.use("/Login-User-ControlTareas", LoginUserControlTareas);
+app.use("/Post-Tareas-ControlTareas", PostTareasControlTareas);
+app.use("/Patch-Tareas-ControlTareas", PathTareasControlTareas);
+app.use("/Delete-Tareas-ControlTareas", DeleteTareasControlTareas);
+app.use("/Get-Tareas-ControlTareas", GetTareasControlTareas);
 
 //************ */
 app.use(function (req, res, next) {
