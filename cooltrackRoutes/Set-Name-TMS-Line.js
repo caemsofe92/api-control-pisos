@@ -102,10 +102,7 @@ router.post("/", async (req, res) => {
     const ordersLines = order.ordersTable[0].ordersLines;
     const courier = order.users[0].displayName;
 
-    if (
-      transaction.old === null &&
-      transaction.new.status === "none"
-    ) {
+    if (transaction.old === null && transaction.new.status === "none") {
       step = 1;
 
       if (
@@ -148,7 +145,7 @@ router.post("/", async (req, res) => {
               itemId: orderLine.productNumber,
               summationQuantity: orderLine.summationQuantity,
             };
-
+            console.log(deliveryData);
             await axios.post(
               `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
               {
@@ -179,7 +176,7 @@ router.post("/", async (req, res) => {
         });
       }
     }
-}
+  }
 });
 
 module.exports = router;

@@ -347,10 +347,11 @@ router.post("/", async (req, res) => {
               statusNew = "Entregado";
               break;
             case "undelivered":
-              statusNew = "No entregado";
+              statusNew = "Devuelto";
               break;
             case "partial_delivered":
-              statusNew = `Entrega parcial`;
+              const deliveryValue = deliveryData.orderedQuantity - deliveryData.deliveredQuantity;
+              deliveryValue === 0 ? statusNew = "Completamente Entregado" : statusNew = "Con novedad";
               break;
             case "rescheduled_delivery":
               statusNew = "Entrega reprogramada";
