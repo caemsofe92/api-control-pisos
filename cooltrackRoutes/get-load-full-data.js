@@ -15,6 +15,9 @@ router.post("/", async (req, res) => {
     const pageSize = req.query.pageSize || (req.body && req.body.pageSize);
     const pageId = req.query.pageId || (req.body && req.body.pageId);
     const loadId = req.query.loadId || (req.body && req.body.loadId);
+    const isDescending = req.query.isDescending || (req.body && req.body.isDescending);
+    const fromDate = req.query.fromDate || (req.body && req.body.fromDate);
+    const toDate = req.query.toDate || (req.body && req.body.toDate);
     
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -72,7 +75,10 @@ router.post("/", async (req, res) => {
         _loadId: loadId,
         _inventLocationId: inventLocationId.toString(),
         _pageSize: pageSize,
-        _pageId: pageId
+        _pageId: pageId,
+        _isDescending: isDescending,
+        _fromDate: fromDate,
+        _toDate: toDate
       },
       { headers: { Authorization: "Bearer " + token } }
     );
