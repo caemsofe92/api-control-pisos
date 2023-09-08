@@ -59,6 +59,7 @@ const getOrderTable = async (variables) => {
                     externalInvoiceId
                     externalSalesId
                     Invoice
+                    processed
                   }
               }
                 users(where: {id: {_eq: $userId}}){
@@ -85,6 +86,26 @@ const getEvidences = async (variables) => {
             evidenceURL
             evidenceType
             id
+          }
+        }`,
+      variables,
+    }),
+    url: apiURL,
+  };
+
+  const fetchResponse = await axios(options);
+  return fetchResponse.data;
+};
+
+const setOrderLine = async (variables) => {
+  const options = {
+    method: "POST",
+    headers: { "x-hasura-admin-secret": "Srf2020***" },
+    data: JSON.stringify({
+      query: `
+        mutation update_ordersLine($orderNumber: String, $externalId: String){
+          update_ordersLine(where: {orderNumber: {_eq: $orderNumber}, externalId: {_eq: $externalId}},_set: {processed: true}){
+            affected_rows
           }
         }`,
       variables,
@@ -190,36 +211,38 @@ router.post("/", async (req, res) => {
           for (let i = 0; i < ordersLines.length; i++) {
             const orderLine = ordersLines[i];
 
-            const deliveryData = {
-              loadId: deliveryHeaderData.loadId,
-              collectionDate: deliveryHeaderData.collectionDate,
-              deliveredOrderNumber: deliveryHeaderData.deliveredOrderNumber,
-              deliveredTo: deliveryHeaderData.deliveredTo,
-              shipmentId: consecutiveShipping,
-              salesId: consecutiveSaleOrder,
-              itemId: orderLine.productNumber,
-              summationQuantity: orderLine.summationQuantity,
-            };
+            if(!orderLine.processed){
+              const deliveryData = {
+                loadId: deliveryHeaderData.loadId,
+                collectionDate: deliveryHeaderData.collectionDate,
+                deliveredOrderNumber: deliveryHeaderData.deliveredOrderNumber,
+                deliveredTo: deliveryHeaderData.deliveredTo,
+                shipmentId: consecutiveShipping,
+                salesId: consecutiveSaleOrder,
+                itemId: orderLine.productNumber,
+                summationQuantity: orderLine.summationQuantity,
+              };
 
-            await axios.post(
-              `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
-              {
-                _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-                _NAVPackingControlDeliveredCode:
-                  deliveryData.deliveredOrderNumber,
-                _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
-                _NAVPackingControlRecipientCode: "",
-                _NAVPackingControlRecipientDateTime2: "",
-                _NAVPackingControlRecipientName: "",
-                _NAVPackingControlDeliveredStatus: "Próximo a Despachar",
-                _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
-                _loadId: deliveryData.loadId,
-                _shipmentId: deliveryData.shipmentId,
-                _salesId: deliveryData.salesId,
-                _itemId: deliveryData.itemId,
-              },
-              { headers: { Authorization: "Bearer " + token } }
-            );
+              await axios.post(
+                `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
+                {
+                  _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+                  _NAVPackingControlDeliveredCode:
+                    deliveryData.deliveredOrderNumber,
+                  _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
+                  _NAVPackingControlRecipientCode: "",
+                  _NAVPackingControlRecipientDateTime2: "",
+                  _NAVPackingControlRecipientName: "",
+                  _NAVPackingControlDeliveredStatus: "Próximo a Despachar",
+                  _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
+                  _loadId: deliveryData.loadId,
+                  _shipmentId: deliveryData.shipmentId,
+                  _salesId: deliveryData.salesId,
+                  _itemId: deliveryData.itemId,
+                },
+                { headers: { Authorization: "Bearer " + token } }
+              );
+            }
           }
         }
 
@@ -255,36 +278,38 @@ router.post("/", async (req, res) => {
           for (let i = 0; i < ordersLines.length; i++) {
             const orderLine = ordersLines[i];
 
-            const deliveryData = {
-              loadId: deliveryHeaderData.loadId,
-              collectionDate: deliveryHeaderData.collectionDate,
-              deliveredOrderNumber: deliveryHeaderData.deliveredOrderNumber,
-              deliveredTo: deliveryHeaderData.deliveredTo,
-              shipmentId: consecutiveShipping,
-              salesId: consecutiveSaleOrder,
-              itemId: orderLine.productNumber,
-              summationQuantity: orderLine.summationQuantity,
-            };
+            if(!orderLine.processed){
+              const deliveryData = {
+                loadId: deliveryHeaderData.loadId,
+                collectionDate: deliveryHeaderData.collectionDate,
+                deliveredOrderNumber: deliveryHeaderData.deliveredOrderNumber,
+                deliveredTo: deliveryHeaderData.deliveredTo,
+                shipmentId: consecutiveShipping,
+                salesId: consecutiveSaleOrder,
+                itemId: orderLine.productNumber,
+                summationQuantity: orderLine.summationQuantity,
+              };
 
-            await axios.post(
-              `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
-              {
-                _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-                _NAVPackingControlDeliveredCode:
-                  deliveryData.deliveredOrderNumber,
-                _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
-                _NAVPackingControlRecipientCode: "",
-                _NAVPackingControlRecipientDateTime2: "",
-                _NAVPackingControlRecipientName: "",
-                _NAVPackingControlDeliveredStatus: "En Reparto",
-                _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
-                _loadId: deliveryData.loadId,
-                _shipmentId: deliveryData.shipmentId,
-                _salesId: deliveryData.salesId,
-                _itemId: deliveryData.itemId,
-              },
-              { headers: { Authorization: "Bearer " + token } }
-            );
+              await axios.post(
+                `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
+                {
+                  _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+                  _NAVPackingControlDeliveredCode:
+                    deliveryData.deliveredOrderNumber,
+                  _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
+                  _NAVPackingControlRecipientCode: "",
+                  _NAVPackingControlRecipientDateTime2: "",
+                  _NAVPackingControlRecipientName: "",
+                  _NAVPackingControlDeliveredStatus: "En Reparto",
+                  _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
+                  _loadId: deliveryData.loadId,
+                  _shipmentId: deliveryData.shipmentId,
+                  _salesId: deliveryData.salesId,
+                  _itemId: deliveryData.itemId,
+                },
+                { headers: { Authorization: "Bearer " + token } }
+              );
+            }
           }
         }
 
@@ -320,87 +345,96 @@ router.post("/", async (req, res) => {
         for (let i = 0; i < ordersLines.length; i++) {
           const orderLine = ordersLines[i];
 
-          const deliveryData = {
-            loadId: consecutiveBurden,
-            shipmentId: consecutiveShipping,
-            salesId: consecutiveSaleOrder,
-            itemId: orderLine.productNumber,
-            collectionDate: moment(transaction.new.startDateTime).format(
-              "YYYY/MM/DD"
-            ),
-            deliveredOrderNumber: orderNumber,
-            deliveredTo: courier,
-            recipientDocument: transaction.new.receivedDocument,
-            recipientDateTime: moment(transaction.new.endDateTime)
-              .add(5, "hours")
-              .format("YYYY/MM/DD HH:mm:ss"),
-            recipientName: transaction.new.receivedPerson,
-            deliveredQuantity: orderLine.deliveredQuantity,
-            orderedQuantity: orderLine.orderedQuantity,
-            summationQuantity: orderLine.summationQuantity,
-          };
+          if(!orderLine.processed){
+            const deliveryData = {
+              loadId: consecutiveBurden,
+              shipmentId: consecutiveShipping,
+              salesId: consecutiveSaleOrder,
+              itemId: orderLine.productNumber,
+              collectionDate: moment(transaction.new.startDateTime).format(
+                "YYYY/MM/DD"
+              ),
+              deliveredOrderNumber: orderNumber,
+              deliveredTo: courier,
+              recipientDocument: transaction.new.receivedDocument,
+              recipientDateTime: moment(transaction.new.endDateTime)
+                .add(5, "hours")
+                .format("YYYY/MM/DD HH:mm:ss"),
+              recipientName: transaction.new.receivedPerson,
+              deliveredQuantity: orderLine.deliveredQuantity,
+              orderedQuantity: orderLine.orderedQuantity,
+              summationQuantity: orderLine.summationQuantity,
+            };
 
-          let statusNew = "";
+            let statusNew = "";
 
-          switch (transaction.new.status) {
-            case "delivered":
-              statusNew = "Entregado";
-              break;
-            case "undelivered":
-              statusNew = "Devuelto";
-              break;
-            case "partial_delivered":
-              const deliveryValue = deliveryData.orderedQuantity - deliveryData.deliveredQuantity;
-              deliveryValue === 0 ? statusNew = "Completamente Entregado" : statusNew = "Con novedad";
-              break;
-            case "rescheduled_delivery":
-              statusNew = "Entrega reprogramada";
-              break;
-            default:
+            switch (transaction.new.status) {
+              case "delivered":
+                statusNew = "Completamente Entregado";
+                break;
+              case "undelivered":
+                statusNew = "Devuelto";
+                break;
+              case "partial_delivered":
+                const deliveryValue = deliveryData.orderedQuantity - deliveryData.deliveredQuantity;
+                deliveryValue === 0 ? statusNew = "Completamente Entregado" : statusNew = "Con Novedad";
+                break;
+              case "rescheduled_delivery":
+                statusNew = "Entrega Reprogramada";
+                break;
+              default:
+            }
+            
+            let _deliveryData = await axios.post(
+              `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
+              {
+                _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+                _NAVPackingControlDeliveredCode:
+                  deliveryData.deliveredOrderNumber,
+                _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
+                _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
+                _NAVPackingControlRecipientDateTime2:
+                  deliveryData.recipientDateTime,
+                _NAVPackingControlRecipientName: deliveryData.recipientName,
+                _NAVPackingControlDeliveredStatus: statusNew,
+                _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
+                _loadId: deliveryData.loadId,
+                _shipmentId: deliveryData.shipmentId,
+                _salesId: deliveryData.salesId,
+                _itemId: deliveryData.itemId,
+              },
+              { headers: { Authorization: "Bearer " + token } }
+            );
+
+            _deliveryData = _deliveryData.data;
+
+            responses.push({
+              itemId: deliveryData.itemId,
+              response: _deliveryData,
+            });
+
+            await axios.post(
+              `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetInvoiceHeader`,
+              {
+                _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
+                _NAVPackingControlRecipientDateTime2:
+                  deliveryData.recipientDateTime,
+                _NAVPackingControlRecipientName: deliveryData.recipientName,
+                _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+                _NAVPackingControlPaymentMethod: paymentMethod,
+                _invoiceId: orderLine.Invoice,
+                _salesId: deliveryData.salesId,
+              },
+              { headers: { Authorization: "Bearer " + token } }
+            );
+
+            if(statusNew === "Completamente Entregado" || statusNew === "Devuelto"){
+              await setOrderLine({
+                orderNumber: orderNumber,
+                externalId: orderLine.externalId,
+              });
+            }
           }
-          
-          let _deliveryData = await axios.post(
-            `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
-            {
-              _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-              _NAVPackingControlDeliveredCode:
-                deliveryData.deliveredOrderNumber,
-              _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
-              _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
-              _NAVPackingControlRecipientDateTime2:
-                deliveryData.recipientDateTime,
-              _NAVPackingControlRecipientName: deliveryData.recipientName,
-              _NAVPackingControlDeliveredStatus: statusNew,
-              _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
-              _loadId: deliveryData.loadId,
-              _shipmentId: deliveryData.shipmentId,
-              _salesId: deliveryData.salesId,
-              _itemId: deliveryData.itemId,
-            },
-            { headers: { Authorization: "Bearer " + token } }
-          );
-
-          _deliveryData = _deliveryData.data;
-
-          responses.push({
-            itemId: deliveryData.itemId,
-            response: _deliveryData,
-          });
-
-          await axios.post(
-            `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetInvoiceHeader`,
-            {
-              _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
-              _NAVPackingControlRecipientDateTime2:
-                deliveryData.recipientDateTime,
-              _NAVPackingControlRecipientName: deliveryData.recipientName,
-              _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-              _NAVPackingControlPaymentMethod: paymentMethod,
-              _invoiceId: orderLine.Invoice,
-              _salesId: deliveryData.salesId,
-            },
-            { headers: { Authorization: "Bearer " + token } }
-          );
         }
 
         let evidences = await getEvidences({
