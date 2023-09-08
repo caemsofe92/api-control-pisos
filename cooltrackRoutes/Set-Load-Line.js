@@ -233,7 +233,7 @@ router.post("/", async (req, res) => {
                   _NAVPackingControlRecipientCode: "",
                   _NAVPackingControlRecipientDateTime2: "",
                   _NAVPackingControlRecipientName: "",
-                  _NAVPackingControlDeliveredStatus: "Próximo a Despachar",
+                  _NAVPackingControlDeliveredStatus: "En Ruta",
                   _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
                   _loadId: deliveryData.loadId,
                   _shipmentId: deliveryData.shipmentId,
