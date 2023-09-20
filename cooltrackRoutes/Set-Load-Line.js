@@ -392,10 +392,10 @@ router.post("/", async (req, res) => {
                 _NAVPackingControlDeliveredCode:
                   deliveryData.deliveredOrderNumber,
                 _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
-                _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
+                _NAVPackingControlRecipientCode: transaction.new.status === "rescheduled_delivery" || transaction.new.status === "undelivered" ? "" : deliveryData.recipientDocument,
                 _NAVPackingControlRecipientDateTime2:
                   deliveryData.recipientDateTime,
-                _NAVPackingControlRecipientName: deliveryData.recipientName,
+                _NAVPackingControlRecipientName: transaction.new.status === "rescheduled_delivery" || transaction.new.status === "undelivered" ? "" : deliveryData.recipientName,
                 _NAVPackingControlDeliveredStatus: statusNew,
                 _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
                 _loadId: deliveryData.loadId,
@@ -416,10 +416,10 @@ router.post("/", async (req, res) => {
             await axios.post(
               `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetInvoiceHeader`,
               {
-                _NAVPackingControlRecipientCode: deliveryData.recipientDocument,
+                _NAVPackingControlRecipientCode: transaction.new.status === "rescheduled_delivery" || transaction.new.status === "undelivered" ? "" : deliveryData.recipientDocument,
                 _NAVPackingControlRecipientDateTime2:
                   deliveryData.recipientDateTime,
-                _NAVPackingControlRecipientName: deliveryData.recipientName,
+                _NAVPackingControlRecipientName: transaction.new.status === "rescheduled_delivery" || transaction.new.status === "undelivered" ? "" : deliveryData.recipientName,
                 _NAVPackingControlCollectionDate: deliveryData.collectionDate,
                 _NAVPackingControlPaymentMethod: paymentMethod,
                 _invoiceId: orderLine.Invoice,
