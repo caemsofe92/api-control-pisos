@@ -392,10 +392,10 @@ router.post("/", async (req, res) => {
                 _NAVPackingControlDeliveredCode:
                   deliveryData.deliveredOrderNumber,
                 _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
-                _NAVPackingControlRecipientCode: transaction.new.status === "rescheduled_delivery" || transaction.new.status === "undelivered" ? "" : deliveryData.recipientDocument,
+                _NAVPackingControlRecipientCode: transaction.new.status === "rescheduled_delivery"  ? "" : deliveryData.recipientDocument,
                 _NAVPackingControlRecipientDateTime2:
                   deliveryData.recipientDateTime,
-                _NAVPackingControlRecipientName: transaction.new.status === "rescheduled_delivery" || transaction.new.status === "undelivered" ? "" : deliveryData.recipientName,
+                _NAVPackingControlRecipientName: transaction.new.status === "rescheduled_delivery"  ? "" : deliveryData.recipientName,
                 _NAVPackingControlDeliveredStatus: statusNew,
                 _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
                 _loadId: deliveryData.loadId,
