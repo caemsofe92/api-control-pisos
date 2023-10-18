@@ -30,6 +30,7 @@ const getOrderTable = async (variables) => {
                     externalInvoiceId
                     externalSalesId
                     Invoice
+                    processed
                   }
               }
                 users(where: {id: {_eq: $userId}}){
@@ -52,8 +53,8 @@ router.post("/", async (req, res) => {
   const tenantUrl = "navitrans.com.co";
   const clientId = "97a8cc5c-65a7-40ac-b1b8-4c9f50e2bc3b";
   const clientSecret = "31n8Q~rvYbbRtLqcEhmOob5zhHQPCjQO4611jcZ7";
-  const tenant = "https://uat4-navitrans.sandbox.operations.dynamics.com";
-  const environment = "UAT4";
+  const tenant = "https://test-navitrans.sandbox.operations.dynamics.com";
+  const environment = "TEST";
 
   if (!client.isOpen) client.connect();
 
@@ -134,37 +135,38 @@ router.post("/", async (req, res) => {
         if (ordersLines.length > 0) {
           for (let i = 0; i < ordersLines.length; i++) {
             const orderLine = ordersLines[i];
-
-            const deliveryData = {
-              loadId: deliveryHeaderData.loadId,
-              collectionDate: deliveryHeaderData.collectionDate,
-              deliveredOrderNumber: deliveryHeaderData.deliveredOrderNumber,
-              deliveredTo: deliveryHeaderData.deliveredTo,
-              shipmentId: consecutiveShipping,
-              salesId: consecutiveSaleOrder,
-              itemId: orderLine.productNumber,
-              summationQuantity: orderLine.summationQuantity,
-            };
-            console.log(deliveryData);
-            await axios.post(
-              `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
-              {
-                _NAVPackingControlCollectionDate: deliveryData.collectionDate,
-                _NAVPackingControlDeliveredCode:
-                  deliveryData.deliveredOrderNumber,
-                _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
-                _NAVPackingControlRecipientCode: "",
-                _NAVPackingControlRecipientDateTime2: "",
-                _NAVPackingControlRecipientName: "",
-                _NAVPackingControlDeliveredStatus: "Despachado",
-                _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
-                _loadId: deliveryData.loadId,
-                _shipmentId: deliveryData.shipmentId,
-                _salesId: deliveryData.salesId,
-                _itemId: deliveryData.itemId,
-              },
-              { headers: { Authorization: "Bearer " + token } }
-            );
+            if(!orderLine.processed){
+              const deliveryData = {
+                loadId: deliveryHeaderData.loadId,
+                collectionDate: deliveryHeaderData.collectionDate,
+                deliveredOrderNumber: deliveryHeaderData.deliveredOrderNumber,
+                deliveredTo: deliveryHeaderData.deliveredTo,
+                shipmentId: consecutiveShipping,
+                salesId: consecutiveSaleOrder,
+                itemId: orderLine.productNumber,
+                summationQuantity: orderLine.summationQuantity,
+              };
+              
+              await axios.post(
+                `${tenant}/api/services/SRF_ServiceCenterControlServices/SRF_ServiceCenterControlService/SRFSetLoadLine`,
+                {
+                  _NAVPackingControlCollectionDate: deliveryData.collectionDate,
+                  _NAVPackingControlDeliveredCode:
+                    deliveryData.deliveredOrderNumber,
+                  _NAVPackingControlDeliveredTo: deliveryData.deliveredTo,
+                  _NAVPackingControlRecipientCode: "",
+                  _NAVPackingControlRecipientDateTime2: "",
+                  _NAVPackingControlRecipientName: "",
+                  _NAVPackingControlDeliveredStatus: "Despachado",
+                  _NAVPackingControlDeliveredQty: deliveryData.summationQuantity,
+                  _loadId: deliveryData.loadId,
+                  _shipmentId: deliveryData.shipmentId,
+                  _salesId: deliveryData.salesId,
+                  _itemId: deliveryData.itemId,
+                },
+                { headers: { Authorization: "Bearer " + token } }
+              );
+            }
           }
         }
 
