@@ -78,17 +78,13 @@ var SetNameTMSLine = require("./cooltrackRoutes/Set-Name-TMS-Line");
 //TodoList Angelo
 
 var CreatedUserTodoList = require("./TodoListAngelo/Created-User-TodoList");
-<<<<<<< HEAD
-var createdTask = require("./TodoListAngelo/created-Task");
-var updateTask = require("./TodoListAngelo/update-Task");
-=======
+
 var LoginUserControlTareas = require("./TodoListAngelo/Login-User-ControlTareas");
 var PostTareasControlTareas = require("./TodoListAngelo/Post-Tareas-ControlTareas");
 var PathTareasControlTareas = require("./TodoListAngelo/Patch-Tareas-ControlTareas");
 var DeleteTareasControlTareas = require("./TodoListAngelo/Delete-Tareas-ControlTareas");
 var GetTareasControlTareas = require("./TodoListAngelo/Get-Tareas-ControlTareas");
 
->>>>>>> 397cbc8ec28dd7cc45e7b694775cfac4b9606919
 //************ */
 
 var app = express();
@@ -171,17 +167,13 @@ app.use("/Set-Name-TMS-Line", SetNameTMSLine);
 //TodoList Angelo
 
 app.use("/Created-User-TodoList", CreatedUserTodoList);
-<<<<<<< HEAD
-app.use("/created-Task", createdTask);
-app.use("/update-Task", updateTask);
-=======
+
 app.use("/Login-User-ControlTareas", LoginUserControlTareas);
 app.use("/Post-Tareas-ControlTareas", PostTareasControlTareas);
 app.use("/Patch-Tareas-ControlTareas", PathTareasControlTareas);
 app.use("/Delete-Tareas-ControlTareas", DeleteTareasControlTareas);
 app.use("/Get-Tareas-ControlTareas", GetTareasControlTareas);
 
->>>>>>> 397cbc8ec28dd7cc45e7b694775cfac4b9606919
 //************ */
 app.use(function (req, res, next) {
   next(createError(404));
