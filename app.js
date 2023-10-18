@@ -78,7 +78,8 @@ var SetNameTMSLine = require("./cooltrackRoutes/Set-Name-TMS-Line");
 //TodoList Angelo
 
 var CreatedUserTodoList = require("./TodoListAngelo/Created-User-TodoList");
-
+var createdTask = require("./TodoListAngelo/created-Task");
+var updateTask = require("./TodoListAngelo/update-Task");
 //************ */
 
 var app = express();
@@ -161,7 +162,8 @@ app.use("/Set-Name-TMS-Line", SetNameTMSLine);
 //TodoList Angelo
 
 app.use("/Created-User-TodoList", CreatedUserTodoList);
-
+app.use("/created-Task", createdTask);
+app.use("/update-Task", updateTask);
 //************ */
 app.use(function (req, res, next) {
   next(createError(404));
