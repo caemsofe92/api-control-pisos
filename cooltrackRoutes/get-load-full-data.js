@@ -20,6 +20,7 @@ router.post("/", async (req, res) => {
     const toDate = req.query.toDate || (req.body && req.body.toDate);
     const seeDispatched = req.query.seeDispatched || (req.body && req.body.seeDispatched);
     const filterByDispatchDate = req.query.filterByDispatchDate || (req.body && req.body.filterByDispatchDate);
+    const transport = req.query.transport || (req.body && req.body.transport);
     
     if (!tenantUrl || tenantUrl.length === 0)
       throw new Error("tenantUrl is Mandatory");
@@ -82,7 +83,8 @@ router.post("/", async (req, res) => {
         _fromDate: fromDate,
         _toDate: toDate,
         _seeDispatched: seeDispatched,
-        _filterByDispatchDate: filterByDispatchDate
+        _filterByDispatchDate: filterByDispatchDate,
+        __transport: transport
       },
       { headers: { Authorization: "Bearer " + token } }
     );
